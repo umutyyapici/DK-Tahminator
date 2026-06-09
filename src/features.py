@@ -102,7 +102,8 @@ class EloFeatureBuilder:
 
     def __init__(self):
         self.elos: dict[str, float] = {}
-        self.history: dict[str, list] = {}  # takım → [(tarih, puan), ...]
+        self.history: dict[str, list] = {}   # takım → [sonuçlar]
+        self.elo_history: dict[str, list] = {}  # takım → [elo değerleri]
 
     def get_elo(self, team: str) -> float:
         return self.elos.get(team, INITIAL_ELO)
@@ -125,6 +126,10 @@ class EloFeatureBuilder:
         self.elos[home] = elo_h + delta
         self.elos[away] = elo_a - delta
 
+        # elo geçmişi güncelle
+        self._update_elo_history(home, elo_h)
+        self._update_elo_history(away, elo_a)
+
         # forma güncelle
         self._update_form(home, act_h)
         self._update_form(away, 1.0 - act_h)
@@ -135,6 +140,19 @@ class EloFeatureBuilder:
         if team not in self.history:
             self.history[team] = []
         self.history[team].append(result)
+
+    def _update_elo_history(self, team: str, elo: float):
+        if team not in self.elo_history:
+            self.elo_history[team] = []
+        self.elo_history[team].append(elo)
+
+    def get_elo_momentum(self, team: str, window: int = 5) -> float:
+        """Son N maçtaki ELO değişimi. Pozitif = yükselen, negatif = düşen."""
+        hist = self.elo_history.get(team, [])
+        if len(hist) < 2:
+            return 0.0
+        recent = hist[-window:]
+        return float(recent[-1] - recent[0])
 
     def get_form(self, team: str, window: int = FORM_WINDOW) -> float:
         """Son N maçtaki ortalama puan (0-1 arası)."""
@@ -231,6 +249,8 @@ def build_features(kaggle_results_path: str,
         elo_a = builder.get_elo(away)
         form_h = builder.get_form(home)
         form_a = builder.get_form(away)
+        mom_h = builder.get_elo_momentum(home)
+        mom_a = builder.get_elo_momentum(away)
         h2h_w, h2h_d, h2h_l = builder.get_h2h(home, away, h2h_records)
 
         # Hedef değişken: 2=ev galip, 1=beraberlik, 0=deplasman galip
@@ -262,6 +282,9 @@ def build_features(kaggle_results_path: str,
             "h2h_away_win":  h2h_l,
             "is_wc":         1 if "world cup" in tourn.lower() else 0,
             "is_neutral":    1 if neut else 0,
+            "elo_momentum_home": mom_h,
+            "elo_momentum_away": mom_a,
+            "elo_momentum_diff": mom_h - mom_a,
             "outcome":       outcome,
         })
 
@@ -287,6 +310,8 @@ def build_features(kaggle_results_path: str,
             elo_a  = builder.get_elo(away)
             form_h = builder.get_form(home)
             form_a = builder.get_form(away)
+            mom_h  = builder.get_elo_momentum(home)
+            mom_a  = builder.get_elo_momentum(away)
             h2h_w, h2h_d, h2h_l = builder.get_h2h(home, away, h2h_records)
 
             pred_rows.append({
@@ -307,6 +332,9 @@ def build_features(kaggle_results_path: str,
                 "h2h_away_win": h2h_l,
                 "is_wc":        1,
                 "is_neutral":   1,
+                "elo_momentum_home": mom_h,
+                "elo_momentum_away": mom_a,
+                "elo_momentum_diff": mom_h - mom_a,
             })
 
     pred_df = pd.DataFrame(pred_rows)
@@ -318,6 +346,7 @@ FEATURE_COLS = [
     "form_home", "form_away", "form_diff",
     "h2h_home_win", "h2h_draw", "h2h_away_win",
     "is_wc", "is_neutral",
+    "elo_momentum_home", "elo_momentum_away", "elo_momentum_diff",
 ]
 
 
