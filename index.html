@@ -570,7 +570,7 @@
 
     function flagImg(team) {
       const code = getCountryCode(team);
-      return '<img src="https://flagcdn.com/w80/' + code + '.png" alt="' + team + '" class="team-flag-img" onerror="this.style.display='none'" />';
+      return `<img src="https://flagcdn.com/w80/${code}.png" alt="${team}" class="team-flag-img" />`;
     }
 
     // ── Stage label map ────────────────────────────────────
