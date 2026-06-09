@@ -6,35 +6,123 @@ Sırayla:
   1. football-data.org'dan yeni maç sonuçlarını çeker
   2. Modeli yeniden eğitir (ELO ve feature'lar güncellenir)
   3. Tahminleri yeniden üretir
+  4. Oynanan maçlardaki tahmin başarısını hesaplayıp accuracy.json'a yazar
 """
 
 import sys
 import os
+import json
+import pandas as pd
+from datetime import datetime
 
-# src/ altındaki modülleri import edebilmek için
 sys.path.insert(0, os.path.dirname(__file__))
 
 from fetch_matches import fetch_wc2026_matches, save_matches
 from train import train
 from predict import predict
 
+DATA_DIR     = os.path.join(os.path.dirname(__file__), "..", "data")
+ACCURACY_OUT = os.path.join(DATA_DIR, "accuracy.json")
+
+
+def calc_accuracy():
+    matches_path = os.path.join(DATA_DIR, "matches_2026.csv")
+    preds_path   = os.path.join(DATA_DIR, "predictions.csv")
+
+    if not os.path.exists(matches_path) or not os.path.exists(preds_path):
+        print("[accuracy] Gerekli dosyalar bulunamadı, atlanıyor.")
+        return
+
+    matches = pd.read_csv(matches_path)
+    preds   = pd.read_csv(preds_path)
+
+    # Sadece sonucu kesinleşmiş maçlar
+    finished = matches[matches["status"] == "FINISHED"].copy()
+    if finished.empty:
+        print("[accuracy] Henüz oynanmış maç yok.")
+        _save_accuracy(0, 0, 0, 0)
+        return
+
+    # Tahminlerle birleştir
+    merged = finished.merge(
+        preds[["home_team", "away_team", "date", "predicted", "most_likely_score"]],
+        on=["home_team", "away_team", "date"],
+        how="inner"
+    )
+
+    if merged.empty:
+        print("[accuracy] Eşleşen tahmin bulunamadı.")
+        _save_accuracy(0, 0, 0, 0)
+        return
+
+    total   = len(merged)
+    correct = 0
+    exact   = 0
+
+    for _, row in merged.iterrows():
+        hg = int(row["home_score"])
+        ag = int(row["away_score"])
+
+        # Gerçek sonuç
+        if hg > ag:   actual = "Ev Sahibi"
+        elif hg == ag: actual = "Beraberlik"
+        else:          actual = "Deplasman"
+
+        if row["predicted"] == actual:
+            correct += 1
+
+        # Tam skor kontrolü
+        if pd.notna(row.get("most_likely_score", None)):
+            try:
+                ph, pa = row["most_likely_score"].split("-")
+                if int(ph) == hg and int(pa) == ag:
+                    exact += 1
+            except Exception:
+                pass
+
+    accuracy   = round(correct / total * 100, 1) if total > 0 else 0
+    exact_pct  = round(exact / total * 100, 1)   if total > 0 else 0
+
+    _save_accuracy(accuracy, correct, total, exact, exact_pct)
+    print(f"[accuracy] {correct}/{total} doğru → %{accuracy}  |  {exact} tam skor (%{exact_pct})")
+
+
+def _save_accuracy(accuracy, correct, total, exact, exact_pct=0):
+    data = {
+        "accuracy":    accuracy,
+        "correct":     correct,
+        "total":       total,
+        "exact":       exact,
+        "exact_pct":   exact_pct,
+        "updated_at":  datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC"),
+    }
+    os.makedirs(os.path.dirname(ACCURACY_OUT), exist_ok=True)
+    with open(ACCURACY_OUT, "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+    print(f"[accuracy] Kaydedildi: {ACCURACY_OUT}")
+
 
 def main():
     print("=" * 50)
-    print("ADIM 1/3: Maç sonuçları çekiliyor...")
+    print("ADIM 1/4: Maç sonuçları çekiliyor...")
     print("=" * 50)
     df = fetch_wc2026_matches()
     save_matches(df)
 
     print("\n" + "=" * 50)
-    print("ADIM 2/3: Model yeniden eğitiliyor...")
+    print("ADIM 2/4: Model yeniden eğitiliyor...")
     print("=" * 50)
     train()
 
     print("\n" + "=" * 50)
-    print("ADIM 3/3: Tahminler üretiliyor...")
+    print("ADIM 3/4: Tahminler üretiliyor...")
     print("=" * 50)
     predict()
+
+    print("\n" + "=" * 50)
+    print("ADIM 4/4: Başarı oranı hesaplanıyor...")
+    print("=" * 50)
+    calc_accuracy()
 
     print("\n✓ Güncelleme tamamlandı.")
 
