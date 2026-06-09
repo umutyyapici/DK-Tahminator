@@ -15,7 +15,8 @@ A machine learning project that predicts 2026 FIFA World Cup match outcomes usin
 2. Two XGBoost regressors predict expected goals for each team independently
 3. A Poisson probability matrix converts expected goals into win/draw/loss probabilities and a most likely scoreline
 4. As 2026 WC matches are played, results are fetched automatically, ELO ratings are updated, and predictions for remaining matches are recalculated
-5. The web dashboard reads `predictions.csv` directly and reflects every update without redeployment
+5. Completed matches are compared against predictions to compute a live accuracy score
+6. The web dashboard reads all three output files dynamically — no redeployment needed
 
 ## Setup
 
@@ -62,7 +63,7 @@ Add `FOOTBALL_DATA_API_KEY` as a repository secret under `Settings → Secrets �
 The workflow runs daily at 12:00 UTC and automatically:
 - Fetches new match results from football-data.org
 - Retrains the models with updated data
-- Commits refreshed `predictions.csv` and `matches_2026.csv`
+- Commits refreshed `predictions.csv`, `matches_2026.csv`, and `accuracy.json`
 
 ### Web dashboard (GitHub Pages)
 
@@ -70,7 +71,15 @@ The workflow runs daily at 12:00 UTC and automatically:
 2. Set source to **Deploy from a branch**, select `main`, root `/`
 3. The dashboard will be live at `https://<username>.github.io/<repo>/`
 
-The page fetches `data/predictions.csv` on every load — no redeployment needed when predictions update.
+The page fetches output files on every load — no redeployment needed when data updates.
+
+### Model evaluation (backtest)
+
+```bash
+python src/evaluate.py
+```
+
+Trains on pre-2022 WC data, tests on the 2022 World Cup, and reports accuracy, log loss, Brier score, and exact score accuracy.
 
 ## Model
 
@@ -96,6 +105,7 @@ The page fetches `data/predictions.csv` on every load — no redeployment needed
 
 | File | Description |
 |------|-------------|
-| `index.html` | Live web dashboard — reads predictions.csv dynamically |
+| `index.html` | Live web dashboard — reads all data files dynamically |
 | `data/matches_2026.csv` | Full 2026 WC schedule with results as they come in |
 | `data/predictions.csv` | Latest predictions with probabilities and expected scorelines |
+| `data/accuracy.json` | Live accuracy stats — updated after each match day |
