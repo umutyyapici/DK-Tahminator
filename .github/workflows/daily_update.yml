@@ -2,7 +2,7 @@ name: Daily WC2026 Update
 
 on:
   schedule:
-    # UTC 12:00, Türkiye saatiyle 15:00 yapar (Turnuva saatleri için gayet ideal)
+    # UTC 12:00, Türkiye saatiyle 15:00
     - cron: "0 12 * * *"
   workflow_dispatch:  # Elle de tetiklenebilir
 
@@ -31,8 +31,7 @@ jobs:
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          # Modellerin ve verilerin güncel hallerini ekliyoruz
-          git add data/matches_2026.csv data/predictions.csv models/*.pkl
+          git add data/matches_2026.csv data/predictions.csv
           # Değişiklik yoksa hata vermeden çık
           git diff --staged --quiet || git commit -m "chore: daily update $(date -u '+%Y-%m-%d')"
           git push
