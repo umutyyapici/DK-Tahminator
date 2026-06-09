@@ -376,6 +376,52 @@
       margin: 0 4px;
     }
 
+
+    /* ── Backtest panel ──────────────────────────────────── */
+    .backtest-bar {
+      background: rgba(74,144,217,0.05);
+      border-bottom: 1px solid rgba(74,144,217,0.12);
+      padding: 12px 24px;
+      display: none;
+    }
+
+    .backtest-bar.loaded { display: block; }
+
+    .backtest-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .backtest-label {
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-right: 4px;
+      white-space: nowrap;
+    }
+
+    .backtest-detail {
+      font-size: 11px;
+      color: var(--muted);
+      padding: 3px 10px;
+      background: rgba(255,255,255,0.04);
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,0.07);
+      white-space: nowrap;
+    }
+
+    .backtest-detail strong {
+      color: var(--blue);
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 14px;
+      letter-spacing: 0.5px;
+    }
+
     /* ── Loading / Error states ──────────────────────────── */
     .state-screen {
       display: flex;
@@ -464,6 +510,17 @@
       <div class="accuracy-divider"></div>
       <span class="accuracy-detail" id="accCorrect">— / — doğru tahmin</span>
       <span class="accuracy-detail" id="accExact">— tam skor</span>
+    </div>
+  </div>
+
+  <div class="backtest-bar" id="backtestBar">
+    <div class="backtest-inner">
+      <span class="backtest-label">📊 2022 WC Backtest</span>
+      <span class="backtest-detail">Doğruluk: <strong id="btAcc">—</strong></span>
+      <span class="backtest-detail">Tam Skor: <strong id="btExact">—</strong></span>
+      <span class="backtest-detail">Log Loss: <strong id="btLL">—</strong></span>
+      <span class="backtest-detail">Brier: <strong id="btBrier">—</strong></span>
+      <span class="backtest-detail">Baseline: <strong id="btBaseline">—</strong></span>
     </div>
   </div>
 
@@ -683,6 +740,21 @@
             }
           }
         } catch(e) { /* accuracy.json henüz yok, banner gizli kalır */ }
+        // Backtest banner
+        try {
+          const btRes = await fetch('data/backtest.json?t=' + Date.now());
+          if (btRes.ok) {
+            const bt = await btRes.json();
+            document.getElementById('btAcc').textContent      = '%' + bt.accuracy;
+            document.getElementById('btExact').textContent    = '%' + bt.exact_acc;
+            document.getElementById('btLL').textContent       = bt.log_loss;
+            document.getElementById('btBrier').textContent    = bt.brier;
+            document.getElementById('btBaseline').textContent = '%' + bt.baseline;
+            document.getElementById('backtestBar').classList.add('loaded');
+          }
+        } catch(e) { /* backtest.json henüz yok */ }
+
+
 
         // Summary bar
         document.getElementById('statTotal').textContent = matches.length;
