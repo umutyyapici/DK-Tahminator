@@ -6,6 +6,9 @@ on:
     - cron: "0 12 * * *"
   workflow_dispatch:  # Elle de tetiklenebilir
 
+permissions:
+  contents: write
+
 jobs:
   update:
     runs-on: ubuntu-latest
@@ -13,6 +16,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Python kur
         uses: actions/setup-python@v5
