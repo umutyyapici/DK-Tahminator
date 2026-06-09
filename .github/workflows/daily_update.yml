@@ -36,7 +36,9 @@ jobs:
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add --ignore-unmatch data/matches_2026.csv data/predictions.csv data/accuracy.json data/backtest.json
-          # Değişiklik yoksa hata vermeden çık
+          # Var olan dosyaları tek tek ekle, olmayanları atla
+          for f in data/matches_2026.csv data/predictions.csv data/accuracy.json data/backtest.json; do
+            [ -f "$f" ] && git add "$f"
+          done
           git diff --staged --quiet || git commit -m "chore: daily update $(date -u '+%Y-%m-%d')"
           git push
