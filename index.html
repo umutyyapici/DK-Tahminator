@@ -221,7 +221,7 @@
     .team-block { display: flex; flex-direction: column; gap: 4px; }
     .team-block.away { text-align: right; align-items: flex-end; }
 
-    .team-flag { font-size: 28px; line-height: 1; }
+    .team-flag-img { width: 48px; height: 30px; border-radius: 4px; object-fit: cover; box-shadow: 0 2px 6px rgba(0,0,0,0.4); }
 
     .team-name {
       font-size: 13px;
@@ -383,7 +383,6 @@
       .cards-grid { grid-template-columns: 1fr; }
       .header-title { font-size: 20px; }
       .score-display { font-size: 26px; }
-      .team-flag { font-size: 22px; }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -420,26 +419,39 @@
   </main>
 
   <script>
-    // ── Flag emoji helper ──────────────────────────────────
-    const FLAG_MAP = {
-      "Argentina":"🇦🇷","Australia":"🇦🇺","Austria":"🇦🇹","Belgium":"🇧🇪",
-      "Bosnia-Herzegovina":"🇧🇦","Brazil":"🇧🇷","Canada":"🇨🇦","Chile":"🇨🇱",
-      "Colombia":"🇨🇴","Congo DR":"🇨🇩","Croatia":"🇭🇷","Czechia":"🇨🇿",
-      "Czech Republic":"🇨🇿","Curaçao":"🇨🇼","Ecuador":"🇪🇨","Egypt":"🇪🇬",
-      "England":"🏴󠁧󠁢󠁥󠁮󠁧󠁿","France":"🇫🇷","Germany":"🇩🇪","Ghana":"🇬🇭",
-      "Haiti":"🇭🇹","Iran":"🇮🇷","Iraq":"🇮🇶","Ivory Coast":"🇨🇮",
-      "Japan":"🇯🇵","Jordan":"🇯🇴","Mexico":"🇲🇽","Morocco":"🇲🇦",
-      "Netherlands":"🇳🇱","New Zealand":"🇳🇿","Norway":"🇳🇴","Panama":"🇵🇦",
-      "Paraguay":"🇵🇾","Portugal":"🇵🇹","Qatar":"🇶🇦","Saudi Arabia":"🇸🇦",
-      "Scotland":"🏴󠁧󠁢󠁳󠁣󠁴󠁿","Senegal":"🇸🇳","South Africa":"🇿🇦",
-      "South Korea":"🇰🇷","Spain":"🇪🇸","Sweden":"🇸🇪","Switzerland":"🇨🇭",
-      "Tunisia":"🇹🇳","Turkey":"🇹🇷","United States":"🇺🇸","Uruguay":"🇺🇾",
-      "Uzbekistan":"🇺🇿","Wales":"🏴󠁧󠁢󠁷󠁬󠁳󠁿",
-      "Cape Verde Islands":"🇨🇻","Algeria":"🇩🇿",
-    };
+    // ── Flag CDN helper (flagcdn.com) ─────────────────────
+    function getCountryCode(teamName) {
+      if (!teamName) return 'un';
+      const name = teamName.toLowerCase().trim();
+      const countries = {
+        'austria': 'at', 'belgium': 'be',
+        'bosnia and herzegovina': 'ba', 'bosnia-herzegovina': 'ba',
+        'croatia': 'hr', 'czech republic': 'cz', 'czechia': 'cz',
+        'england': 'gb-eng', 'france': 'fr', 'germany': 'de',
+        'netherlands': 'nl', 'norway': 'no', 'portugal': 'pt',
+        'scotland': 'gb-sct', 'spain': 'es', 'sweden': 'se',
+        'switzerland': 'ch', 'turkey': 'tr',
+        'argentina': 'ar', 'brazil': 'br', 'colombia': 'co',
+        'ecuador': 'ec', 'paraguay': 'py', 'uruguay': 'uy',
+        'canada': 'ca', 'curacao': 'cw', 'cura\u00e7ao': 'cw',
+        'haiti': 'ht', 'mexico': 'mx', 'panama': 'pa',
+        'united states': 'us', 'usa': 'us',
+        'algeria': 'dz', 'cape verde': 'cv', 'cape verde islands': 'cv',
+        'dr congo': 'cd', 'congo dr': 'cd',
+        'egypt': 'eg', 'ghana': 'gh', 'ivory coast': 'ci',
+        'morocco': 'ma', 'senegal': 'sn', 'south africa': 'za',
+        'tunisia': 'tn',
+        'australia': 'au', 'iran': 'ir', 'iraq': 'iq',
+        'japan': 'jp', 'jordan': 'jo', 'qatar': 'qa',
+        'saudi arabia': 'sa', 'south korea': 'kr',
+        'uzbekistan': 'uz', 'new zealand': 'nz',
+      };
+      return countries[name] || 'un';
+    }
 
-    function flag(team) {
-      return FLAG_MAP[team] || "🏳️";
+    function flagImg(team) {
+      const code = getCountryCode(team);
+      return '<img src="https://flagcdn.com/w80/' + code + '.png" alt="' + team + '" class="team-flag-img" onerror="this.style.display='none'" />';
     }
 
     // ── Stage label map ────────────────────────────────────
@@ -499,7 +511,7 @@
           <div class="stage-badge">${stageLabel(match.stage)}</div>
           <div class="teams-row">
             <div class="team-block home">
-              <span class="team-flag">${flag(match.home_team)}</span>
+              ${flagImg(match.home_team)}
               <span class="team-name">${match.home_team}</span>
               <span class="team-elo">ELO ${eloH}</span>
             </div>
@@ -508,7 +520,7 @@
               <span class="score-label">Tahmin</span>
             </div>
             <div class="team-block away">
-              <span class="team-flag">${flag(match.away_team)}</span>
+              ${flagImg(match.away_team)}
               <span class="team-name">${match.away_team}</span>
               <span class="team-elo">ELO ${eloA}</span>
             </div>
