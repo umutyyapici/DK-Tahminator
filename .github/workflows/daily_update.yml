@@ -2,8 +2,8 @@ name: Daily WC2026 Update
 
 on:
   schedule:
-    # UTC 12:00, Türkiye saatiyle 15:00
-    - cron: "0 12 * * *"
+    # UTC 10:00, Türkiye saatiyle 13:00
+    - cron: "0 10 * * *"
   workflow_dispatch:  # Elle de tetiklenebilir
 
 permissions:
@@ -36,7 +36,6 @@ jobs:
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          # Var olan dosyaları tek tek ekle, olmayanları atla
           for f in data/matches_2026.csv data/predictions.csv data/accuracy.json data/backtest.json; do
             [ -f "$f" ] && git add "$f"
           done
