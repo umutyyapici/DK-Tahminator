@@ -128,26 +128,31 @@ def build_train_test(kaggle_path, former_names_path):
         elo_a  = builder.get_elo(away)
         form_h = builder.get_form(home)
         form_a = builder.get_form(away)
+        mom_h  = builder.get_elo_momentum(home)
+        mom_a  = builder.get_elo_momentum(away)
         h2h_w, h2h_d, h2h_l = builder.get_h2h(home, away, h2h_records)
 
         feat = {
-            "date":         date,
-            "home_team":    home,
-            "away_team":    away,
-            "home_score":   hg,
-            "away_score":   ag,
-            "tournament":   tourn,
-            "elo_diff":     elo_h - elo_a,
-            "elo_home_adj": elo_h + (0 if neut else HOME_ADVANTAGE),
-            "elo_away":     elo_a,
-            "form_home":    form_h,
-            "form_away":    form_a,
-            "form_diff":    form_h - form_a,
-            "h2h_home_win": h2h_w,
-            "h2h_draw":     h2h_d,
-            "h2h_away_win": h2h_l,
-            "is_wc":        1 if "world cup" in tourn.lower() else 0,
-            "is_neutral":   1 if neut else 0,
+            "date":               date,
+            "home_team":          home,
+            "away_team":          away,
+            "home_score":         hg,
+            "away_score":         ag,
+            "tournament":         tourn,
+            "elo_diff":           elo_h - elo_a,
+            "elo_home_adj":       elo_h + (0 if neut else HOME_ADVANTAGE),
+            "elo_away":           elo_a,
+            "form_home":          form_h,
+            "form_away":          form_a,
+            "form_diff":          form_h - form_a,
+            "h2h_home_win":       h2h_w,
+            "h2h_draw":           h2h_d,
+            "h2h_away_win":       h2h_l,
+            "is_wc":              1 if "world cup" in tourn.lower() else 0,
+            "is_neutral":         1 if neut else 0,
+            "elo_momentum_home":  mom_h,
+            "elo_momentum_away":  mom_a,
+            "elo_momentum_diff":  mom_h - mom_a,
         }
 
         if is_test_match(tourn, ds):
