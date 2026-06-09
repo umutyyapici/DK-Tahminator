@@ -1,6 +1,6 @@
 # WC 2026 Match Predictor
 
-A machine learning project that predicts 2026 FIFA World Cup match outcomes using historical international football data and ELO ratings. Predictions are updated daily via GitHub Actions as the tournament progresses.
+A machine learning project that predicts 2026 FIFA World Cup match outcomes using historical international football data and ELO ratings. Predictions are updated daily via GitHub Actions as the tournament progresses, and displayed on a live web dashboard.
 
 ## Data Sources
 
@@ -15,6 +15,7 @@ A machine learning project that predicts 2026 FIFA World Cup match outcomes usin
 2. Two XGBoost regressors predict expected goals for each team independently
 3. A Poisson probability matrix converts expected goals into win/draw/loss probabilities and a most likely scoreline
 4. As 2026 WC matches are played, results are fetched automatically, ELO ratings are updated, and predictions for remaining matches are recalculated
+5. The web dashboard reads `predictions.csv` directly and reflects every update without redeployment
 
 ## Setup
 
@@ -63,6 +64,14 @@ The workflow runs daily at 12:00 UTC and automatically:
 - Retrains the models with updated data
 - Commits refreshed `predictions.csv` and `matches_2026.csv`
 
+### Web dashboard (GitHub Pages)
+
+1. Go to `Settings → Pages`
+2. Set source to **Deploy from a branch**, select `main`, root `/`
+3. The dashboard will be live at `https://<username>.github.io/<repo>/`
+
+The page fetches `data/predictions.csv` on every load — no redeployment needed when predictions update.
+
 ## Model
 
 | | |
@@ -87,5 +96,6 @@ The workflow runs daily at 12:00 UTC and automatically:
 
 | File | Description |
 |------|-------------|
+| `index.html` | Live web dashboard — reads predictions.csv dynamically |
 | `data/matches_2026.csv` | Full 2026 WC schedule with results as they come in |
 | `data/predictions.csv` | Latest predictions with probabilities and expected scorelines |
