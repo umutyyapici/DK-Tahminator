@@ -109,3 +109,4 @@ Trains on pre-2022 WC data, tests on the 2022 World Cup, and reports accuracy, l
 | `data/matches_2026.csv` | Full 2026 WC schedule with results as they come in |
 | `data/predictions.csv` | Latest predictions with probabilities and expected scorelines |
 | `data/accuracy.json` | Live accuracy stats — updated after each match day |
+| `data/backtest.json` | 2022 WC backtest results — accuracy, log loss, Brier score |
