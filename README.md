@@ -1,21 +1,29 @@
 # WC 2026 Match Predictor
 
-ELO tabanlı 2026 FIFA Dünya Kupası maç tahmin projesi.
+A machine learning project that predicts 2026 FIFA World Cup match outcomes using historical international football data and ELO ratings. Predictions are updated daily via GitHub Actions as the tournament progresses.
 
-## Veri Kaynakları
+## Data Sources
 
-| Kaynak | İçerik |
-|--------|--------|
-| [Kaggle - International Football Results](https://www.kaggle.com/datasets/martj42/international-football-results-from-1872-to-2017) | 1872'den günümüze tarihsel maç sonuçları |
-| [football-data.org](https://www.football-data.org) | 2026 WC takvimi ve canlı sonuçlar |
+| Source | Content |
+|--------|---------|
+| [Kaggle - International Football Results](https://www.kaggle.com/datasets/martj42/international-football-results-from-1872-to-2017) | Historical match results from 1872 to present |
+| [football-data.org](https://www.football-data.org) | 2026 WC fixtures and live results |
 
-## Kurulum
+## How It Works
+
+1. Historical match data is used to compute ELO ratings and form statistics for every national team
+2. Two XGBoost regressors predict expected goals for each team independently
+3. A Poisson probability matrix converts expected goals into win/draw/loss probabilities and a most likely scoreline
+4. As 2026 WC matches are played, results are fetched automatically, ELO ratings are updated, and predictions for remaining matches are recalculated
+
+## Setup
 
 ```bash
 pip install -r requirements.txt
 ```
 
-Kaggle'dan indirilen CSV'leri `data/` klasörüne koy:
+Download the Kaggle dataset and place the CSV files under `data/`:
+
 ```
 data/
 ├── results.csv
@@ -24,55 +32,60 @@ data/
 └── former_names.csv
 ```
 
-API key'ini ortam değişkeni olarak tanımla:
+Set your football-data.org API key as an environment variable:
+
 ```bash
 export FOOTBALL_DATA_API_KEY=your_key_here
 ```
 
-## Kullanım
+## Usage
 
-### İlk kurulum (tek seferlik)
+### First run
 
 ```bash
-# 1. 2026 WC maçlarını çek
-python src/fetch_matches.py
-
-# 2. Modeli eğit
-python src/train.py
-
-# 3. Tahminleri üret
-python src/predict.py
+python src/fetch_matches.py   # Fetch 2026 WC fixtures
+python src/train.py           # Train the models
+python src/predict.py         # Generate predictions
 ```
 
-### Günlük güncelleme (elle)
+### Manual update
 
 ```bash
 python src/update.py
 ```
 
-### GitHub Actions (otomatik)
+### Automated updates via GitHub Actions
 
-`Settings → Secrets → Actions` altına `FOOTBALL_DATA_API_KEY` secret'ını ekle.
-Her gün 08:00 UTC'de otomatik çalışır.
+Add `FOOTBALL_DATA_API_KEY` as a repository secret under `Settings → Secrets → Actions`.
+
+The workflow runs daily at 12:00 UTC and automatically:
+- Fetches new match results from football-data.org
+- Retrains the models with updated data
+- Commits refreshed `predictions.csv` and `matches_2026.csv`
 
 ## Model
 
-- **Algoritma:** XGBoost + Platt Scaling (olasılık kalibrasyonu)
-- **Hedef:** 3 sınıf — Ev Sahibi Galip / Beraberlik / Deplasman Galip
-- **Feature'lar:**
+| | |
+|---|---|
+| **Algorithm** | XGBoost Regressor (two models: home goals / away goals) |
+| **Probability estimation** | Poisson distribution over expected goals |
+| **Validation** | 5-fold cross-validation (RMSE) |
 
-| Feature | Açıklama |
-|---------|----------|
-| `elo_diff` | İki takım arasındaki ELO farkı |
-| `elo_home_adj` | Ev sahibi ELO'su (nötr sahada avantaj eklenmez) |
-| `form_home/away` | Son 10 maçtaki ortalama puan |
-| `form_diff` | Form farkı |
-| `h2h_*` | Kafa kafaya tarihsel win/draw/loss oranları |
-| `is_wc` | Dünya Kupası maçı mı? |
-| `is_neutral` | Nötr sahada mı? |
+### Features
 
-## Çıktılar
+| Feature | Description |
+|---------|-------------|
+| `elo_diff` | ELO rating difference between the two teams |
+| `elo_home_adj` | Home team ELO (home advantage not applied at neutral venues) |
+| `form_home/away` | Average points over last 10 matches |
+| `form_diff` | Form difference |
+| `h2h_*` | Historical head-to-head win/draw/loss rates |
+| `is_wc` | Whether the match is a World Cup fixture |
+| `is_neutral` | Whether the match is played at a neutral venue |
 
-- `data/matches_2026.csv` — API'den çekilen maç takvimi + sonuçlar
-- `data/predictions.csv` — Güncel tahminler (olasılıklar dahil)
-- `models/model.pkl` — Eğitilmiş model
+## Outputs
+
+| File | Description |
+|------|-------------|
+| `data/matches_2026.csv` | Full 2026 WC schedule with results as they come in |
+| `data/predictions.csv` | Latest predictions with probabilities and expected scorelines |
