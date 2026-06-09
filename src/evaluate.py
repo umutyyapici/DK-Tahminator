@@ -5,15 +5,15 @@ Modelin geçmiş büyük turnuvalardaki başarısını ölçer.
 
 Strateji:
   - Train seti : Test setindeki en erken maçtan önce oynanan tüm maçlar (1990+)
-  - Test seti  : Tüm konfederasyonlardan büyük turnuvalar (2021-2024)
+  - Test seti  : Tüm konfederasyonlardan büyük turnuvalar (2020-2025)
       * 2022 FIFA World Cup
       * UEFA Euro 2020 + 2024
-      * UEFA Nations League 2021 + 2023 final four
+      * UEFA Nations League 2020-2025 (tüm edisyonlar)
       * Copa América 2021 + 2024
-      * African Cup of Nations 2021 + 2023
-      * AFC Asian Cup 2023
-      * Gold Cup 2021 + 2023
-      * CONCACAF Nations League 2021 + 2023 final four
+      * African Cup of Nations 2022 + 2024
+      * AFC Asian Cup 2024
+      * Gold Cup 2021 + 2023 + 2025
+      * CONCACAF Nations League 2021-2025 (tüm edisyonlar)
       * Oceania Nations Cup 2024
 
 Metrikler:
@@ -47,28 +47,37 @@ MAX_GOALS = 9
 # Kaggle results.csv'deki gerçek turnuva adları kullanılıyor.
 # "Africa Cup of Nations" Kaggle'da yok — çıkarıldı.
 TEST_WINDOWS = [
-    # (turnuva adı içermesi gereken string, başlangıç, bitiş)
+    # (turnuva adı, başlangıç, bitiş)
+    # FIFA
+    ("FIFA World Cup",          "2022-11-20", "2022-12-18"),  # 2022 — 64 maç
     # UEFA
-    ("FIFA World Cup",          "2022-11-20", "2022-12-18"),  # 64 maç
-    ("UEFA Euro",               "2021-06-11", "2021-07-11"),  # Euro 2020
-    ("UEFA Euro",               "2024-06-14", "2024-07-14"),  # Euro 2024
-    ("UEFA Nations League",     "2021-10-06", "2021-10-17"),  # 2021 NL final four
-    ("UEFA Nations League",     "2023-06-14", "2023-06-18"),  # 2023 NL final four
+    ("UEFA Euro",               "2021-06-11", "2021-07-11"),  # Euro 2020 — 51 maç
+    ("UEFA Euro",               "2024-06-14", "2024-07-14"),  # Euro 2024 — 51 maç
+    ("UEFA Nations League",     "2020-09-03", "2020-11-18"),  # 2020-21 grup
+    ("UEFA Nations League",     "2021-10-06", "2021-10-10"),  # 2021 final four
+    ("UEFA Nations League",     "2022-03-24", "2022-09-27"),  # 2022-23 grup
+    ("UEFA Nations League",     "2023-06-14", "2023-06-18"),  # 2023 final four
+    ("UEFA Nations League",     "2024-03-21", "2024-11-19"),  # 2024-25 grup
+    ("UEFA Nations League",     "2025-03-20", "2025-06-08"),  # 2025 final four
     # CONMEBOL
-    ("Copa América",            "2021-06-13", "2021-07-10"),  # 2021
-    ("Copa América",            "2024-06-20", "2024-07-14"),  # 2024
-    # CAF — Kaggle'da "African Cup of Nations"
-    ("African Cup of Nations",  "2021-01-09", "2021-02-06"),  # 2021 Kamerun
-    ("African Cup of Nations",  "2023-01-13", "2024-02-11"),  # 2023 Fildişi Sahili
+    ("Copa América",            "2021-06-13", "2021-07-10"),  # 2021 — 26 maç
+    ("Copa América",            "2024-06-20", "2024-07-14"),  # 2024 — 26 maç
+    # CAF
+    ("African Cup of Nations",  "2022-01-09", "2022-02-06"),  # 2022 Kamerun — 52 maç
+    ("African Cup of Nations",  "2024-01-13", "2024-02-11"),  # 2024 Fildişi Sahili — 52 maç
     # AFC
-    ("AFC Asian Cup",           "2024-01-12", "2024-02-10"),  # 2023 AFC
+    ("AFC Asian Cup",           "2024-01-12", "2024-02-10"),  # 2023 AFC — 52 maç
     # CONCACAF
-    ("Gold Cup",                "2021-07-02", "2021-08-01"),  # 2021
-    ("Gold Cup",                "2023-06-24", "2023-07-16"),  # 2023
+    ("Gold Cup",                "2021-07-10", "2021-08-01"),  # 2021 — 31 maç
+    ("Gold Cup",                "2023-06-24", "2023-07-16"),  # 2023 — 31 maç
+    ("Gold Cup",                "2025-06-14", "2025-07-06"),  # 2025 — 31 maç
     ("CONCACAF Nations League", "2021-06-03", "2021-06-06"),  # 2021 final four
-    ("CONCACAF Nations League", "2023-06-15", "2023-06-18"),  # 2023 final four
+    ("CONCACAF Nations League", "2022-06-02", "2022-06-14"),  # 2022 grup
+    ("CONCACAF Nations League", "2023-03-23", "2023-11-21"),  # 2023 grup
+    ("CONCACAF Nations League", "2024-03-21", "2024-11-19"),  # 2024 grup
+    ("CONCACAF Nations League", "2025-03-20", "2025-03-23"),  # 2025 final four
     # OFC
-    ("Oceania Nations Cup",     "2024-06-01", "2024-06-30"),  # 2024
+    ("Oceania Nations Cup",     "2024-06-01", "2024-06-30"),  # 2024 — 13 maç
 ]
 
 def is_test_match(tourn: str, date_str: str) -> bool:
