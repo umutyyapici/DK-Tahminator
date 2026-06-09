@@ -324,6 +324,58 @@
       letter-spacing: 0.5px;
     }
 
+
+    /* ── Accuracy banner ─────────────────────────────────── */
+    .accuracy-bar {
+      background: linear-gradient(90deg, rgba(46,204,113,0.08) 0%, rgba(10,14,26,0) 100%);
+      border-bottom: 1px solid rgba(46,204,113,0.15);
+      padding: 12px 24px;
+      display: none;
+    }
+
+    .accuracy-bar.loaded { display: block; }
+
+    .accuracy-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .accuracy-label {
+      font-size: 12px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-right: 4px;
+    }
+
+    .accuracy-pct {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 22px;
+      color: var(--win-green);
+      letter-spacing: 1px;
+      line-height: 1;
+    }
+
+    .accuracy-detail {
+      font-size: 11px;
+      color: var(--muted);
+      padding: 3px 10px;
+      background: rgba(255,255,255,0.04);
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,0.07);
+    }
+
+    .accuracy-divider {
+      width: 1px;
+      height: 16px;
+      background: rgba(255,255,255,0.1);
+      margin: 0 4px;
+    }
+
     /* ── Loading / Error states ──────────────────────────── */
     .state-screen {
       display: flex;
@@ -404,6 +456,16 @@
       <div class="updated-badge" id="updatedAt">Yükleniyor...</div>
     </div>
   </header>
+
+  <div class="accuracy-bar" id="accuracyBar">
+    <div class="accuracy-inner">
+      <span class="accuracy-label">🤖 Yapay Zeka Başarı Oranı</span>
+      <span class="accuracy-pct" id="accPct">—</span>
+      <div class="accuracy-divider"></div>
+      <span class="accuracy-detail" id="accCorrect">— / — doğru tahmin</span>
+      <span class="accuracy-detail" id="accExact">— tam skor</span>
+    </div>
+  </div>
 
   <div class="summary-bar">
     <div class="summary-inner" id="summaryBar">
@@ -606,6 +668,21 @@
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const text = await res.text();
         const matches = parseCSV(text).filter(m => m.home_team && m.away_team);
+
+
+        // Accuracy banner
+        try {
+          const accRes = await fetch('data/accuracy.json?t=' + Date.now());
+          if (accRes.ok) {
+            const acc = await accRes.json();
+            if (acc.total > 0) {
+              document.getElementById('accPct').textContent = '%' + acc.accuracy;
+              document.getElementById('accCorrect').textContent = acc.correct + ' / ' + acc.total + ' doğru tahmin';
+              document.getElementById('accExact').textContent = acc.exact + ' tam skor (%' + acc.exact_pct + ')';
+              document.getElementById('accuracyBar').classList.add('loaded');
+            }
+          }
+        } catch(e) { /* accuracy.json henüz yok, banner gizli kalır */ }
 
         // Summary bar
         document.getElementById('statTotal').textContent = matches.length;
