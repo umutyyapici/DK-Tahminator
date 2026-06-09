@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WC 2026 · AI Tahmin Bülteni</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0A0E1A;
+      --surface:   #131929;
+      --card:      #1A2235;
+      --card-hover:#1F2B42;
+      --gold:      #C9A84C;
+      --gold-dim:  #8B6E2A;
+      --blue:      #4A90D9;
+      --text:      #E8EDF5;
+      --muted:     #6B7A99;
+      --win-green: #2ECC71;
+      --loss-red:  #E74C3C;
+      --draw-gray: #95A5B5;
+      --radius:    12px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+
+    /* ── Header ─────────────────────────────────────────── */
+    header {
+      background: linear-gradient(160deg, #0D1525 0%, #0A0E1A 100%);
+      border-bottom: 1px solid rgba(201,168,76,0.2);
+      padding: 28px 24px 22px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+    }
+
+    .header-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .header-left { display: flex; align-items: center; gap: 14px; }
+
+    .trophy {
+      font-size: 32px;
+      filter: drop-shadow(0 0 12px rgba(201,168,76,0.6));
+      animation: pulse-glow 3s ease-in-out infinite;
+    }
+
+    @keyframes pulse-glow {
+      0%, 100% { filter: drop-shadow(0 0 8px rgba(201,168,76,0.4)); }
+      50%       { filter: drop-shadow(0 0 20px rgba(201,168,76,0.9)); }
+    }
+
+    .header-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 26px;
+      letter-spacing: 2px;
+      color: var(--text);
+      line-height: 1;
+    }
+
+    .header-title span { color: var(--gold); }
+
+    .header-sub {
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
+
+    .updated-badge {
+      font-size: 11px;
+      color: var(--muted);
+      background: rgba(255,255,255,0.05);
+      padding: 6px 12px;
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,0.07);
+      white-space: nowrap;
+    }
+
+    /* ── Summary bar ─────────────────────────────────────── */
+    .summary-bar {
+      background: var(--surface);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      padding: 14px 24px;
+    }
+
+    .summary-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      gap: 28px;
+      flex-wrap: wrap;
+    }
+
+    .stat-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .stat-pill strong {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 18px;
+      letter-spacing: 1px;
+      color: var(--text);
+    }
+
+    .stat-pill .dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* ── Main layout ─────────────────────────────────────── */
+    main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 32px 24px 60px;
+    }
+
+    /* ── Day group ───────────────────────────────────────── */
+    .day-group { margin-bottom: 40px; }
+
+    .day-label {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 13px;
+      letter-spacing: 3px;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 14px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(201,168,76,0.15);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .day-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(to right, rgba(201,168,76,0.15), transparent);
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 14px;
+    }
+
+    /* ── Match card ──────────────────────────────────────── */
+    .match-card {
+      background: var(--card);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: var(--radius);
+      padding: 20px;
+      transition: background 0.2s, border-color 0.2s, transform 0.15s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .match-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .match-card:hover {
+      background: var(--card-hover);
+      border-color: rgba(201,168,76,0.2);
+      transform: translateY(-2px);
+    }
+
+    .match-card:hover::before { opacity: 1; }
+
+    /* stage badge */
+    .stage-badge {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+
+    /* teams row */
+    .teams-row {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+
+    .team-block { display: flex; flex-direction: column; gap: 4px; }
+    .team-block.away { text-align: right; align-items: flex-end; }
+
+    .team-flag { font-size: 28px; line-height: 1; }
+
+    .team-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 120px;
+    }
+
+    .team-elo {
+      font-size: 10px;
+      color: var(--muted);
+    }
+
+    /* score bubble */
+    .score-bubble {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .score-display {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 32px;
+      letter-spacing: 2px;
+      color: var(--gold);
+      line-height: 1;
+      text-shadow: 0 0 20px rgba(201,168,76,0.3);
+    }
+
+    .score-label {
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--muted);
+    }
+
+    /* probability bars */
+    .prob-section { margin-top: 4px; }
+
+    .prob-bar-wrap {
+      display: flex;
+      height: 5px;
+      border-radius: 3px;
+      overflow: hidden;
+      gap: 2px;
+      margin-bottom: 8px;
+    }
+
+    .prob-seg {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .prob-seg.home  { background: var(--win-green); }
+    .prob-seg.draw  { background: var(--draw-gray); }
+    .prob-seg.away  { background: var(--loss-red); }
+
+    .prob-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 10px;
+    }
+
+    .prob-item { display: flex; flex-direction: column; align-items: center; gap: 1px; }
+    .prob-item.home-item { align-items: flex-start; }
+    .prob-item.away-item { align-items: flex-end; }
+
+    .prob-pct {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 15px;
+      letter-spacing: 0.5px;
+    }
+
+    .prob-pct.home-pct  { color: var(--win-green); }
+    .prob-pct.draw-pct  { color: var(--draw-gray); }
+    .prob-pct.away-pct  { color: var(--loss-red); }
+
+    .prob-tag {
+      color: var(--muted);
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+
+    /* winner ribbon */
+    .winner-ribbon {
+      margin-top: 12px;
+      padding: 6px 10px;
+      background: rgba(201,168,76,0.08);
+      border: 1px solid rgba(201,168,76,0.15);
+      border-radius: 6px;
+      font-size: 11px;
+      color: var(--gold);
+      text-align: center;
+      letter-spacing: 0.5px;
+    }
+
+    /* ── Loading / Error states ──────────────────────────── */
+    .state-screen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 300px;
+      gap: 16px;
+      color: var(--muted);
+    }
+
+    .spinner {
+      width: 36px; height: 36px;
+      border: 3px solid rgba(201,168,76,0.15);
+      border-top-color: var(--gold);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .state-screen p { font-size: 13px; }
+
+    /* ── Filter bar ──────────────────────────────────────── */
+    .filter-bar {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 28px;
+    }
+
+    .filter-btn {
+      background: var(--surface);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: var(--muted);
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 6px 14px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .filter-btn:hover { border-color: var(--gold-dim); color: var(--text); }
+
+    .filter-btn.active {
+      background: var(--gold);
+      border-color: var(--gold);
+      color: #0A0E1A;
+      font-weight: 600;
+    }
+
+    /* ── Responsive ──────────────────────────────────────── */
+    @media (max-width: 600px) {
+      .cards-grid { grid-template-columns: 1fr; }
+      .header-title { font-size: 20px; }
+      .score-display { font-size: 26px; }
+      .team-flag { font-size: 22px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .match-card, .prob-seg, .trophy { transition: none; animation: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-inner">
+      <div class="header-left">
+        <span class="trophy">🏆</span>
+        <div>
+          <div class="header-title">WC 2026 · <span>AI Tahminleri</span></div>
+          <div class="header-sub">XGBoost + ELO + Poisson · Günlük Güncelleme</div>
+        </div>
+      </div>
+      <div class="updated-badge" id="updatedAt">Yükleniyor...</div>
+    </div>
+  </header>
+
+  <div class="summary-bar">
+    <div class="summary-inner" id="summaryBar">
+      <div class="stat-pill"><span class="dot" style="background:var(--gold)"></span><strong id="statTotal">—</strong> Maç</div>
+      <div class="stat-pill"><span class="dot" style="background:var(--win-green)"></span><strong id="statPlayed">—</strong> Oynanmış</div>
+      <div class="stat-pill"><span class="dot" style="background:var(--blue)"></span><strong id="statRemaining">—</strong> Kalan Tahmin</div>
+    </div>
+  </div>
+
+  <main>
+    <div class="filter-bar" id="filterBar"></div>
+    <div id="content"><div class="state-screen"><div class="spinner"></div><p>Tahminler yükleniyor…</p></div></div>
+  </main>
+
+  <script>
+    // ── Flag emoji helper ──────────────────────────────────
+    const FLAG_MAP = {
+      "Argentina":"🇦🇷","Australia":"🇦🇺","Austria":"🇦🇹","Belgium":"🇧🇪",
+      "Bosnia-Herzegovina":"🇧🇦","Brazil":"🇧🇷","Canada":"🇨🇦","Chile":"🇨🇱",
+      "Colombia":"🇨🇴","Congo DR":"🇨🇩","Croatia":"🇭🇷","Czechia":"🇨🇿",
+      "Czech Republic":"🇨🇿","Curaçao":"🇨🇼","Ecuador":"🇪🇨","Egypt":"🇪🇬",
+      "England":"🏴󠁧󠁢󠁥󠁮󠁧󠁿","France":"🇫🇷","Germany":"🇩🇪","Ghana":"🇬🇭",
+      "Haiti":"🇭🇹","Iran":"🇮🇷","Iraq":"🇮🇶","Ivory Coast":"🇨🇮",
+      "Japan":"🇯🇵","Jordan":"🇯🇴","Mexico":"🇲🇽","Morocco":"🇲🇦",
+      "Netherlands":"🇳🇱","New Zealand":"🇳🇿","Norway":"🇳🇴","Panama":"🇵🇦",
+      "Paraguay":"🇵🇾","Portugal":"🇵🇹","Qatar":"🇶🇦","Saudi Arabia":"🇸🇦",
+      "Scotland":"🏴󠁧󠁢󠁳󠁣󠁴󠁿","Senegal":"🇸🇳","South Africa":"🇿🇦",
+      "South Korea":"🇰🇷","Spain":"🇪🇸","Sweden":"🇸🇪","Switzerland":"🇨🇭",
+      "Tunisia":"🇹🇳","Turkey":"🇹🇷","United States":"🇺🇸","Uruguay":"🇺🇾",
+      "Uzbekistan":"🇺🇿","Wales":"🏴󠁧󠁢󠁷󠁬󠁳󠁿",
+      "Cape Verde Islands":"🇨🇻","Algeria":"🇩🇿",
+    };
+
+    function flag(team) {
+      return FLAG_MAP[team] || "🏳️";
+    }
+
+    // ── Stage label map ────────────────────────────────────
+    const STAGE_MAP = {
+      "GROUP_STAGE":   "Grup Aşaması",
+      "ROUND_OF_32":   "Son 32",
+      "ROUND_OF_16":   "Son 16",
+      "QUARTER_FINALS":"Çeyrek Final",
+      "SEMI_FINALS":   "Yarı Final",
+      "THIRD_PLACE":   "3. lük Maçı",
+      "FINAL":         "Final",
+    };
+
+    function stageLabel(s) {
+      return STAGE_MAP[s] || s || "Maç";
+    }
+
+    // ── CSV parser ─────────────────────────────────────────
+    function parseCSV(text) {
+      const lines = text.trim().split('\n');
+      const headers = lines[0].split(',').map(h => h.trim());
+      return lines.slice(1).map(line => {
+        const vals = line.split(',');
+        const obj = {};
+        headers.forEach((h, i) => { obj[h] = (vals[i] || '').trim(); });
+        return obj;
+      });
+    }
+
+    // ── Format date ────────────────────────────────────────
+    function formatDate(dateStr) {
+      const d = new Date(dateStr);
+      if (isNaN(d)) return dateStr;
+      return d.toLocaleDateString('tr-TR', { weekday:'long', day:'numeric', month:'long' });
+    }
+
+    // ── Render card ────────────────────────────────────────
+    function renderCard(match) {
+      const ph = parseFloat(match.prob_home) || 0;
+      const pd = parseFloat(match.prob_draw) || 0;
+      const pa = parseFloat(match.prob_away) || 0;
+      const total = ph + pd + pa || 100;
+
+      const score = match.most_likely_score || '?-?';
+      const predicted = match.predicted || '';
+      const eloH = match.elo_home ? Math.round(match.elo_home) : '—';
+      const eloA = match.elo_away ? Math.round(match.elo_away) : '—';
+
+      const winnerText = predicted === 'Ev Sahibi'
+        ? `🏅 ${match.home_team} galip bekleniyor`
+        : predicted === 'Deplasman'
+        ? `🏅 ${match.away_team} galip bekleniyor`
+        : '🤝 Beraberlik bekleniyor';
+
+      return `
+        <div class="match-card">
+          <div class="stage-badge">${stageLabel(match.stage)}</div>
+          <div class="teams-row">
+            <div class="team-block home">
+              <span class="team-flag">${flag(match.home_team)}</span>
+              <span class="team-name">${match.home_team}</span>
+              <span class="team-elo">ELO ${eloH}</span>
+            </div>
+            <div class="score-bubble">
+              <span class="score-display">${score}</span>
+              <span class="score-label">Tahmin</span>
+            </div>
+            <div class="team-block away">
+              <span class="team-flag">${flag(match.away_team)}</span>
+              <span class="team-name">${match.away_team}</span>
+              <span class="team-elo">ELO ${eloA}</span>
+            </div>
+          </div>
+          <div class="prob-section">
+            <div class="prob-bar-wrap">
+              <div class="prob-seg home" style="width:${ph/total*100}%"></div>
+              <div class="prob-seg draw" style="width:${pd/total*100}%"></div>
+              <div class="prob-seg away" style="width:${pa/total*100}%"></div>
+            </div>
+            <div class="prob-labels">
+              <div class="prob-item home-item">
+                <span class="prob-pct home-pct">%${ph.toFixed(0)}</span>
+                <span class="prob-tag">Ev</span>
+              </div>
+              <div class="prob-item">
+                <span class="prob-pct draw-pct">%${pd.toFixed(0)}</span>
+                <span class="prob-tag">Beraberlik</span>
+              </div>
+              <div class="prob-item away-item">
+                <span class="prob-pct away-pct">%${pa.toFixed(0)}</span>
+                <span class="prob-tag">Deplasman</span>
+              </div>
+            </div>
+          </div>
+          <div class="winner-ribbon">${winnerText}</div>
+        </div>`;
+    }
+
+    // ── Group by date ──────────────────────────────────────
+    function groupByDate(matches) {
+      const groups = {};
+      matches.forEach(m => {
+        const d = m.date?.slice(0, 10) || 'Bilinmiyor';
+        if (!groups[d]) groups[d] = [];
+        groups[d].push(m);
+      });
+      return groups;
+    }
+
+    // ── Render all ─────────────────────────────────────────
+    function renderAll(matches, activeStage) {
+      const filtered = activeStage === 'ALL'
+        ? matches
+        : matches.filter(m => (m.stage || '') === activeStage);
+
+      if (filtered.length === 0) {
+        document.getElementById('content').innerHTML =
+          `<div class="state-screen"><p>Bu aşamada tahmin bulunamadı.</p></div>`;
+        return;
+      }
+
+      const groups = groupByDate(filtered);
+      let html = '';
+      Object.keys(groups).sort().forEach(date => {
+        html += `<div class="day-group">
+          <div class="day-label">${formatDate(date)}</div>
+          <div class="cards-grid">
+            ${groups[date].map(renderCard).join('')}
+          </div>
+        </div>`;
+      });
+      document.getElementById('content').innerHTML = html;
+    }
+
+    // ── Build filter buttons ───────────────────────────────
+    function buildFilters(matches, activeStage, onSelect) {
+      const stages = ['ALL', ...new Set(matches.map(m => m.stage || '').filter(Boolean))];
+      const bar = document.getElementById('filterBar');
+      bar.innerHTML = stages.map(s => `
+        <button class="filter-btn ${s === activeStage ? 'active' : ''}" data-stage="${s}">
+          ${s === 'ALL' ? 'Tümü' : stageLabel(s)}
+        </button>`).join('');
+      bar.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => onSelect(btn.dataset.stage));
+      });
+    }
+
+    // ── Main load ──────────────────────────────────────────
+    async function load() {
+      try {
+        const res = await fetch('data/predictions.csv?t=' + Date.now());
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const text = await res.text();
+        const matches = parseCSV(text).filter(m => m.home_team && m.away_team);
+
+        // Summary bar
+        document.getElementById('statTotal').textContent = matches.length;
+        document.getElementById('statPlayed').textContent = '—';
+        document.getElementById('statRemaining').textContent = matches.length;
+
+        // Updated at
+        const updatedAt = matches[0]?.updated_at || '';
+        document.getElementById('updatedAt').textContent = updatedAt
+          ? `Son güncelleme: ${updatedAt}`
+          : 'Tahminler yüklendi';
+
+        // Filters + render
+        let activeStage = 'ALL';
+        function update(stage) {
+          activeStage = stage;
+          buildFilters(matches, activeStage, update);
+          renderAll(matches, activeStage);
+        }
+        update('ALL');
+
+      } catch (err) {
+        document.getElementById('content').innerHTML = `
+          <div class="state-screen">
+            <p>⚠️ Tahminler yüklenemedi.</p>
+            <p style="font-size:11px;margin-top:4px">
+              <code>data/predictions.csv</code> dosyasının mevcut olduğundan emin olun.
+            </p>
+          </div>`;
+        console.error(err);
+      }
+    }
+
+    load();
+  </script>
+</body>
+</html>
