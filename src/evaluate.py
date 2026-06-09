@@ -41,7 +41,7 @@ from features import FEATURE_COLS, EloFeatureBuilder, HOME_ADVANTAGE
 from features import actual_score, build_name_map, normalize_team
 
 DATA_DIR  = os.path.join(os.path.dirname(__file__), "..", "data")
-MAX_GOALS = 7
+MAX_GOALS = 9
 
 # ── Test setine alınacak turnuva + tarih aralıkları ──────────────────────
 # Kaggle results.csv'deki gerçek turnuva adları kullanılıyor.
