@@ -522,6 +522,7 @@
       <span class="backtest-detail">Brier: <strong id="btBrier">—</strong></span>
       <span class="backtest-detail">Baseline: <strong id="btBaseline">—</strong></span>
       <span class="backtest-detail" id="btMatchCount" style="margin-left:auto;color:var(--muted)"></span>
+      <span class="backtest-detail" id="btTrainCount" style="color:var(--muted)"></span>
     </div>
   </div>
 
@@ -752,7 +753,8 @@
             document.getElementById('btBrier').textContent    = bt.brier;
             document.getElementById('btBaseline').textContent = '%' + bt.baseline;
             document.getElementById('backtestBar').classList.add('loaded');
-            document.getElementById('btMatchCount').textContent = bt.test_matches + ' maç · 2022 WC · Copa América · UEFA Euro · AFC Asian Cup · Nations League';
+            document.getElementById('btMatchCount').textContent = 'Test: ' + bt.test_matches + ' maç';
+            document.getElementById('btTrainCount').textContent   = 'Train: ' + bt.train_matches + ' maç';
           }
         } catch(e) { /* backtest.json henüz yok */ }
 
