@@ -1,0 +1,12 @@
+{
+  "test_tournaments": "2022 WC · UEFA Euro · Copa América · AFCON · AFC Asian Cup · Gold Cup · Nations Leagues · OFC",
+  "test_matches": 517,
+  "train_matches": 31743,
+  "accuracy": 57.1,
+  "exact_acc": 15.3,
+  "log_loss": 0.946,
+  "brier": 0.186,
+  "baseline": 44.5,
+  "train_accuracy": 58.7,
+  "updated_at": "2026-06-09 21:11 UTC"
+}
