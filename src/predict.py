@@ -1,7 +1,7 @@
 """
 predict.py
 ----------
-E itilmiş regresyon modellerini kullanarak oynanmamış 2026 WC maçlarının
+E�itilmiş regresyon modellerini kullanarak oynanmamış 2026 WC maçlarının
 beklenen gollerini tahmin eder, Poisson dağılımıyla olasılıkları hesaplar.
 data/predictions.csv olarak kaydeder.
 """
@@ -20,7 +20,7 @@ MODEL_HOME_PATH = os.path.join(MODELS_DIR, "model_home.pkl")
 MODEL_AWAY_PATH = os.path.join(MODELS_DIR, "model_away.pkl")
 PREDICTIONS_OUT = os.path.join(DATA_DIR, "predictions.csv")
 
-MAX_GOALS = 7  # Olasılık matrisinde 0-6 gol arası hesaplanır
+MAX_GOALS = 9  # Olasılık matrisinde 0-8 gol arası hesaplanır
 
 
 def poisson_probabilities(lambda_home: float, lambda_away: float):
