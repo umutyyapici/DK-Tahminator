@@ -515,12 +515,13 @@
 
   <div class="backtest-bar" id="backtestBar">
     <div class="backtest-inner">
-      <span class="backtest-label">📊 2022 WC Backtest</span>
+      <span class="backtest-label">📊 Backtest</span>
       <span class="backtest-detail">Doğruluk: <strong id="btAcc">—</strong></span>
       <span class="backtest-detail">Tam Skor: <strong id="btExact">—</strong></span>
       <span class="backtest-detail">Log Loss: <strong id="btLL">—</strong></span>
       <span class="backtest-detail">Brier: <strong id="btBrier">—</strong></span>
       <span class="backtest-detail">Baseline: <strong id="btBaseline">—</strong></span>
+      <span class="backtest-detail" id="btMatchCount" style="margin-left:auto;color:var(--muted)"></span>
     </div>
   </div>
 
@@ -751,6 +752,7 @@
             document.getElementById('btBrier').textContent    = bt.brier;
             document.getElementById('btBaseline').textContent = '%' + bt.baseline;
             document.getElementById('backtestBar').classList.add('loaded');
+            document.getElementById('btMatchCount').textContent = bt.test_matches + ' maç · ' + bt.test_tournaments;
           }
         } catch(e) { /* backtest.json henüz yok */ }
 
