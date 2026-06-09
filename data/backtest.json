@@ -1,0 +1,12 @@
+{
+  "test_tournaments": "2022 WC + Copa América + AFCON + UEFA Euro + AFC Asian Cup + Nations League",
+  "test_matches": 652,
+  "train_matches": 31608,
+  "accuracy": 59.5,
+  "exact_acc": 12.0,
+  "log_loss": 0.92,
+  "brier": 0.178,
+  "baseline": 43.7,
+  "train_accuracy": 58.5,
+  "updated_at": "2026-06-09 20:26 UTC"
+}
