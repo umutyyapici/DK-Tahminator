@@ -2,6 +2,18 @@
 
 A machine learning project that predicts 2026 FIFA World Cup match outcomes using historical international football data and ELO ratings. Predictions are updated daily via GitHub Actions as the tournament progresses, and displayed on a live web dashboard.
 
+## Backtest Performance
+
+Evaluated on 3,610 matches from major tournaments (2018–2025) across all confederations:
+
+| Metric | Value |
+|--------|-------|
+| Accuracy | 60.8% |
+| Exact Score | 13.3% |
+| Log Loss | 0.861 |
+| Brier Score | 0.168 |
+| Baseline (always home) | 46.1% |
+
 ## Data Sources
 
 | Source | Content |
@@ -13,10 +25,10 @@ A machine learning project that predicts 2026 FIFA World Cup match outcomes usin
 
 1. Historical match data is used to compute ELO ratings and form statistics for every national team
 2. Two XGBoost regressors predict expected goals for each team independently
-3. A Poisson probability matrix converts expected goals into win/draw/loss probabilities and a most likely scoreline
+3. A Poisson probability matrix (0–8 goals) converts expected goals into win/draw/loss probabilities and a most likely scoreline
 4. As 2026 WC matches are played, results are fetched automatically, ELO ratings are updated, and predictions for remaining matches are recalculated
 5. Completed matches are compared against predictions to compute a live accuracy score
-6. The web dashboard reads all three output files dynamically — no redeployment needed
+6. The web dashboard reads all output files dynamically — no redeployment needed
 
 ## Setup
 
@@ -60,10 +72,11 @@ python src/update.py
 
 Add `FOOTBALL_DATA_API_KEY` as a repository secret under `Settings → Secrets → Actions`.
 
-The workflow runs daily at 12:00 UTC and automatically:
+The workflow runs daily at 10:00 UTC (13:00 Turkey) and automatically:
 - Fetches new match results from football-data.org
 - Retrains the models with updated data
-- Commits refreshed `predictions.csv`, `matches_2026.csv`, and `accuracy.json`
+- Runs backtest evaluation
+- Commits refreshed `predictions.csv`, `matches_2026.csv`, `accuracy.json`, and `backtest.json`
 
 ### Web dashboard (GitHub Pages)
 
@@ -79,14 +92,14 @@ The page fetches output files on every load — no redeployment needed when data
 python src/evaluate.py
 ```
 
-Trains on pre-2022 WC data, tests on the 2022 World Cup, and reports accuracy, log loss, Brier score, and exact score accuracy.
+Trains on historical data and tests on major tournaments from 2018 onward across all confederations (FIFA World Cup + qualification, UEFA Euro, UEFA Nations League, Copa América, African Cup of Nations, AFC Asian Cup, Gold Cup, CONCACAF Nations League, Oceania Nations Cup). Reports accuracy, log loss, Brier score, and exact score accuracy.
 
 ## Model
 
 | | |
 |---|---|
 | **Algorithm** | XGBoost Regressor (two models: home goals / away goals) |
-| **Probability estimation** | Poisson distribution over expected goals |
+| **Probability estimation** | Poisson distribution over expected goals (0–8 goal matrix) |
 | **Validation** | 5-fold cross-validation (RMSE) |
 
 ### Features
@@ -98,6 +111,8 @@ Trains on pre-2022 WC data, tests on the 2022 World Cup, and reports accuracy, l
 | `form_home/away` | Average points over last 10 matches |
 | `form_diff` | Form difference |
 | `h2h_*` | Historical head-to-head win/draw/loss rates |
+| `elo_momentum_home/away` | ELO change over last 5 matches (rising vs falling team) |
+| `elo_momentum_diff` | Momentum difference between teams |
 | `is_wc` | Whether the match is a World Cup fixture |
 | `is_neutral` | Whether the match is played at a neutral venue |
 
@@ -109,4 +124,4 @@ Trains on pre-2022 WC data, tests on the 2022 World Cup, and reports accuracy, l
 | `data/matches_2026.csv` | Full 2026 WC schedule with results as they come in |
 | `data/predictions.csv` | Latest predictions with probabilities and expected scorelines |
 | `data/accuracy.json` | Live accuracy stats — updated after each match day |
-| `data/backtest.json` | 2022 WC backtest results — accuracy, log loss, Brier score |
+| `data/backtest.json` | Backtest results across 2018+ major tournaments (3,610 matches) |
