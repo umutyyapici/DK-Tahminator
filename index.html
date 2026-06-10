@@ -255,6 +255,13 @@
       text-shadow: 0 0 20px rgba(201,168,76,0.3);
     }
 
+    .xg-line {
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 0.5px;
+      margin-top: 1px;
+    }
+
     .score-label {
       font-size: 9px;
       text-transform: uppercase;
@@ -620,6 +627,9 @@
       const predicted = match.predicted || '';
       const eloH = match.elo_home ? Math.round(match.elo_home) : '—';
       const eloA = match.elo_away ? Math.round(match.elo_away) : '—';
+      const xgH = match.expected_home ? parseFloat(match.expected_home).toFixed(2) : null;
+      const xgA = match.expected_away ? parseFloat(match.expected_away).toFixed(2) : null;
+      const xgLine = xgH && xgA ? `<span class="xg-line">xG ${xgH} – ${xgA}</span>` : '';
 
       const winnerText = predicted === 'Ev Sahibi'
         ? `🏅 ${match.home_team} galip bekleniyor`
@@ -639,6 +649,7 @@
             <div class="score-bubble">
               <span class="score-display">${score}</span>
               <span class="score-label">Tahmin</span>
+              ${xgLine}
             </div>
             <div class="team-block away">
               ${flagImg(match.away_team)}
