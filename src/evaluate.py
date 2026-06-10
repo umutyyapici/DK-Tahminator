@@ -5,16 +5,13 @@ Modelin geçmiş büyük turnuvalardaki başarısını ölçer.
 
 Strateji:
   - Train seti : Test setindeki en erken maçtan önce oynanan tüm maçlar (1990+)
-  - Test seti  : Tüm konfederasyonlardan büyük turnuvalar (2020-2025)
-      * 2022 FIFA World Cup
-      * UEFA Euro 2020 + 2024
-      * UEFA Nations League 2020-2025 (tüm edisyonlar)
-      * Copa América 2021 + 2024
-      * African Cup of Nations 2022 + 2024
-      * AFC Asian Cup 2024
-      * Gold Cup 2021 + 2023 + 2025
-      * CONCACAF Nations League 2021-2025 (tüm edisyonlar)
-      * Oceania Nations Cup 2024
+  - Test seti  : 2018-06-01 sonrası ana turnuvalar + FIFA WC qualification
+      * FIFA World Cup + qualification (2018 sonrası)
+      * UEFA Euro, UEFA Nations League
+      * Copa América, African Cup of Nations
+      * AFC Asian Cup, Gold Cup, CONCACAF Nations League
+      * Oceania Nations Cup
+      Toplam ~3.700 maç, train/test oranı ~%12
 
 Metrikler:
   - Outcome accuracy    : home/draw/away tahmin doğruluğu
@@ -46,46 +43,24 @@ MAX_GOALS = 9
 # ── Test setine alınacak turnuva + tarih aralıkları ──────────────────────
 # Kaggle results.csv'deki gerçek turnuva adları kullanılıyor.
 # "Africa Cup of Nations" Kaggle'da yok — çıkarıldı.
-TEST_WINDOWS = [
-    # (turnuva adı, başlangıç, bitiş)
-    # FIFA
-    ("FIFA World Cup",          "2022-11-20", "2022-12-18"),  # 2022 — 64 maç
-    # UEFA
-    ("UEFA Euro",               "2021-06-11", "2021-07-11"),  # Euro 2020 — 51 maç
-    ("UEFA Euro",               "2024-06-14", "2024-07-14"),  # Euro 2024 — 51 maç
-    ("UEFA Nations League",     "2020-09-03", "2020-11-18"),  # 2020-21 grup
-    ("UEFA Nations League",     "2021-10-06", "2021-10-10"),  # 2021 final four
-    ("UEFA Nations League",     "2022-03-24", "2022-09-27"),  # 2022-23 grup
-    ("UEFA Nations League",     "2023-06-14", "2023-06-18"),  # 2023 final four
-    ("UEFA Nations League",     "2024-03-21", "2024-11-19"),  # 2024-25 grup
-    ("UEFA Nations League",     "2025-03-20", "2025-06-08"),  # 2025 final four
-    # CONMEBOL
-    ("Copa América",            "2021-06-13", "2021-07-10"),  # 2021 — 26 maç
-    ("Copa América",            "2024-06-20", "2024-07-14"),  # 2024 — 26 maç
-    # CAF
-    ("African Cup of Nations",  "2022-01-09", "2022-02-06"),  # 2022 Kamerun — 52 maç
-    ("African Cup of Nations",  "2024-01-13", "2024-02-11"),  # 2024 Fildişi Sahili — 52 maç
-    # AFC
-    ("AFC Asian Cup",           "2024-01-12", "2024-02-10"),  # 2023 AFC — 52 maç
-    # CONCACAF
-    ("Gold Cup",                "2021-07-10", "2021-08-01"),  # 2021 — 31 maç
-    ("Gold Cup",                "2023-06-24", "2023-07-16"),  # 2023 — 31 maç
-    ("Gold Cup",                "2025-06-14", "2025-07-06"),  # 2025 — 31 maç
-    ("CONCACAF Nations League", "2021-06-03", "2021-06-06"),  # 2021 final four
-    ("CONCACAF Nations League", "2022-06-02", "2022-06-14"),  # 2022 grup
-    ("CONCACAF Nations League", "2023-03-23", "2023-11-21"),  # 2023 grup
-    ("CONCACAF Nations League", "2024-03-21", "2024-11-19"),  # 2024 grup
-    ("CONCACAF Nations League", "2025-03-20", "2025-03-23"),  # 2025 final four
-    # OFC
-    ("Oceania Nations Cup",     "2024-06-01", "2024-06-30"),  # 2024 — 13 maç
+# Test seti: 2018-06-01 sonrası ana turnuvalar + FIFA WC qualification
+# Kaggle'daki exact turnuva adları kullanılıyor
+TEST_CUTOFF = "2018-06-01"
+TEST_TOURNAMENTS = [
+    "FIFA World Cup",
+    "FIFA World Cup qualification",
+    "UEFA Euro",
+    "UEFA Nations League",
+    "Copa América",
+    "African Cup of Nations",
+    "AFC Asian Cup",
+    "Gold Cup",
+    "CONCACAF Nations League",
+    "Oceania Nations Cup",
 ]
 
 def is_test_match(tourn: str, date_str: str) -> bool:
-    t = tourn.lower()
-    for keyword, start, end in TEST_WINDOWS:
-        if keyword.lower() in t and start <= date_str <= end:
-            return True
-    return False
+    return tourn in TEST_TOURNAMENTS and date_str >= TEST_CUTOFF
 
 
 # ── Poisson olasılıkları ─────────────────────────────────────────────────
@@ -286,7 +261,7 @@ def evaluate():
 
     # backtest.json kaydet
     backtest = {
-        "test_tournaments": "2022 WC · UEFA Euro · Copa América · AFCON · AFC Asian Cup · Gold Cup · Nations Leagues · OFC",
+        "test_tournaments": "2018+ WC+Qual · UEFA Euro · Nations Leagues · Copa América · AFCON · AFC Asian Cup · Gold Cup · CONCACAF NL · OFC",
         "test_matches":     len(test_df),
         "train_matches":    len(train_df),
         "accuracy":         round(float(test_metrics["accuracy"]) * 100, 1),
