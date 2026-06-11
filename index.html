@@ -743,23 +743,34 @@
       const eloH = match.elo_home ? Math.round(match.elo_home) : '—';
       const eloA = match.elo_away ? Math.round(match.elo_away) : '—';
 
-      // En olası 3 skoru Poisson matrisinden hesapla
-      function poissonPmf(k, lam) {
-        let p = Math.exp(-lam);
-        for (let i = 1; i <= k; i++) p *= lam / i;
-        return p;
-      }
-      const lh = parseFloat(match.expected_home) || 1.2;
-      const la = parseFloat(match.expected_away) || 1.0;
-      const maxG = 9;
-      const scores = [];
-      for (let i = 0; i < maxG; i++) {
-        for (let j = 0; j < maxG; j++) {
-          scores.push({ s: i + '-' + j, p: poissonPmf(i, lh) * poissonPmf(j, la) });
+      // En olası 3 skor: tercihen predict.py'nin Dixon-Coles düzeltmeli
+      // matristen ürettiği top1/2/3_score + top1/2/3_prob kolonları kullanılır
+      // (dashboard'daki sıralamanın CSV'deki most_likely_score ile tutarlı
+      // olması için). Bu kolonlar yoksa (eski arşiv satırları) basit Poisson
+      // ile client-side hesaplanır.
+      let top3;
+      if (match.top1_score) {
+        top3 = [1, 2, 3]
+          .filter(rank => match[`top${rank}_score`])
+          .map(rank => ({ s: match[`top${rank}_score`], p: parseFloat(match[`top${rank}_prob`]) / 100 }));
+      } else {
+        function poissonPmf(k, lam) {
+          let p = Math.exp(-lam);
+          for (let i = 1; i <= k; i++) p *= lam / i;
+          return p;
         }
+        const lh = parseFloat(match.expected_home) || 1.2;
+        const la = parseFloat(match.expected_away) || 1.0;
+        const maxG = 9;
+        const scores = [];
+        for (let i = 0; i < maxG; i++) {
+          for (let j = 0; j < maxG; j++) {
+            scores.push({ s: i + '-' + j, p: poissonPmf(i, lh) * poissonPmf(j, la) });
+          }
+        }
+        scores.sort((a, b) => b.p - a.p);
+        top3 = scores.slice(0, 3);
       }
-      scores.sort((a, b) => b.p - a.p);
-      const top3 = scores.slice(0, 3);
       const topScoresHtml = top3.map((s, idx) => `
         <div class="top-score-item">
           <span class="top-score-val${idx === 0 ? ' first' : ''}">${s.s}</span>
@@ -771,9 +782,9 @@
       let scoreBubbleHtml;
       let winnerText;
       if (match.played) {
-        const hg = match.home_score;
-        const ag = match.away_score;
-        const actual = Number(hg) > Number(ag) ? 'Ev Sahibi' : Number(hg) < Number(ag) ? 'Deplasman' : 'Beraberlik';
+        const hg = Math.round(Number(match.home_score));
+        const ag = Math.round(Number(match.away_score));
+        const actual = hg > ag ? 'Ev Sahibi' : hg < ag ? 'Deplasman' : 'Beraberlik';
         const hasPrediction = !!predicted;
         const correct = hasPrediction && predicted === actual;
 
