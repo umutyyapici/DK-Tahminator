@@ -147,9 +147,20 @@ def main():
     calc_accuracy()
 
     print("\n" + "=" * 50)
-    print("ADIM 5/5: Backtest güncelleniyor...")
+    print("ADIM 5/6: Backtest güncelleniyor...")
     print("=" * 50)
-    evaluate()
+    try:
+        evaluate()
+    except Exception as e:
+        print(f"[backtest] HATA: {e}")
+
+    print("\n" + "=" * 50)
+    print("ADIM 6/6: Otomatik tahmin giriliyor...")
+    print("=" * 50)
+    try:
+        auto_predict()
+    except Exception as e:
+        print(f"[auto_predict] HATA: {e}")
 
     print("\n✓ Güncelleme tamamlandı.")
 
