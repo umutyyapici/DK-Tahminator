@@ -27,18 +27,17 @@ import json
 import numpy as np
 import pandas as pd
 from datetime import datetime
-from xgboost import XGBRegressor
 from sklearn.metrics import log_loss, brier_score_loss
-from scipy.stats import poisson
 
 BACKTEST_OUT = os.path.join(os.path.dirname(__file__), "..", "data", "backtest.json")
 
 sys.path.insert(0, os.path.dirname(__file__))
 from features import FEATURE_COLS, EloFeatureBuilder, HOME_ADVANTAGE
-from features import actual_score, build_name_map, normalize_team
+from features import actual_score, build_name_map, normalize_team, expected_score
+from poisson_model import score_matrix, top_n_scores, estimate_rho, time_decay_weights
+from train import make_model
 
 DATA_DIR  = os.path.join(os.path.dirname(__file__), "..", "data")
-MAX_GOALS = 9
 
 # ── Test setine alınacak turnuva + tarih aralıkları ──────────────────────
 # Kaggle results.csv'deki gerçek turnuva adları kullanılıyor.
@@ -65,21 +64,14 @@ def is_test_match(tourn: str, date_str: str) -> bool:
 
 # ── Poisson olasılıkları ─────────────────────────────────────────────────
 
-def poisson_probs(lh, la):
-    lh = max(0.01, lh)
-    la = max(0.01, la)
-    hp = poisson.pmf(range(MAX_GOALS), lh)
-    ap = poisson.pmf(range(MAX_GOALS), la)
-    matrix = np.outer(hp, ap)
+def poisson_probs(lh, la, rho=0.0):
+    matrix = score_matrix(lh, la, rho)
     ph  = float(np.tril(matrix, -1).sum())
     pd_ = float(np.trace(matrix))
     pa  = float(np.triu(matrix, 1).sum())
-    # En olası 3 skor
-    flat = [(i, j, matrix[i, j]) for i in range(MAX_GOALS) for j in range(MAX_GOALS)]
-    flat.sort(key=lambda x: -x[2])
-    top3 = [(i, j) for i, j, _ in flat[:3]]
-    idx = flat[0]
-    return ph, pd_, pa, idx[0], idx[1], top3
+    top3 = top_n_scores(matrix, 3)
+    sh, sa = top3[0]
+    return ph, pd_, pa, sh, sa, top3
 
 
 # ── Train/test split ─────────────────────────────────────────────────────
@@ -123,6 +115,9 @@ def build_train_test(kaggle_path, former_names_path):
         atk_a  = builder.get_avg_scored(away)
         def_a  = builder.get_avg_conceded(away)
         h2h_w, h2h_d, h2h_l = builder.get_h2h(home, away, h2h_records)
+        conf_h = builder.get_conf_strength(home)
+        conf_a = builder.get_conf_strength(away)
+        elo_win_prob_home = expected_score(elo_h + (0 if neut else HOME_ADVANTAGE), elo_a)
 
         feat = {
             "date":               date,
@@ -151,6 +146,10 @@ def build_train_test(kaggle_path, former_names_path):
             "def_away":           def_a,
             "atk_vs_def_home":    atk_h - def_a,
             "atk_vs_def_away":    atk_a - def_h,
+            "elo_win_prob_home":  elo_win_prob_home,
+            "conf_strength_home": conf_h,
+            "conf_strength_away": conf_a,
+            "conf_strength_diff": conf_h - conf_a,
         }
 
         if is_test_match(tourn, ds):
@@ -177,7 +176,7 @@ def outcome_label(hg, ag):
     return 0
 
 
-def evaluate_predictions(df, model_home, model_away, label=""):
+def evaluate_predictions(df, model_home, model_away, label="", rho=0.0):
     X  = df[FEATURE_COLS].values
     lh = model_home.predict(X)
     la = model_away.predict(X)
@@ -189,7 +188,7 @@ def evaluate_predictions(df, model_home, model_away, label=""):
     top3_correct  = 0
 
     for i, (_, row) in enumerate(df.iterrows()):
-        ph, pd_, pa, sh, sa, top3 = poisson_probs(lh[i], la[i])
+        ph, pd_, pa, sh, sa, top3 = poisson_probs(lh[i], la[i], rho)
         true_label = outcome_label(row["home_score"], row["away_score"])
         hg = int(row["home_score"])
         ag = int(row["away_score"])
@@ -265,19 +264,27 @@ def evaluate():
     for t, grp in test_df.groupby("tournament"):
         print(f"  {t:<35}: {len(grp)} maç")
 
-    # Modelleri eğit
+    # Modelleri eğit (train.py ile aynı, ayarlanmış hiperparametreler)
     print("\n[eval] Modeller eğitiliyor...")
-    model_home = XGBRegressor(n_estimators=600, learning_rate=0.01, max_depth=4,
-                               subsample=0.8, colsample_bytree=0.8, random_state=42, n_jobs=-1)
-    model_away = XGBRegressor(n_estimators=600, learning_rate=0.01, max_depth=4,
-                               subsample=0.8, colsample_bytree=0.8, random_state=42, n_jobs=-1)
+    model_home = make_model()
+    model_away = make_model()
 
     X_train = train_df[FEATURE_COLS].values
     model_home.fit(X_train, train_df["home_score"].values)
     model_away.fit(X_train, train_df["away_score"].values)
 
-    train_metrics = evaluate_predictions(train_df, model_home, model_away, "TRAIN SETİ")
-    test_metrics  = evaluate_predictions(test_df,  model_home, model_away, "TEST SETİ — Büyük Turnuvalar (2021-2024)")
+    # Dixon-Coles rho'yu sadece train seti üzerinden, zaman ağırlıklı tahmin et
+    # (test'e sızıntı olmasın)
+    lh_train = model_home.predict(X_train)
+    la_train = model_away.predict(X_train)
+    days_ago = (train_df["date"].max() - train_df["date"]).dt.days.values
+    weights  = time_decay_weights(days_ago)
+    rho = estimate_rho(lh_train, la_train, train_df["home_score"].values,
+                        train_df["away_score"].values, weights=weights)
+    print(f"\n[eval] Dixon-Coles rho (train'den, zaman ağırlıklı tahmin edildi): {rho:.4f}")
+
+    train_metrics = evaluate_predictions(train_df, model_home, model_away, "TRAIN SETİ", rho)
+    test_metrics  = evaluate_predictions(test_df,  model_home, model_away, "TEST SETİ — Büyük Turnuvalar (2021-2024)", rho)
 
     print("\n[eval] Not: Test accuracy > baseline ise model rastgele tahminden iyidir.")
     print("[eval] Futbol tahmininde %50+ accuracy iyi kabul edilir.")
@@ -294,6 +301,7 @@ def evaluate():
         "brier":            round(float(test_metrics["brier"]), 3),
         "baseline":         round(float(test_metrics["baseline"]) * 100, 1),
         "train_accuracy":   round(float(train_metrics["accuracy"]) * 100, 1),
+        "rho":              round(rho, 4),
         "updated_at":       datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC"),
     }
     os.makedirs(os.path.dirname(BACKTEST_OUT), exist_ok=True)
