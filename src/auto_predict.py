@@ -17,6 +17,8 @@ import requests
 import pandas as pd
 from datetime import datetime, timezone, timedelta
 
+from poisson_model import score_matrix, load_rho, MAX_GOALS
+
 SUPABASE_URL = os.environ.get("SUPABASE_URL", "")
 SUPABASE_KEY = os.environ.get("SUPABASE_KEY", "")  # service_role key
 BOT_USER_ID  = os.environ.get("BOT_USER_ID", "")   # senin user_id'n
@@ -58,15 +60,13 @@ def supabase_upsert(table: str, rows: list) -> None:
 
 def calc_expected_points(pred_h: int, pred_a: int,
                          lambda_h: float, lambda_a: float,
-                         max_g: int = 9) -> float:
+                         rho: float = 0.0,
+                         max_g: int = MAX_GOALS) -> float:
     """
-    Poisson dağılımıyla beklenen puan hesabı.
+    Poisson dağılımıyla (Dixon-Coles düşük skor düzeltmesi ile) beklenen puan hesabı.
     Puanlama: tam isabet=6, kıl payı=3, stratejist=2, bilge=1, teselli=1
     """
-    import math
-
-    def pmf(k, lam):
-        return math.exp(-lam) * (lam ** k) / math.factorial(k)
+    matrix = score_matrix(lambda_h, lambda_a, rho)
 
     expected = 0.0
     pred_diff = pred_h - pred_a
@@ -74,7 +74,7 @@ def calc_expected_points(pred_h: int, pred_a: int,
 
     for ah in range(max_g):
         for aa in range(max_g):
-            p = pmf(ah, max(0.01, lambda_h)) * pmf(aa, max(0.01, lambda_a))
+            p = matrix[ah, aa]
             if p < 1e-6:
                 continue
 
@@ -133,6 +133,8 @@ def auto_predict():
 
     print(f"[auto_predict] {len(upcoming)} maç için tahmin girilecek.")
 
+    rho = load_rho()
+
     # 2. Supabase'den tüm maçları çek
     # locked=false filtresi yerine Python'da kontrol ediyoruz
     # çünkü bahis 1 saat önce kapanıyor ama locked henüz false olabilir
@@ -176,15 +178,32 @@ def auto_predict():
         date_str = str(row["date"])
 
         # Supabase'de eşleşen maçı bul
+        # Not: tarihler farklı zaman dilimlerinden gelebilir (UTC vs TR),
+        # bu yüzden takım isimleri eşleşirse ±1 günlük farkı tolere ediyoruz.
         match_id = None
+        p_home = normalize_name(row["home_team"])
+        p_away = normalize_name(row["away_team"])
+        try:
+            p_date = datetime.strptime(date_str, "%Y-%m-%d").date()
+        except ValueError:
+            p_date = None
+
         for m in sb_matches:
             m_home = normalize_name(m.get("home_team", ""))
             m_away = normalize_name(m.get("away_team", ""))
-            p_home = normalize_name(row["home_team"])
-            p_away = normalize_name(row["away_team"])
-            m_date = str(m.get("match_datetime", ""))[:10]
+            if m_home != p_home or m_away != p_away:
+                continue
 
-            if m_home == p_home and m_away == p_away and m_date == date_str:
+            m_date_str = str(m.get("match_datetime", ""))[:10]
+            if p_date is None:
+                match_id = m["id"]
+                break
+            try:
+                m_date = datetime.strptime(m_date_str, "%Y-%m-%d").date()
+                if abs((m_date - p_date).days) <= 1:
+                    match_id = m["id"]
+                    break
+            except ValueError:
                 match_id = m["id"]
                 break
 
@@ -192,7 +211,7 @@ def auto_predict():
             print(f"[auto_predict] Eşleşme bulunamadı: {row['home_team']} vs {row['away_team']} ({date_str})")
             continue
 
-        exp_pts = calc_expected_points(pred_h, pred_a, lambda_h, lambda_a)
+        exp_pts = calc_expected_points(pred_h, pred_a, lambda_h, lambda_a, rho)
         by_date[date_str].append({
             "match_id": match_id,
             "pred_h":   pred_h,
