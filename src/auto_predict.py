@@ -109,6 +109,7 @@ def normalize_name(name: str) -> str:
 
 
 def auto_predict():
+    print("[auto_predict] VERSION: daily_joker_v2")
     if not SUPABASE_URL or not SUPABASE_KEY or not BOT_USER_ID:
         print("[auto_predict] SUPABASE_URL, SUPABASE_KEY veya BOT_USER_ID eksik, atlanıyor.")
         return
