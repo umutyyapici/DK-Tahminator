@@ -1,235 +1,169 @@
 """
-auto_predict.py
----------------
-DK-Tahminator Supabase oyununa otomatik tahmin girer.
-update.py tarafından çağrılır.
-
-Mantık:
-  1. predictions.csv'den bugün ve sonraki oynanmamış maçları al
-  2. Supabase matches tablosundan match_id'leri eşleştir
-  3. Beklenen puanı hesapla, en yükseğine joker oyna
-  4. predictions tablosuna upsert et
+update.py
+---------
+GitHub Action tarafından günlük çalıştırılan ana script.
+Sırayla:
+  1. football-data.org'dan yeni maç sonuçlarını çeker
+  2. Modeli yeniden eğitir (ELO ve feature'lar güncellenir)
+  3. Tahminleri yeniden üretir
+  4. Oynanan maçlardaki tahmin başarısını hesaplar
+  5. Backtest metriklerini günceller
+  6. DK-Tahminator oyununa otomatik tahmin girer
 """
 
+import sys
 import os
 import json
-import requests
 import pandas as pd
-from datetime import datetime, timezone, timedelta
+from datetime import datetime
 
-SUPABASE_URL = os.environ.get("SUPABASE_URL", "")
-SUPABASE_KEY = os.environ.get("SUPABASE_KEY", "")  # service_role key
-BOT_USER_ID  = os.environ.get("BOT_USER_ID", "")   # senin user_id'n
+sys.path.insert(0, os.path.dirname(__file__))
+
+from fetch_matches import fetch_wc2026_matches, save_matches
+from train import train
+from predict import predict
+from evaluate import evaluate
+from auto_predict import auto_predict
 
 DATA_DIR     = os.path.join(os.path.dirname(__file__), "..", "data")
+ACCURACY_OUT = os.path.join(DATA_DIR, "accuracy.json")
 
 
-def supabase_get(table: str, params: dict = {}) -> list:
-    headers = {
-        "apikey": SUPABASE_KEY,
-        "Authorization": f"Bearer {SUPABASE_KEY}",
-        "Content-Type": "application/json",
-    }
-    resp = requests.get(
-        f"{SUPABASE_URL}/rest/v1/{table}",
-        headers=headers,
-        params={"select": "*", **params},
-        timeout=15
+def calc_accuracy():
+    matches_path = os.path.join(DATA_DIR, "matches_2026.csv")
+    preds_path   = os.path.join(DATA_DIR, "predictions.csv")
+
+    if not os.path.exists(matches_path) or not os.path.exists(preds_path):
+        print("[accuracy] Gerekli dosyalar bulunamadı, atlanıyor.")
+        return
+
+    matches = pd.read_csv(matches_path)
+    preds   = pd.read_csv(preds_path)
+
+    finished = matches[matches["status"] == "FINISHED"].copy()
+    if finished.empty:
+        print("[accuracy] Henüz oynanmış maç yok.")
+        _save_accuracy(0, 0, 0, 0, 0, 0, 0)
+        return
+
+    merged = finished.merge(
+        preds[["home_team", "away_team", "date", "predicted", "most_likely_score", "expected_home", "expected_away"]],
+        on=["home_team", "away_team", "date"],
+        how="inner"
     )
-    resp.raise_for_status()
-    return resp.json()
 
-
-def supabase_upsert(table: str, rows: list) -> None:
-    headers = {
-        "apikey": SUPABASE_KEY,
-        "Authorization": f"Bearer {SUPABASE_KEY}",
-        "Content-Type": "application/json",
-        "Prefer": "resolution=merge-duplicates",
-    }
-    resp = requests.post(
-        f"{SUPABASE_URL}/rest/v1/{table}?on_conflict=user_id,match_id",
-        headers=headers,
-        json=rows,
-        timeout=15
-    )
-    resp.raise_for_status()
-
-
-def calc_expected_points(pred_h: int, pred_a: int,
-                         lambda_h: float, lambda_a: float,
-                         max_g: int = 9) -> float:
-    """
-    Poisson dağılımıyla beklenen puan hesabı.
-    Puanlama: tam isabet=6, kıl payı=3, stratejist=2, bilge=1, teselli=1
-    """
-    import math
-
-    def pmf(k, lam):
-        return math.exp(-lam) * (lam ** k) / math.factorial(k)
-
-    expected = 0.0
-    pred_diff = pred_h - pred_a
-    pred_result = "home" if pred_h > pred_a else ("away" if pred_h < pred_a else "draw")
-
-    for ah in range(max_g):
-        for aa in range(max_g):
-            p = pmf(ah, max(0.01, lambda_h)) * pmf(aa, max(0.01, lambda_a))
-            if p < 1e-6:
-                continue
-
-            actual_result = "home" if ah > aa else ("away" if ah < aa else "draw")
-            result_correct = (pred_result == actual_result)
-            actual_diff = ah - aa
-
-            if not result_correct:
-                # Teselli: yanlış sonuç ama bir takımın golü doğru
-                if pred_h == ah or pred_a == aa:
-                    expected += p * 1
-                continue
-
-            # Sonuç doğru — hangi kategori?
-            if pred_h == ah and pred_a == aa:
-                pts = 6  # tam isabet
-            elif pred_h == ah or pred_a == aa:
-                pts = 3  # kıl payı
-            elif pred_diff == actual_diff:
-                pts = 2  # stratejist
-            else:
-                pts = 1  # bilge
-
-            expected += p * pts
-
-    return expected
-
-
-def normalize_name(name: str) -> str:
-    """Basit normalizasyon — büyük/küçük harf ve boşluk."""
-    return name.strip().lower() if name else ""
-
-
-def auto_predict():
-    if not SUPABASE_URL or not SUPABASE_KEY or not BOT_USER_ID:
-        print("[auto_predict] SUPABASE_URL, SUPABASE_KEY veya BOT_USER_ID eksik, atlanıyor.")
+    if merged.empty:
+        print("[accuracy] Eşleşen tahmin bulunamadı.")
+        _save_accuracy(0, 0, 0, 0, 0, 0, 0)
         return
 
-    # 1. predictions.csv'yi yükle
-    preds_path = os.path.join(DATA_DIR, "predictions.csv")
-    if not os.path.exists(preds_path):
-        print("[auto_predict] predictions.csv bulunamadı.")
-        return
+    total    = len(merged)
+    correct  = 0
+    exact    = 0
+    top3_hit = 0
 
-    preds_df = pd.read_csv(preds_path)
-    preds_df["date"] = pd.to_datetime(preds_df["date"]).dt.date
+    def top3_scores(lh, la, n=9):
+        from scipy.stats import poisson as sp
+        hp = sp.pmf(range(n), max(0.01, lh))
+        ap = sp.pmf(range(n), max(0.01, la))
+        flat = [(i, j, hp[i]*ap[j]) for i in range(n) for j in range(n)]
+        flat.sort(key=lambda x: -x[2])
+        return [(i, j) for i, j, _ in flat[:3]]
 
-    # Bugün ve sonrasındaki maçları al (oynanmamışlar)
-    today = datetime.now(timezone.utc).date()
-    upcoming = preds_df[preds_df["date"] >= today].copy()
+    for _, row in merged.iterrows():
+        hg = int(row["home_score"])
+        ag = int(row["away_score"])
 
-    if upcoming.empty:
-        print("[auto_predict] Girilecek tahmin yok.")
-        return
+        if hg > ag:    actual = "Ev Sahibi"
+        elif hg == ag: actual = "Beraberlik"
+        else:          actual = "Deplasman"
 
-    print(f"[auto_predict] {len(upcoming)} maç için tahmin girilecek.")
+        if row["predicted"] == actual:
+            correct += 1
 
-    # 2. Supabase'den tüm maçları çek
-    # locked=false filtresi yerine Python'da kontrol ediyoruz
-    # çünkü bahis 1 saat önce kapanıyor ama locked henüz false olabilir
-    all_matches = supabase_get("matches", {"order": "match_datetime.asc"})
-    if not all_matches:
-        print("[auto_predict] Supabase'de maç bulunamadı.")
-        return
+        # 1. skor
+        if pd.notna(row.get("most_likely_score", None)):
+            try:
+                ph, pa = row["most_likely_score"].split("-")
+                if int(ph) == hg and int(pa) == ag:
+                    exact += 1
+            except Exception:
+                pass
 
-    # Bahis hâlâ açık maçları filtrele (maçtan 1 saat öncesine kadar açık)
-    now_utc = datetime.now(timezone.utc)
-    cutoff = now_utc + timedelta(hours=1)  # 1 saat sonrasına kadar olan maçlara gir
-    sb_matches = []
-    for m in all_matches:
-        if m.get("locked"):
-            continue
-        dt_str = m.get("match_datetime", "")
-        if not dt_str:
-            continue
+        # Top 3
         try:
-            from datetime import datetime as dt
-            match_dt = dt.fromisoformat(dt_str.replace("Z", "+00:00"))
-            if match_dt > cutoff:
-                sb_matches.append(m)
+            lh = float(row.get("expected_home", 1.2))
+            la = float(row.get("expected_away", 1.0))
+            if any(h == hg and a == ag for h, a in top3_scores(lh, la)):
+                top3_hit += 1
         except Exception:
-            sb_matches.append(m)  # parse edilemezse dahil et
+            pass
 
-    if not sb_matches:
-        print("[auto_predict] Bahis açık maç yok.")
-        return
+    accuracy   = round(correct  / total * 100, 1) if total > 0 else 0
+    exact_pct  = round(exact    / total * 100, 1) if total > 0 else 0
+    top3_pct   = round(top3_hit / total * 100, 1) if total > 0 else 0
 
-    # 3. predictions.csv ile Supabase maçlarını eşleştir
-    to_upsert = []
-    joker_candidate = None  # (match_id, expected_pts)
+    _save_accuracy(accuracy, correct, total, exact, exact_pct, top3_hit, top3_pct)
+    print(f"[accuracy] {correct}/{total} doğru → %{accuracy}  |  1. skor: {exact} (%{exact_pct})  |  Top3: {top3_hit} (%{top3_pct})")
 
-    for _, row in upcoming.iterrows():
-        pred_h = int(round(float(row["most_likely_score"].split("-")[0])))
-        pred_a = int(round(float(row["most_likely_score"].split("-")[1])))
-        lambda_h = float(row.get("expected_home", 1.2))
-        lambda_a = float(row.get("expected_away", 1.0))
-        date_str = str(row["date"])
 
-        # Supabase'de eşleşen maçı bul
-        match_id = None
-        for m in sb_matches:
-            m_home = normalize_name(m.get("home_team", ""))
-            m_away = normalize_name(m.get("away_team", ""))
-            p_home = normalize_name(row["home_team"])
-            p_away = normalize_name(row["away_team"])
-            m_date = str(m.get("match_datetime", ""))[:10]
+def _save_accuracy(accuracy, correct, total, exact, exact_pct=0, top3=0, top3_pct=0):
+    data = {
+        "accuracy":   accuracy,
+        "correct":    correct,
+        "total":      total,
+        "exact":      exact,
+        "exact_pct":  exact_pct,
+        "top3":       top3,
+        "top3_pct":   top3_pct,
+        "updated_at": datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC"),
+    }
+    os.makedirs(os.path.dirname(ACCURACY_OUT), exist_ok=True)
+    with open(ACCURACY_OUT, "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+    print(f"[accuracy] Kaydedildi: {ACCURACY_OUT}")
 
-            if m_home == p_home and m_away == p_away and m_date == date_str:
-                match_id = m["id"]
-                break
 
-        if match_id is None:
-            print(f"[auto_predict] Eşleşme bulunamadı: {row['home_team']} vs {row['away_team']} ({date_str})")
-            continue
+def main():
+    print("=" * 50)
+    print("ADIM 1/5: Maç sonuçları çekiliyor...")
+    print("=" * 50)
+    df = fetch_wc2026_matches()
+    save_matches(df)
 
-        # Beklenen puanı hesapla
-        exp_pts = calc_expected_points(pred_h, pred_a, lambda_h, lambda_a)
+    print("\n" + "=" * 50)
+    print("ADIM 2/5: Model yeniden eğitiliyor...")
+    print("=" * 50)
+    train()
 
-        to_upsert.append({
-            "match_id": match_id,
-            "pred_h":   pred_h,
-            "pred_a":   pred_a,
-            "exp_pts":  exp_pts,
-        })
+    print("\n" + "=" * 50)
+    print("ADIM 3/5: Tahminler üretiliyor...")
+    print("=" * 50)
+    predict()
 
-        # Joker adayı — en yüksek beklenen puan
-        if joker_candidate is None or exp_pts > joker_candidate[1]:
-            joker_candidate = (match_id, exp_pts)
+    print("\n" + "=" * 50)
+    print("ADIM 4/5: Başarı oranı hesaplanıyor...")
+    print("=" * 50)
+    calc_accuracy()
 
-    if not to_upsert:
-        print("[auto_predict] Eşleşen maç bulunamadı.")
-        return
+    print("\n" + "=" * 50)
+    print("ADIM 5/6: Backtest güncelleniyor...")
+    print("=" * 50)
+    try:
+        evaluate()
+    except Exception as e:
+        print(f"[backtest] HATA: {e}")
 
-    # 4. Upsert
-    rows = []
-    for item in to_upsert:
-        is_joker = (joker_candidate and item["match_id"] == joker_candidate[0])
-        rows.append({
-            "user_id":   BOT_USER_ID,
-            "match_id":  item["match_id"],
-            "pred_home": item["pred_h"],
-            "pred_away": item["pred_a"],
-            "is_joker":  is_joker,
-        })
+    print("\n" + "=" * 50)
+    print("ADIM 6/6: Otomatik tahmin giriliyor...")
+    print("=" * 50)
+    try:
+        auto_predict()
+    except Exception as e:
+        print(f"[auto_predict] HATA: {e}")
 
-    supabase_upsert("predictions", rows)
-
-    joker_match = next((r for r in rows if r["is_joker"]), None)
-    print(f"[auto_predict] {len(rows)} tahmin girildi.")
-    if joker_match:
-        m = next((m for m in sb_matches if m["id"] == joker_match["match_id"]), {})
-        print(f"[auto_predict] Joker → {m.get('home_team','')} vs {m.get('away_team','')} "
-              f"({joker_match['pred_home']}-{joker_match['pred_away']}, "
-              f"E[puan]={joker_candidate[1]:.2f})")
+    print("\n✓ Güncelleme tamamlandı.")
 
 
 if __name__ == "__main__":
-    auto_predict()
+    main()
