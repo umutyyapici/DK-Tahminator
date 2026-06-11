@@ -200,6 +200,21 @@
 
     .match-card:hover::before { opacity: 1; }
 
+    /* joker badge */
+    .joker-badge {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: #1a1a1a;
+      background: var(--gold);
+      border-radius: 999px;
+      padding: 4px 10px;
+    }
+
     /* stage badge */
     .stage-badge {
       font-size: 10px;
@@ -723,8 +738,11 @@
         ? `🏅 ${match.away_team} galip bekleniyor`
         : '🤝 Beraberlik bekleniyor';
 
+      const jokerBadge = match.is_joker === 'True' ? '<div class="joker-badge">🃏 Joker</div>' : '';
+
       return `
         <div class="match-card">
+          ${jokerBadge}
           <div class="stage-badge">${stageLabel(match.stage)}</div>
           <div class="teams-row">
             <div class="team-block home">
