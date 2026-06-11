@@ -2,8 +2,8 @@ name: Daily WC2026 Update
 
 on:
   schedule:
-    # UTC 10:00, Türkiye saatiyle 13:00
-    - cron: "0 10 * * *"
+    # UTC 12:00, Türkiye saatiyle 15:00
+    - cron: "0 12 * * *"
   workflow_dispatch:  # Elle de tetiklenebilir
 
 permissions:
@@ -31,19 +31,9 @@ jobs:
       - name: Bağımlılıkları yükle
         run: pip install -r requirements.txt
 
-      - name: auto_predict dosyasını kontrol et
-        run: |
-          echo "=== auto_predict.py satır 108-120 ==="
-          sed -n '108,120p' src/auto_predict.py
-          echo "=== update.py auto_predict çağrısı ==="
-          grep -n "auto_predict" src/update.py
-
       - name: Güncelleme çalıştır
         env:
           FOOTBALL_DATA_API_KEY: ${{ secrets.FOOTBALL_DATA_API_KEY }}
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
-          BOT_USER_ID: ${{ secrets.BOT_USER_ID }}
         run: python src/update.py
 
       - name: Değişiklikleri commit et
