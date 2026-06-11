@@ -537,7 +537,8 @@
       <span class="accuracy-pct" id="accPct">—</span>
       <div class="accuracy-divider"></div>
       <span class="accuracy-detail" id="accCorrect">— / — doğru tahmin</span>
-      <span class="accuracy-detail" id="accExact">— tam skor</span>
+      <span class="accuracy-detail" id="accExact">— 1. skor</span>
+      <span class="accuracy-detail" id="accTop3">— top 3</span>
     </div>
   </div>
 
@@ -545,7 +546,8 @@
     <div class="backtest-inner">
       <span class="backtest-label">📊 Backtest</span>
       <span class="backtest-detail">Doğruluk: <strong id="btAcc">—</strong></span>
-      <span class="backtest-detail">Tam Skor: <strong id="btExact">—</strong></span>
+      <span class="backtest-detail">1. Skor: <strong id="btExact">—</strong></span>
+      <span class="backtest-detail">Top 3: <strong id="btTop3">—</strong></span>
       <span class="backtest-detail">Log Loss: <strong id="btLL">—</strong></span>
       <span class="backtest-detail">Brier: <strong id="btBrier">—</strong></span>
       <span class="backtest-detail">Baseline: <strong id="btBaseline">—</strong></span>
@@ -799,6 +801,7 @@
             const bt = await btRes.json();
             document.getElementById('btAcc').textContent      = '%' + bt.accuracy;
             document.getElementById('btExact').textContent    = '%' + bt.exact_acc;
+            document.getElementById('btTop3').textContent     = bt.top3_acc !== undefined ? '%' + bt.top3_acc : '—';
             document.getElementById('btLL').textContent       = bt.log_loss;
             document.getElementById('btBrier').textContent    = bt.brier;
             document.getElementById('btBaseline').textContent = '%' + bt.baseline;
