@@ -264,30 +264,45 @@
 
     .top-scores {
       display: flex;
-      gap: 6px;
+      flex-direction: column;
+      gap: 3px;
       margin-top: 2px;
+      width: 100%;
+      align-items: center;
     }
 
     .top-score-item {
       display: flex;
-      flex-direction: column;
       align-items: center;
-      gap: 1px;
+      justify-content: center;
+      gap: 8px;
     }
 
     .top-score-val {
       font-family: 'Bebas Neue', sans-serif;
-      font-size: 13px;
+      font-size: 15px;
       letter-spacing: 1px;
       color: var(--text);
       line-height: 1;
+      min-width: 32px;
+      text-align: center;
     }
 
-    .top-score-val.first { color: var(--gold); font-size: 15px; }
+    .top-score-val.first {
+      color: var(--gold);
+      font-size: 22px;
+    }
 
     .top-score-pct {
-      font-size: 9px;
+      font-size: 10px;
       color: var(--muted);
+      min-width: 36px;
+    }
+
+    .top-score-pct.first {
+      font-size: 11px;
+      color: var(--gold);
+      opacity: 0.8;
     }
 
     /* probability bars */
@@ -670,7 +685,7 @@
       const topScoresHtml = top3.map((s, idx) => `
         <div class="top-score-item">
           <span class="top-score-val${idx === 0 ? ' first' : ''}">${s.s}</span>
-          <span class="top-score-pct">%${(s.p * 100).toFixed(1)}</span>
+          <span class="top-score-pct${idx === 0 ? ' first' : ''}">%${(s.p * 100).toFixed(1)}</span>
         </div>`).join('');
 
       const winnerText = predicted === 'Ev Sahibi'
