@@ -102,8 +102,10 @@ class EloFeatureBuilder:
 
     def __init__(self):
         self.elos: dict[str, float] = {}
-        self.history: dict[str, list] = {}   # takım → [sonuçlar]
-        self.elo_history: dict[str, list] = {}  # takım → [elo değerleri]
+        self.history: dict[str, list] = {}        # takım → [sonuçlar]
+        self.elo_history: dict[str, list] = {}    # takım → [elo değerleri]
+        self.goals_scored: dict[str, list] = {}   # takım → [attığı goller]
+        self.goals_conceded: dict[str, list] = {} # takım → [yediği goller]
 
     def get_elo(self, team: str) -> float:
         return self.elos.get(team, INITIAL_ELO)
@@ -134,12 +136,37 @@ class EloFeatureBuilder:
         self._update_form(home, act_h)
         self._update_form(away, 1.0 - act_h)
 
+        # gol geçmişi güncelle
+        self._update_goals(home, home_goals, away_goals)
+        self._update_goals(away, away_goals, home_goals)
+
         return elo_h, elo_a  # maç öncesi değerler
 
     def _update_form(self, team: str, result: float):
         if team not in self.history:
             self.history[team] = []
         self.history[team].append(result)
+
+    def _update_goals(self, team: str, scored: int, conceded: int):
+        if team not in self.goals_scored:
+            self.goals_scored[team] = []
+            self.goals_conceded[team] = []
+        self.goals_scored[team].append(scored)
+        self.goals_conceded[team].append(conceded)
+
+    def get_avg_scored(self, team: str, window: int = FORM_WINDOW) -> float:
+        """Son N maçtaki ortalama atılan gol."""
+        hist = self.goals_scored.get(team, [])
+        if not hist:
+            return 1.2  # genel ortalama
+        return float(np.mean(hist[-window:]))
+
+    def get_avg_conceded(self, team: str, window: int = FORM_WINDOW) -> float:
+        """Son N maçtaki ortalama yenilen gol."""
+        hist = self.goals_conceded.get(team, [])
+        if not hist:
+            return 1.0  # genel ortalama
+        return float(np.mean(hist[-window:]))
 
     def _update_elo_history(self, team: str, elo: float):
         if team not in self.elo_history:
@@ -251,6 +278,10 @@ def build_features(kaggle_results_path: str,
         form_a = builder.get_form(away)
         mom_h = builder.get_elo_momentum(home)
         mom_a = builder.get_elo_momentum(away)
+        atk_h = builder.get_avg_scored(home)    # ev hücum gücü
+        def_h = builder.get_avg_conceded(home)  # ev defans zayıflığı
+        atk_a = builder.get_avg_scored(away)    # dep hücum gücü
+        def_a = builder.get_avg_conceded(away)  # dep defans zayıflığı
         h2h_w, h2h_d, h2h_l = builder.get_h2h(home, away, h2h_records)
 
         # Hedef değişken: 2=ev galip, 1=beraberlik, 0=deplasman galip
@@ -285,6 +316,12 @@ def build_features(kaggle_results_path: str,
             "elo_momentum_home": mom_h,
             "elo_momentum_away": mom_a,
             "elo_momentum_diff": mom_h - mom_a,
+            "atk_home":      atk_h,
+            "def_home":      def_h,
+            "atk_away":      atk_a,
+            "def_away":      def_a,
+            "atk_vs_def_home": atk_h - def_a,  # ev hücum - dep defans
+            "atk_vs_def_away": atk_a - def_h,  # dep hücum - ev defans
             "outcome":       outcome,
         })
 
@@ -312,6 +349,10 @@ def build_features(kaggle_results_path: str,
             form_a = builder.get_form(away)
             mom_h  = builder.get_elo_momentum(home)
             mom_a  = builder.get_elo_momentum(away)
+            atk_h  = builder.get_avg_scored(home)
+            def_h  = builder.get_avg_conceded(home)
+            atk_a  = builder.get_avg_scored(away)
+            def_a  = builder.get_avg_conceded(away)
             h2h_w, h2h_d, h2h_l = builder.get_h2h(home, away, h2h_records)
 
             pred_rows.append({
@@ -335,6 +376,12 @@ def build_features(kaggle_results_path: str,
                 "elo_momentum_home": mom_h,
                 "elo_momentum_away": mom_a,
                 "elo_momentum_diff": mom_h - mom_a,
+                "atk_home":      atk_h,
+                "def_home":      def_h,
+                "atk_away":      atk_a,
+                "def_away":      def_a,
+                "atk_vs_def_home": atk_h - def_a,
+                "atk_vs_def_away": atk_a - def_h,
             })
 
     pred_df = pd.DataFrame(pred_rows)
@@ -347,6 +394,8 @@ FEATURE_COLS = [
     "h2h_home_win", "h2h_draw", "h2h_away_win",
     "is_wc", "is_neutral",
     "elo_momentum_home", "elo_momentum_away", "elo_momentum_diff",
+    "atk_home", "def_home", "atk_away", "def_away",
+    "atk_vs_def_home", "atk_vs_def_away",
 ]
 
 
