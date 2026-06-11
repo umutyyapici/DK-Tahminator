@@ -55,6 +55,8 @@ def supabase_upsert(table: str, rows: list) -> None:
         json=rows,
         timeout=15
     )
+    if not resp.ok:
+        print(f"[auto_predict] Supabase HATA detayı: {resp.status_code} {resp.text}")
     resp.raise_for_status()
 
 
