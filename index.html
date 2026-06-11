@@ -286,6 +286,33 @@
       align-items: center;
     }
 
+    .top-scores.small {
+      margin-top: 8px;
+      opacity: 0.7;
+    }
+
+    .top-scores.small .top-score-val {
+      font-size: 11px;
+      min-width: 28px;
+    }
+
+    .top-scores.small .top-score-val.first {
+      font-size: 13px;
+    }
+
+    .top-scores.small .top-score-pct,
+    .top-scores.small .top-score-pct.first {
+      font-size: 9px;
+    }
+
+    .small-top-scores-label {
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--muted);
+      margin-top: 6px;
+    }
+
     .top-score-item {
       display: flex;
       align-items: center;
@@ -650,6 +677,13 @@
       return STAGE_MAP[s] || s || "Maç";
     }
 
+    // ── "Ev Sahibi"/"Deplasman"/"Beraberlik" -> takım adı ───
+    function winnerLabel(result, match) {
+      return result === 'Ev Sahibi' ? match.home_team
+           : result === 'Deplasman' ? match.away_team
+           : 'Beraberlik';
+    }
+
     // ── CSV parser ─────────────────────────────────────────
     function parseCSV(text) {
       const lines = text.trim().split('\n');
@@ -732,13 +766,41 @@
           <span class="top-score-pct${idx === 0 ? ' first' : ''}">%${(s.p * 100).toFixed(1)}</span>
         </div>`).join('');
 
-      const winnerText = predicted === 'Ev Sahibi'
-        ? `🏅 ${match.home_team} galip bekleniyor`
-        : predicted === 'Deplasman'
-        ? `🏅 ${match.away_team} galip bekleniyor`
-        : '🤝 Beraberlik bekleniyor';
-
       const jokerBadge = match.is_joker === 'True' ? '<div class="joker-badge">🃏 Joker</div>' : '';
+
+      let scoreBubbleHtml;
+      let winnerText;
+      if (match.played) {
+        const hg = match.home_score;
+        const ag = match.away_score;
+        const actual = Number(hg) > Number(ag) ? 'Ev Sahibi' : Number(hg) < Number(ag) ? 'Deplasman' : 'Beraberlik';
+        const hasPrediction = !!predicted;
+        const correct = hasPrediction && predicted === actual;
+
+        scoreBubbleHtml = `
+            <div class="score-bubble">
+              <span class="score-label">Maç Sonucu</span>
+              <div class="score-display">${hg}-${ag}</div>
+              ${hasPrediction ? `
+              <div class="small-top-scores-label">Model Tahmini</div>
+              <div class="top-scores small">${topScoresHtml}</div>` : ''}
+            </div>`;
+
+        winnerText = !hasPrediction
+          ? (actual === 'Beraberlik' ? '⚪ Berabere bitti' : `⚪ ${winnerLabel(actual, match)} kazandı`)
+          : correct
+          ? `✅ Tahmin doğruydu (${winnerLabel(predicted, match)})`
+          : `❌ Yanlış tahmin — beklenen: ${winnerLabel(predicted, match)}, gerçek: ${winnerLabel(actual, match)}`;
+      } else {
+        scoreBubbleHtml = `
+            <div class="score-bubble">
+              <span class="score-label">En Olası Skorlar</span>
+              <div class="top-scores">${topScoresHtml}</div>
+            </div>`;
+
+        winnerText = `🏅 ${winnerLabel(predicted, match)} bekleniyor`;
+        if (predicted === 'Beraberlik') winnerText = '🤝 Beraberlik bekleniyor';
+      }
 
       return `
         <div class="match-card">
@@ -750,10 +812,7 @@
               <span class="team-name">${match.home_team}</span>
               <span class="team-elo">ELO ${eloH}</span>
             </div>
-            <div class="score-bubble">
-              <span class="score-label">En Olası Skorlar</span>
-              <div class="top-scores">${topScoresHtml}</div>
-            </div>
+${scoreBubbleHtml}
             <div class="team-block away">
               ${flagImg(match.away_team)}
               <span class="team-name">${match.away_team}</span>
@@ -840,8 +899,34 @@
         const res = await fetch('data/predictions.csv?t=' + Date.now());
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const text = await res.text();
-        const matches = parseCSV(text).filter(m => m.home_team && m.away_team);
+        const upcoming = parseCSV(text).filter(m => m.home_team && m.away_team);
 
+        // Oynanmış maçlar: matches_2026.csv'den gerçek skor + predictions_history.csv'den
+        // o maç için yapılmış son tahmin birleştirilir, böylece kart kaybolmadan
+        // gerçek sonuç + modelin tahminini gösterebilir.
+        let finished = [];
+        try {
+          const [matchesRes, histRes] = await Promise.all([
+            fetch('data/matches_2026.csv?t=' + Date.now()),
+            fetch('data/predictions_history.csv?t=' + Date.now()),
+          ]);
+          if (matchesRes.ok && histRes.ok) {
+            const allMatches = parseCSV(await matchesRes.text());
+            const history = parseCSV(await histRes.text());
+            const histMap = {};
+            history.forEach(h => {
+              histMap[`${h.date}|${h.home_team}|${h.away_team}`] = h;
+            });
+            finished = allMatches
+              .filter(m => m.status === 'FINISHED' && m.home_team && m.away_team)
+              .map(m => {
+                const hist = histMap[`${m.date}|${m.home_team}|${m.away_team}`] || {};
+                return { ...hist, ...m, played: true };
+              });
+          }
+        } catch(e) { /* maç sonucu/tahmin geçmişi henüz yok */ }
+
+        const matches = [...finished, ...upcoming];
 
         // Accuracy banner
         try {
@@ -878,11 +963,11 @@
 
         // Summary bar
         document.getElementById('statTotal').textContent = matches.length;
-        document.getElementById('statPlayed').textContent = '—';
-        document.getElementById('statRemaining').textContent = matches.length;
+        document.getElementById('statPlayed').textContent = finished.length;
+        document.getElementById('statRemaining').textContent = upcoming.length;
 
         // Updated at (UTC -> TR saatine çevrilir)
-        const updatedAt = matches[0]?.updated_at || '';
+        const updatedAt = upcoming[0]?.updated_at || '';
         document.getElementById('updatedAt').textContent = updatedAt
           ? `Son güncelleme: ${formatUpdatedAtTR(updatedAt)}`
           : 'Tahminler yüklendi';
