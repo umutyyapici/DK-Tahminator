@@ -11,7 +11,7 @@ import pandas as pd
 from datetime import datetime
 
 from features import build_features, FEATURE_COLS
-from poisson_model import match_probabilities, load_rho
+from poisson_model import match_probabilities, load_rho, score_matrix, top_n_scores
 
 DATA_DIR        = os.path.join(os.path.dirname(__file__), "..", "data")
 MODELS_DIR      = os.path.join(os.path.dirname(__file__), "..", "models")
@@ -57,7 +57,13 @@ def predict():
     rows = []
     for i, (_, match) in enumerate(pred_df.iterrows()):
         ph, pd_, pa, score = match_probabilities(lambda_home[i], lambda_away[i], rho)
-        rows.append({
+
+        # En olası 3 skor (Dixon-Coles düzeltmeli matristen) — dashboard'da
+        # client-side Poisson hesabıyla tutarsızlık olmaması için burada üretilir.
+        matrix = score_matrix(lambda_home[i], lambda_away[i], rho)
+        top3 = top_n_scores(matrix, n=3)
+
+        row = {
             "date":              str(match["date"])[:10],
             "kickoff_utc":       match.get("kickoff_utc", ""),
             "home_team":         match["home_team"],
@@ -74,7 +80,12 @@ def predict():
             "elo_home":          round(float(match["elo_home"]), 1),
             "elo_away":          round(float(match["elo_away"]), 1),
             "updated_at":        datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC"),
-        })
+        }
+        for rank, (hg, ag) in enumerate(top3, start=1):
+            row[f"top{rank}_score"] = f"{hg}-{ag}"
+            row[f"top{rank}_prob"]  = round(float(matrix[hg, ag]) * 100, 1)
+
+        rows.append(row)
 
     results = pd.DataFrame(rows)
     results.sort_values("date", inplace=True)
