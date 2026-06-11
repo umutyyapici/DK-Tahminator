@@ -29,10 +29,10 @@ jobs:
 
       - name: auto_predict dosyasını kontrol et
         run: |
-          echo "=== auto_predict.py ilk 25 satır ==="
-          head -25 src/auto_predict.py
-          echo "=== import testi ==="
-          cd src && python -c "from auto_predict import auto_predict; print('import OK')"
+          echo "=== auto_predict.py satır 108-120 ==="
+          sed -n '108,120p' src/auto_predict.py
+          echo "=== update.py auto_predict çağrısı ==="
+          grep -n "auto_predict" src/update.py
 
       - name: Güncelleme çalıştır
         env:
