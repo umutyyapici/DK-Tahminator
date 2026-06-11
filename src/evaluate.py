@@ -74,8 +74,12 @@ def poisson_probs(lh, la):
     ph  = float(np.tril(matrix, -1).sum())
     pd_ = float(np.trace(matrix))
     pa  = float(np.triu(matrix, 1).sum())
-    idx = np.unravel_index(np.argmax(matrix), matrix.shape)
-    return ph, pd_, pa, idx[0], idx[1]
+    # En olası 3 skor
+    flat = [(i, j, matrix[i, j]) for i in range(MAX_GOALS) for j in range(MAX_GOALS)]
+    flat.sort(key=lambda x: -x[2])
+    top3 = [(i, j) for i, j, _ in flat[:3]]
+    idx = flat[0]
+    return ph, pd_, pa, idx[0], idx[1], top3
 
 
 # ── Train/test split ─────────────────────────────────────────────────────
@@ -170,17 +174,22 @@ def evaluate_predictions(df, model_home, model_away, label=""):
     y_pred_class  = []
     y_proba       = []
     exact_correct = 0
+    top3_correct  = 0
 
     for i, (_, row) in enumerate(df.iterrows()):
-        ph, pd_, pa, sh, sa = poisson_probs(lh[i], la[i])
+        ph, pd_, pa, sh, sa, top3 = poisson_probs(lh[i], la[i])
         true_label = outcome_label(row["home_score"], row["away_score"])
+        hg = int(row["home_score"])
+        ag = int(row["away_score"])
 
         y_true.append(true_label)
         y_pred_class.append(np.argmax([pa, pd_, ph]))
         y_proba.append([pa, pd_, ph])
 
-        if sh == int(row["home_score"]) and sa == int(row["away_score"]):
+        if sh == hg and sa == ag:
             exact_correct += 1
+        if any(h == hg and a == ag for h, a in top3):
+            top3_correct += 1
 
     y_true       = np.array(y_true)
     y_pred_class = np.array(y_pred_class)
@@ -188,6 +197,7 @@ def evaluate_predictions(df, model_home, model_away, label=""):
 
     accuracy     = (y_true == y_pred_class).mean()
     exact_acc    = exact_correct / len(df)
+    top3_acc     = top3_correct  / len(df)
     ll           = log_loss(y_true, y_proba, labels=[0, 1, 2])
     brier        = np.mean([
         brier_score_loss((y_true == c).astype(int), y_proba[:, c])
@@ -200,7 +210,8 @@ def evaluate_predictions(df, model_home, model_away, label=""):
     print(f"  {label}  ({n} maç)")
     print(f"{'='*55}")
     print(f"  Outcome Accuracy   : {accuracy:.3f}   (baseline: {baseline_acc:.3f})")
-    print(f"  Exact Score Acc    : {exact_acc:.3f}")
+    print(f"  Exact Score (1.)   : {exact_acc:.3f}")
+    print(f"  Exact Score (Top3) : {top3_acc:.3f}")
     print(f"  Log Loss           : {ll:.3f}   (düşük = iyi)")
     print(f"  Brier Score (avg)  : {brier:.3f}  (düşük = iyi)")
     print(f"\n  Tahmin dağılımı:")
@@ -218,7 +229,7 @@ def evaluate_predictions(df, model_home, model_away, label=""):
             print(f"    {t:<35}: {len(grp):>3} maç  acc={acc:.3f}")
 
     return {
-        "accuracy": accuracy, "exact_acc": exact_acc,
+        "accuracy": accuracy, "exact_acc": exact_acc, "top3_acc": top3_acc,
         "log_loss": ll, "brier": brier, "baseline": baseline_acc,
     }
 
@@ -266,6 +277,7 @@ def evaluate():
         "train_matches":    len(train_df),
         "accuracy":         round(float(test_metrics["accuracy"]) * 100, 1),
         "exact_acc":        round(float(test_metrics["exact_acc"]) * 100, 1),
+        "top3_acc":         round(float(test_metrics["top3_acc"]) * 100, 1),
         "log_loss":         round(float(test_metrics["log_loss"]), 3),
         "brier":            round(float(test_metrics["brier"]), 3),
         "baseline":         round(float(test_metrics["baseline"]) * 100, 1),
