@@ -1,115 +1,100 @@
 """
-auto_predict.py
----------------
-Otomatik siteye giriş YAPMAZ. Bunun yerine her gün için en yüksek beklenen
-puanlı maçı "joker" olarak işaretler ve predictions.csv'ye `is_joker`
-sütunu olarak yazar. Tahminleri ve jokeri siteye girmek kullanıcının
-elindedir.
-
-Mantık:
-  1. predictions.csv'den bugün ve sonraki oynanmamış maçları al
-  2. Her gün için beklenen puanı hesapla, en yükseğini joker olarak işaretle
-  3. predictions.csv'yi `is_joker` sütunuyla birlikte yeniden kaydet
+predict.py
+----------
+E itilmiş regresyon modellerini kullanarak oynanmamış 2026 WC maçlarının
+beklenen gollerini tahmin eder, Poisson dağılımıyla olasılıkları hesaplar.
+data/predictions.csv olarak kaydeder.
 """
-
 import os
-from collections import defaultdict
-from datetime import datetime, timezone
-
+import joblib
 import pandas as pd
+from datetime import datetime
 
-from poisson_model import score_matrix, load_rho, MAX_GOALS
+from features import build_features, FEATURE_COLS
+from poisson_model import match_probabilities, load_rho
 
-DATA_DIR = os.path.join(os.path.dirname(__file__), "..", "data")
-PREDICTIONS_PATH = os.path.join(DATA_DIR, "predictions.csv")
-
-
-def calc_expected_points(pred_h: int, pred_a: int,
-                         lambda_h: float, lambda_a: float,
-                         rho: float = 0.0,
-                         max_g: int = MAX_GOALS) -> float:
-    """
-    Poisson dağılımıyla (Dixon-Coles düşük skor düzeltmesi ile) beklenen puan hesabı.
-    Puanlama: tam isabet=6, kıl payı=3, stratejist=2, bilge=1, teselli=1
-    """
-    matrix = score_matrix(lambda_h, lambda_a, rho)
-
-    expected = 0.0
-    pred_diff = pred_h - pred_a
-    pred_result = "home" if pred_h > pred_a else ("away" if pred_h < pred_a else "draw")
-
-    for ah in range(max_g):
-        for aa in range(max_g):
-            p = matrix[ah, aa]
-            if p < 1e-6:
-                continue
-
-            actual_result = "home" if ah > aa else ("away" if ah < aa else "draw")
-            result_correct = (pred_result == actual_result)
-            actual_diff = ah - aa
-
-            if not result_correct:
-                # Teselli: yanlış sonuç ama bir takımın golü doğru
-                if pred_h == ah or pred_a == aa:
-                    expected += p * 1
-                continue
-
-            # Sonuç doğru — hangi kategori?
-            if pred_h == ah and pred_a == aa:
-                pts = 6  # tam isabet
-            elif pred_h == ah or pred_a == aa:
-                pts = 3  # kıl payı
-            elif pred_diff == actual_diff:
-                pts = 2  # stratejist
-            else:
-                pts = 1  # bilge
-
-            expected += p * pts
-
-    return expected
+DATA_DIR        = os.path.join(os.path.dirname(__file__), "..", "data")
+MODELS_DIR      = os.path.join(os.path.dirname(__file__), "..", "models")
+MODEL_HOME_PATH = os.path.join(MODELS_DIR, "model_home.pkl")
+MODEL_AWAY_PATH = os.path.join(MODELS_DIR, "model_away.pkl")
+PREDICTIONS_OUT = os.path.join(DATA_DIR, "predictions.csv")
 
 
-def auto_predict():
-    if not os.path.exists(PREDICTIONS_PATH):
-        print("[auto_predict] predictions.csv bulunamadı.")
+def predict():
+    # 1. Modelleri yükle
+    for path in [MODEL_HOME_PATH, MODEL_AWAY_PATH]:
+        if not os.path.exists(path):
+            raise FileNotFoundError(
+                f"Model bulunamadı: {path}\n"
+                "Önce `python train.py` çalıştırın."
+            )
+    model_home = joblib.load(MODEL_HOME_PATH)
+    model_away = joblib.load(MODEL_AWAY_PATH)
+    print(f"[predict] Modeller yüklendi: {MODELS_DIR}")
+
+    # 2. Feature'ları oluştur
+    _, pred_df = build_features(
+        kaggle_results_path=os.path.join(DATA_DIR, "results.csv"),
+        wc2026_path=os.path.join(DATA_DIR, "matches_2026.csv"),
+        former_names_path=os.path.join(DATA_DIR, "former_names.csv"),
+    )
+
+    if pred_df.empty:
+        print("[predict] Tahmin edilecek maç yok (tüm maçlar oynanmış olabilir).")
         return
 
-    preds_df = pd.read_csv(PREDICTIONS_PATH)
-    preds_df["date"] = pd.to_datetime(preds_df["date"]).dt.date
+    # Takımı belli olmayan maçları atla (eleme turu — henüz netleşmemiş)
+    pred_df = pred_df[pred_df["home_team"].notna() & pred_df["away_team"].notna()].copy()
+    print(f"[predict] {len(pred_df)} maç için tahmin üretiliyor...")
 
-    # Bugün ve sonrasındaki maçları al (oynanmamışlar)
-    today = datetime.now(timezone.utc).date()
-    upcoming = preds_df[preds_df["date"] >= today]
+    # 3. Beklenen gol sayıları (lambda)
+    X = pred_df[FEATURE_COLS].values
+    lambda_home = model_home.predict(X)
+    lambda_away = model_away.predict(X)
 
-    if upcoming.empty:
-        print("[auto_predict] Joker belirlenecek maç yok.")
-        preds_df["is_joker"] = False
-        preds_df.to_csv(PREDICTIONS_PATH, index=False)
-        return
-
+    # 4. Poisson olasılıkları (Dixon-Coles düşük skor düzeltmesi ile)
     rho = load_rho()
+    rows = []
+    for i, (_, match) in enumerate(pred_df.iterrows()):
+        ph, pd_, pa, score = match_probabilities(lambda_home[i], lambda_away[i], rho)
+        rows.append({
+            "date":              str(match["date"])[:10],
+            "kickoff_utc":       match.get("kickoff_utc", ""),
+            "home_team":         match["home_team"],
+            "away_team":         match["away_team"],
+            "stage":             match.get("stage", ""),
+            "expected_home":     round(float(lambda_home[i]), 2),
+            "expected_away":     round(float(lambda_away[i]), 2),
+            "most_likely_score": score,
+            "prob_home":         round(ph * 100, 1),
+            "prob_draw":         round(pd_ * 100, 1),
+            "prob_away":         round(pa * 100, 1),
+            "predicted":         "Ev Sahibi" if ph > pd_ and ph > pa
+                                 else ("Beraberlik" if pd_ > pa else "Deplasman"),
+            "elo_home":          round(float(match["elo_home"]), 1),
+            "elo_away":          round(float(match["elo_away"]), 1),
+            "updated_at":        datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC"),
+        })
 
-    # Her gün için beklenen puanları hesapla
-    by_date = defaultdict(list)
-    for idx, row in upcoming.iterrows():
-        pred_h = int(round(float(row["most_likely_score"].split("-")[0])))
-        pred_a = int(round(float(row["most_likely_score"].split("-")[1])))
-        lambda_h = float(row.get("expected_home", 1.2))
-        lambda_a = float(row.get("expected_away", 1.0))
-        exp_pts = calc_expected_points(pred_h, pred_a, lambda_h, lambda_a, rho)
-        by_date[str(row["date"])].append((idx, exp_pts))
+    results = pd.DataFrame(rows)
+    results.sort_values("date", inplace=True)
+    results.reset_index(drop=True, inplace=True)
 
-    # Her gün için en yüksek beklenen puanlı maçı joker yap
-    preds_df["is_joker"] = False
-    for date_str, items in sorted(by_date.items()):
-        joker_idx, joker_pts = max(items, key=lambda x: x[1])
-        preds_df.loc[joker_idx, "is_joker"] = True
-        joker_match = preds_df.loc[joker_idx]
-        print(f"[auto_predict] {date_str} joker → {joker_match['home_team']} vs {joker_match['away_team']} (E[puan]={joker_pts:.2f})")
+    # 5. Kaydet
+    results.to_csv(PREDICTIONS_OUT, index=False)
+    print(f"[predict] Tahminler kaydedildi: {PREDICTIONS_OUT}")
 
-    preds_df.to_csv(PREDICTIONS_PATH, index=False)
-    print(f"[auto_predict] {len(by_date)} gün için joker işaretlendi, predictions.csv güncellendi.")
+    # 6. Özet yazdır
+    print("\n" + "=" * 90)
+    print(f"{'Tarih':<12} {'Ev Sahibi':<22} {'Deplasman':<22} {'Skor':>5} {'Tahmin':<12} {'%H':>5} {'%B':>5} {'%D':>5}")
+    print("=" * 90)
+    for _, row in results.iterrows():
+        print(
+            f"{row['date']:<12} {row['home_team']:<22} {row['away_team']:<22} "
+            f"{row['most_likely_score']:>5} {row['predicted']:<12} "
+            f"{row['prob_home']:>5} {row['prob_draw']:>5} {row['prob_away']:>5}"
+        )
 
 
 if __name__ == "__main__":
-    auto_predict()
+    predict()
