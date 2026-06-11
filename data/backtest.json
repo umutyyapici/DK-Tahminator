@@ -1,0 +1,14 @@
+{
+  "test_tournaments": "2018+ WC+Qual · UEFA Euro · Nations Leagues · Copa América · AFCON · AFC Asian Cup · Gold Cup · CONCACAF NL · OFC",
+  "test_matches": 3610,
+  "train_matches": 28650,
+  "accuracy": 61.4,
+  "exact_acc": 13.0,
+  "top3_acc": 37.6,
+  "log_loss": 0.853,
+  "brier": 0.167,
+  "baseline": 46.1,
+  "train_accuracy": 58.5,
+  "rho": -0.0531,
+  "updated_at": "2026-06-11 19:19 UTC"
+}
