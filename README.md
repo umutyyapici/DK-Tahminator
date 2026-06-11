@@ -139,6 +139,7 @@ Each match's impact on ELO ratings (`K` factor) is set per tournament based on i
 | `index.html` | Live web dashboard — reads all data files dynamically |
 | `data/matches_2026.csv` | Full 2026 WC schedule with results as they come in |
 | `data/predictions.csv` | Latest predictions with probabilities, expected scorelines, and the daily `is_joker` pick |
+| `data/predictions_history.csv` | Archived prediction for every match (kept once the match finishes and drops out of `predictions.csv`) — used to compute live accuracy |
 | `data/accuracy.json` | Live accuracy stats — updated after each match day |
 | `data/backtest.json` | Backtest results across 2018+ major tournaments (3,610 matches) |
 | `models/rho.json` | Fitted Dixon-Coles correlation parameter (ρ), re-estimated on every training run |
