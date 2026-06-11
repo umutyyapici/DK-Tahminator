@@ -1,51 +1,23 @@
 """
 predict.py
 ----------
-E�itilmiş regresyon modellerini kullanarak oynanmamış 2026 WC maçlarının
+E itilmiş regresyon modellerini kullanarak oynanmamış 2026 WC maçlarının
 beklenen gollerini tahmin eder, Poisson dağılımıyla olasılıkları hesaplar.
 data/predictions.csv olarak kaydeder.
 """
 import os
 import joblib
-import numpy as np
 import pandas as pd
 from datetime import datetime
-from scipy.stats import poisson
 
 from features import build_features, FEATURE_COLS
+from poisson_model import match_probabilities, load_rho
 
 DATA_DIR        = os.path.join(os.path.dirname(__file__), "..", "data")
 MODELS_DIR      = os.path.join(os.path.dirname(__file__), "..", "models")
 MODEL_HOME_PATH = os.path.join(MODELS_DIR, "model_home.pkl")
 MODEL_AWAY_PATH = os.path.join(MODELS_DIR, "model_away.pkl")
 PREDICTIONS_OUT = os.path.join(DATA_DIR, "predictions.csv")
-
-MAX_GOALS = 9  # Olasılık matrisinde 0-8 gol arası hesaplanır
-
-
-def poisson_probabilities(lambda_home: float, lambda_away: float):
-    """
-    İki Poisson parametresinden maç sonucu olasılıklarını hesaplar.
-    Döndürür: (prob_home_win, prob_draw, prob_away_win, most_likely_score)
-    """
-    lambda_home = max(0.01, lambda_home)
-    lambda_away = max(0.01, lambda_away)
-
-    # MAX_GOALS x MAX_GOALS olasılık matrisi
-    # matrix[i][j] = ev sahibi i gol, deplasman j gol atar olasılığı
-    home_probs = poisson.pmf(range(MAX_GOALS), lambda_home)
-    away_probs = poisson.pmf(range(MAX_GOALS), lambda_away)
-    matrix = np.outer(home_probs, away_probs)
-
-    prob_home_win = float(np.tril(matrix, -1).sum())   # i > j
-    prob_draw     = float(np.trace(matrix))             # i == j
-    prob_away_win = float(np.triu(matrix, 1).sum())    # i < j
-
-    # En yüksek olasılıklı skoru bul
-    idx = np.unravel_index(np.argmax(matrix), matrix.shape)
-    most_likely_score = f"{idx[0]}-{idx[1]}"
-
-    return prob_home_win, prob_draw, prob_away_win, most_likely_score
 
 
 def predict():
@@ -80,12 +52,14 @@ def predict():
     lambda_home = model_home.predict(X)
     lambda_away = model_away.predict(X)
 
-    # 4. Poisson olasılıkları
+    # 4. Poisson olasılıkları (Dixon-Coles düşük skor düzeltmesi ile)
+    rho = load_rho()
     rows = []
     for i, (_, match) in enumerate(pred_df.iterrows()):
-        ph, pd_, pa, score = poisson_probabilities(lambda_home[i], lambda_away[i])
+        ph, pd_, pa, score = match_probabilities(lambda_home[i], lambda_away[i], rho)
         rows.append({
             "date":              str(match["date"])[:10],
+            "kickoff_utc":       match.get("kickoff_utc", ""),
             "home_team":         match["home_team"],
             "away_team":         match["away_team"],
             "stage":             match.get("stage", ""),
