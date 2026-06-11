@@ -51,6 +51,7 @@ def fetch_wc2026_matches() -> pd.DataFrame:
 
         rows.append({
             "date":       m["utcDate"][:10],           # "2026-06-11"
+            "kickoff_utc": m["utcDate"],                # "2026-06-11T22:00:00Z"
             "home_team":  home_name,
             "away_team":  away_name,
             "home_score": home_score,                  # None = oynanmadı
