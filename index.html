@@ -651,7 +651,23 @@
     function formatDate(dateStr) {
       const d = new Date(dateStr);
       if (isNaN(d)) return dateStr;
-      return d.toLocaleDateString('tr-TR', { weekday:'long', day:'numeric', month:'long' });
+      // dateStr salt bir takvim günü ("YYYY-MM-DD") temsil eder; izleyicinin
+      // tarayıcı saat dilimi UTC'nin gerisindeyse gün kaymasın diye UTC'de biçimlendirilir.
+      return d.toLocaleDateString('tr-TR', { weekday:'long', day:'numeric', month:'long', timeZone: 'UTC' });
+    }
+
+    // ── Maçın TR (Europe/Istanbul) takvim gününü döndürür ───
+    // kickoff_utc varsa (örn. "2026-06-11T22:00:00Z") TR saatine
+    // çevirip o günü döndürür; yoksa "date" alanına düşer.
+    function matchDateTR(match) {
+      if (match.kickoff_utc) {
+        const d = new Date(match.kickoff_utc);
+        if (!isNaN(d)) {
+          // sv-SE -> "YYYY-MM-DD" formatı verir
+          return d.toLocaleDateString('sv-SE', { timeZone: 'Europe/Istanbul' });
+        }
+      }
+      return match.date?.slice(0, 10) || 'Bilinmiyor';
     }
 
     // ── "YYYY-MM-DD HH:MM UTC" -> Türkiye saati ─────────────
@@ -755,7 +771,7 @@
     function groupByDate(matches) {
       const groups = {};
       matches.forEach(m => {
-        const d = m.date?.slice(0, 10) || 'Bilinmiyor';
+        const d = matchDateTR(m);
         if (!groups[d]) groups[d] = [];
         groups[d].push(m);
       });
