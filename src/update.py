@@ -8,7 +8,7 @@ Sırayla:
   3. Tahminleri yeniden üretir
   4. Oynanan maçlardaki tahmin başarısını hesaplar
   5. Backtest metriklerini günceller
-  6. DK-Tahminator oyununa otomatik tahmin girer
+  6. Her gün için joker maçı belirler ve predictions.csv'ye işaretler
 """
 
 import sys
@@ -155,7 +155,7 @@ def main():
         print(f"[backtest] HATA: {e}")
 
     print("\n" + "=" * 50)
-    print("ADIM 6/6: Otomatik tahmin giriliyor...")
+    print("ADIM 6/6: Joker maçlar belirleniyor...")
     print("=" * 50)
     try:
         auto_predict()
