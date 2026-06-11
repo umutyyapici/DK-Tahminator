@@ -48,7 +48,7 @@ def supabase_upsert(table: str, rows: list) -> None:
         "Prefer": "resolution=merge-duplicates",
     }
     resp = requests.post(
-        f"{SUPABASE_URL}/rest/v1/{table}",
+        f"{SUPABASE_URL}/rest/v1/{table}?on_conflict=user_id,match_id",
         headers=headers,
         json=rows,
         timeout=15
@@ -163,8 +163,9 @@ def auto_predict():
         return
 
     # 3. predictions.csv ile Supabase maçlarını eşleştir
-    to_upsert = []
-    joker_candidate = None  # (match_id, expected_pts)
+    # Günlük gruplama: her gün için ayrı joker
+    from collections import defaultdict
+    by_date = defaultdict(list)
 
     for _, row in upcoming.iterrows():
         pred_h = int(round(float(row["most_likely_score"].split("-")[0])))
@@ -190,45 +191,39 @@ def auto_predict():
             print(f"[auto_predict] Eşleşme bulunamadı: {row['home_team']} vs {row['away_team']} ({date_str})")
             continue
 
-        # Beklenen puanı hesapla
         exp_pts = calc_expected_points(pred_h, pred_a, lambda_h, lambda_a)
-
-        to_upsert.append({
+        by_date[date_str].append({
             "match_id": match_id,
             "pred_h":   pred_h,
             "pred_a":   pred_a,
             "exp_pts":  exp_pts,
+            "date":     date_str,
         })
 
-        # Joker adayı — en yüksek beklenen puan
-        if joker_candidate is None or exp_pts > joker_candidate[1]:
-            joker_candidate = (match_id, exp_pts)
-
-    if not to_upsert:
+    if not by_date:
         print("[auto_predict] Eşleşen maç bulunamadı.")
         return
 
-    # 4. Upsert
+    # 4. Her gün için joker seç ve upsert listesi oluştur
     rows = []
-    for item in to_upsert:
-        is_joker = (joker_candidate and item["match_id"] == joker_candidate[0])
-        rows.append({
-            "user_id":   BOT_USER_ID,
-            "match_id":  item["match_id"],
-            "pred_home": item["pred_h"],
-            "pred_away": item["pred_a"],
-            "is_joker":  is_joker,
-        })
+    for date_str, items in sorted(by_date.items()):
+        # O günün en yüksek beklenen puanlı maçına joker
+        joker_id = max(items, key=lambda x: x["exp_pts"])["match_id"]
+        for item in items:
+            rows.append({
+                "user_id":   BOT_USER_ID,
+                "match_id":  item["match_id"],
+                "pred_home": item["pred_h"],
+                "pred_away": item["pred_a"],
+                "is_joker":  item["match_id"] == joker_id,
+            })
+        joker_match = next(m for m in sb_matches if m["id"] == joker_id)
+        joker_item  = next(i for i in items if i["match_id"] == joker_id)
+        print(f"[auto_predict] {date_str} joker → {joker_match.get('home_team','')} vs {joker_match.get('away_team','')} (E[puan]={joker_item['exp_pts']:.2f})")
 
     supabase_upsert("predictions", rows)
 
-    joker_match = next((r for r in rows if r["is_joker"]), None)
-    print(f"[auto_predict] {len(rows)} tahmin girildi.")
-    if joker_match:
-        m = next((m for m in sb_matches if m["id"] == joker_match["match_id"]), {})
-        print(f"[auto_predict] Joker → {m.get('home_team','')} vs {m.get('away_team','')} "
-              f"({joker_match['pred_home']}-{joker_match['pred_away']}, "
-              f"E[puan]={joker_candidate[1]:.2f})")
+    print(f"[auto_predict] {len(rows)} tahmin girildi, {sum(1 for r in rows if r['is_joker'])} joker.")
 
 
 if __name__ == "__main__":
