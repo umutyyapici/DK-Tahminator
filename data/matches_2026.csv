@@ -9,7 +9,7 @@ date,home_team,away_team,home_score,away_score,tournament,city,country,neutral,s
 2026-06-14,Australia,Turkey,,,FIFA World Cup,,USA/Mexico/Canada,True,TIMED,GROUP_STAGE,1.0,537346
 2026-06-14,Germany,Curaçao,,,FIFA World Cup,,USA/Mexico/Canada,True,TIMED,GROUP_STAGE,1.0,537351
 2026-06-14,Netherlands,Japan,,,FIFA World Cup,,USA/Mexico/Canada,True,TIMED,GROUP_STAGE,1.0,537357
-2026-06-14,Ivory Coast,Ecuador,,,FIFA World Cup,,USA/Mexico/Canada,True,TIMED,GROUP_STAGE,1.0,537352
+2026-06-14,Ivory Coast,Ecuador,,,FIFA World Cup,,USA/Mexico/Canada,True,SCHEDULED,GROUP_STAGE,1.0,537352
 2026-06-15,Saudi Arabia,Uruguay,,,FIFA World Cup,,USA/Mexico/Canada,True,TIMED,GROUP_STAGE,1.0,537370
 2026-06-15,Belgium,Egypt,,,FIFA World Cup,,USA/Mexico/Canada,True,TIMED,GROUP_STAGE,1.0,537363
 2026-06-15,Spain,Cape Verde Islands,,,FIFA World Cup,,USA/Mexico/Canada,True,TIMED,GROUP_STAGE,1.0,537369
