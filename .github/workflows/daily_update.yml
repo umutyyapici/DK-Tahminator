@@ -9,6 +9,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: daily-update
+  cancel-in-progress: false
+
 jobs:
   update:
     runs-on: ubuntu-latest
@@ -49,5 +53,17 @@ jobs:
           for f in data/matches_2026.csv data/predictions.csv data/accuracy.json data/backtest.json; do
             [ -f "$f" ] && git add "$f"
           done
-          git diff --staged --quiet || git commit -m "chore: daily update $(date -u '+%Y-%m-%d')"
-          git push
+          if git diff --staged --quiet; then
+            echo "Değişiklik yok, commit atlanıyor."
+            exit 0
+          fi
+          git commit -m "chore: daily update $(date -u '+%Y-%m-%d %H:%M UTC')"
+          for i in 1 2 3 4 5; do
+            if git push; then
+              exit 0
+            fi
+            echo "Push reddedildi, rebase deneniyor (deneme $i)..."
+            git pull --rebase origin main
+          done
+          echo "Push 5 denemeden sonra başarısız oldu."
+          exit 1
