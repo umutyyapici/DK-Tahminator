@@ -8,6 +8,7 @@ Sırayla:
   3. Tahminleri yeniden üretir
   4. Oynanan maçlardaki tahmin başarısını hesaplar
   5. Backtest metriklerini günceller
+  6. DK-Tahminator oyununa otomatik tahmin girer
 """
 
 import sys
@@ -22,6 +23,7 @@ from fetch_matches import fetch_wc2026_matches, save_matches
 from train import train
 from predict import predict
 from evaluate import evaluate
+from auto_predict import auto_predict
 
 DATA_DIR     = os.path.join(os.path.dirname(__file__), "..", "data")
 ACCURACY_OUT = os.path.join(DATA_DIR, "accuracy.json")
