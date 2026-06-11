@@ -1,6 +1,0 @@
-- name: Test
-  run: cd src && python -c "from auto_predict import auto_predict; auto_predict()"
-  env:
-    SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-    SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
-    BOT_USER_ID: ${{ secrets.BOT_USER_ID }}
