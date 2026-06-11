@@ -852,6 +852,7 @@
               document.getElementById('accPct').textContent = '%' + acc.accuracy;
               document.getElementById('accCorrect').textContent = acc.correct + ' / ' + acc.total + ' doğru tahmin';
               document.getElementById('accExact').textContent = acc.exact + ' tam skor (%' + acc.exact_pct + ')';
+              document.getElementById('accTop3').textContent = acc.top3 + ' top 3 (%' + acc.top3_pct + ')';
               document.getElementById('accuracyBar').classList.add('loaded');
             }
           }
