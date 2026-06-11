@@ -27,6 +27,13 @@ jobs:
       - name: Bağımlılıkları yükle
         run: pip install -r requirements.txt
 
+      - name: auto_predict dosyasını kontrol et
+        run: |
+          echo "=== auto_predict.py ilk 25 satır ==="
+          head -25 src/auto_predict.py
+          echo "=== import testi ==="
+          cd src && python -c "from auto_predict import auto_predict; print('import OK')"
+
       - name: Güncelleme çalıştır
         env:
           FOOTBALL_DATA_API_KEY: ${{ secrets.FOOTBALL_DATA_API_KEY }}
