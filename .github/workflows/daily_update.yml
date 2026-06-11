@@ -2,8 +2,8 @@ name: Daily WC2026 Update
 
 on:
   schedule:
-    # UTC 12:00, Türkiye saatiyle 15:00
-    - cron: "0 12 * * *"
+    # UTC 10:00, Türkiye saatiyle 13:00
+    - cron: "0 10 * * *"
   workflow_dispatch:  # Elle de tetiklenebilir
 
 permissions:
