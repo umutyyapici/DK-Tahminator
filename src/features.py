@@ -17,32 +17,218 @@ DATA_DIR = os.path.join(os.path.dirname(__file__), "..", "data")
 # --- Sabitler -----------------------------------------------------------
 
 INITIAL_ELO    = 1500.0
-K_BASE         = 32        # standart maçlar
-K_WC           = 60        # Dünya Kupası maçları (daha kritik)
+K_BASE         = 32        # tanımlı olmayan turnuvalar / küçük davetiyeli kupalar
+K_WC           = 60        # Dünya Kupası finalleri (en üst düzey)
 K_FRIENDLY     = 20        # hazırlık maçları
 HOME_ADVANTAGE = 100       # nötr sahada uygulanmaz
 
+# Turnuva → K katsayısı, rekabet seviyesine göre kademeli (tam eşleşme).
+# Önceki sürümde alt-dize eşleşmesi kullanılıyordu; bu da örn.
+# "FIFA World Cup qualification"in "FIFA World Cup" ile eşleşip final
+# maçlarıyla AYNI (en yüksek) katsayıyı almasına yol açıyordu. Artık her
+# turnuva adı kendi katsayısını alıyor; eşleşmeyenler K_BASE'e düşer.
 TOURNAMENT_K = {
-    "FIFA World Cup":             K_WC,
-    "Confederations Cup":         50,
-    "UEFA Euro":                  50,
-    "Copa América":               50,
-    "Africa Cup of Nations":      50,
-    "AFC Asian Cup":              50,
-    "Friendly":                   K_FRIENDLY,
-    "UEFA Nations League":        35,
+    # --- Tier S: Dünya Kupası finalleri -------------------------------
+    "FIFA World Cup":                       K_WC,
+
+    # --- Tier A: Kıtasal şampiyonalar / Konfederasyonlar Kupası -------
+    "UEFA Euro":                            50,
+    "Copa América":                         50,
+    "African Cup of Nations":               50,
+    "AFC Asian Cup":                        50,
+    "Confederations Cup":                   50,
+
+    # --- Tier B: Dünya Kupası elemeleri (yüksek rekabet, final değil) -
+    "FIFA World Cup qualification":         40,
+
+    # --- Tier C: Avrupa elemeleri / UEFA Uluslar Ligi -----------------
+    "UEFA Euro qualification":              35,
+    "UEFA Nations League":                  35,
+    "Copa América qualification":           35,
+
+    # --- Tier D: Diğer kıtasal elemeler / Nations League'ler ----------
+    "African Cup of Nations qualification": 28,
+    "AFC Asian Cup qualification":          28,
+    "CONCACAF Nations League":              28,
+    "CONCACAF Nations League qualification": 28,
+    "CONCACAF Championship":                28,   # Gold Cup öncesi adı
+    "CONCACAF Championship qualification":  28,
+    "Gold Cup":                             28,
+    "Gold Cup qualification":               28,
+
+    # --- Tier E: Bölgesel kupalar (düşük rekabet yoğunluğu) -----------
+    "CECAFA Cup":                           22,
+    "CFU Caribbean Cup":                    22,
+    "CFU Caribbean Cup qualification":      22,
+    "COSAFA Cup":                           22,
+    "COSAFA Cup qualification":             22,
+    "AFF Championship":                     22,
+    "AFF Championship qualification":       22,
+    "ASEAN Championship":                   22,
+    "ASEAN Championship qualification":     22,
+    "SAFF Cup":                             22,
+    "Arab Cup":                             22,
+    "Arab Cup qualification":               22,
+    "EAFF Championship":                    22,
+    "EAFF Championship qualification":      22,
+    "WAFF Championship":                    22,
+    "UNCAF Cup":                            22,
+    "Baltic Cup":                           22,
+    "Nordic Championship":                  22,
+    "Gulf Cup":                             22,
+    "AFC Challenge Cup":                    22,
+    "AFC Challenge Cup qualification":      22,
+    "Oceania Nations Cup":                  22,
+    "Oceania Nations Cup qualification":    22,
+    "Pan American Championship":            22,
+
+    # --- Tier F: Hazırlık maçları / FIFA pencereleri ------------------
+    "Friendly":                             K_FRIENDLY,
+    "FIFA Series":                          K_FRIENDLY,
+
+    # --- Tier G: Çok branşlı oyunlar / amatör / CONIFA ----------------
+    "Olympic Games":                        14,
+    "Island Games":                         14,
+    "Asian Games":                          14,
+    "Southeast Asian Games":                14,
+    "Southeast Asian Peninsular Games":     14,
+    "South Pacific Games":                  14,
+    "South Pacific Mini Games":             14,
+    "South Asian Games":                    14,
+    "Indian Ocean Island Games":            14,
+    "Pacific Games":                        14,
+    "Pacific Mini Games":                   14,
+    "Central American and Caribbean Games": 14,
+    "All-African Games":                    14,
+    "Bolivarian Games":                     14,
+    "Far Eastern Championship Games":       14,
+    "East Asian Games":                     14,
+    "Inter-Allied Games":                   14,
+    "Afro-Asian Games":                     14,
+    "GaNEFo":                               14,
+    "CONIFA World Football Cup":            14,
+    "CONIFA World Football Cup qualification": 14,
+    "CONIFA World Cup qualification":       14,
+    "CONIFA European Football Cup":         14,
+    "CONIFA Africa Football Cup":           14,
+    "CONIFA South America Football Cup":    14,
+    "CONIFA Asia Cup":                      14,
+    "ConIFA Challenger Cup":                14,
+    "Viva World Cup":                       14,
 }
 
 FORM_WINDOW = 10           # son kaç maç forma hesabında kullanılır
 
 
+# --- Konfederasyon haritası ----------------------------------------------
+# FIFA'nın 6 konfederasyonuna göre üye ülkeler. Eşleşmeyen (CONIFA üyeleri,
+# tarihsel/bölgesel takımlar vb.) "OTHER" konfederasyonuna düşer ve kendi
+# ortalamasını oluşturur. "conf_strength" feature'ı, bir takımın bağlı
+# olduğu konfederasyondaki takımların o ana kadarki ortalama ELO'sudur —
+# örn. CONMEBOL'un ortalama gücü ile UEFA'nın ortalama gücü arasındaki
+# farkı modele açıkça gösterir.
+CONFEDERATION = {
+    # --- UEFA ---
+    "Albania": "UEFA", "Andorra": "UEFA", "Armenia": "UEFA", "Austria": "UEFA",
+    "Azerbaijan": "UEFA", "Belarus": "UEFA", "Belgium": "UEFA",
+    "Bosnia and Herzegovina": "UEFA", "Bulgaria": "UEFA", "Croatia": "UEFA",
+    "Cyprus": "UEFA", "Czech Republic": "UEFA", "Denmark": "UEFA",
+    "England": "UEFA", "Estonia": "UEFA", "Faroe Islands": "UEFA",
+    "Finland": "UEFA", "France": "UEFA", "Georgia": "UEFA", "Germany": "UEFA",
+    "Gibraltar": "UEFA", "Greece": "UEFA", "Hungary": "UEFA", "Iceland": "UEFA",
+    "Israel": "UEFA", "Italy": "UEFA", "Kazakhstan": "UEFA", "Kosovo": "UEFA",
+    "Latvia": "UEFA", "Liechtenstein": "UEFA", "Lithuania": "UEFA",
+    "Luxembourg": "UEFA", "Malta": "UEFA", "Moldova": "UEFA", "Monaco": "UEFA",
+    "Montenegro": "UEFA", "Netherlands": "UEFA", "North Macedonia": "UEFA",
+    "Northern Ireland": "UEFA", "Norway": "UEFA", "Poland": "UEFA",
+    "Portugal": "UEFA", "Republic of Ireland": "UEFA", "Romania": "UEFA",
+    "Russia": "UEFA", "San Marino": "UEFA", "Scotland": "UEFA",
+    "Serbia": "UEFA", "Slovakia": "UEFA", "Slovenia": "UEFA", "Spain": "UEFA",
+    "Sweden": "UEFA", "Switzerland": "UEFA", "Turkey": "UEFA", "Ukraine": "UEFA",
+    "Wales": "UEFA",
+    # tarihsel UEFA üyeleri
+    "Czechoslovakia": "UEFA", "Yugoslavia": "UEFA", "German DR": "UEFA",
+
+    # --- CONMEBOL ---
+    "Argentina": "CONMEBOL", "Bolivia": "CONMEBOL", "Brazil": "CONMEBOL",
+    "Chile": "CONMEBOL", "Colombia": "CONMEBOL", "Ecuador": "CONMEBOL",
+    "Paraguay": "CONMEBOL", "Peru": "CONMEBOL", "Uruguay": "CONMEBOL",
+    "Venezuela": "CONMEBOL",
+
+    # --- CONCACAF ---
+    "Anguilla": "CONCACAF", "Antigua and Barbuda": "CONCACAF", "Aruba": "CONCACAF",
+    "Bahamas": "CONCACAF", "Barbados": "CONCACAF", "Belize": "CONCACAF",
+    "Bermuda": "CONCACAF", "Bonaire": "CONCACAF", "British Virgin Islands": "CONCACAF",
+    "Canada": "CONCACAF", "Cayman Islands": "CONCACAF", "Costa Rica": "CONCACAF",
+    "Cuba": "CONCACAF", "Curaçao": "CONCACAF", "Dominica": "CONCACAF",
+    "Dominican Republic": "CONCACAF", "El Salvador": "CONCACAF",
+    "French Guiana": "CONCACAF", "Grenada": "CONCACAF", "Guadeloupe": "CONCACAF",
+    "Guatemala": "CONCACAF", "Guyana": "CONCACAF", "Haiti": "CONCACAF",
+    "Honduras": "CONCACAF", "Jamaica": "CONCACAF", "Martinique": "CONCACAF",
+    "Mexico": "CONCACAF", "Montserrat": "CONCACAF", "Nicaragua": "CONCACAF",
+    "Panama": "CONCACAF", "Puerto Rico": "CONCACAF",
+    "Saint Kitts and Nevis": "CONCACAF", "Saint Lucia": "CONCACAF",
+    "Saint Martin": "CONCACAF", "Saint Vincent and the Grenadines": "CONCACAF",
+    "Sint Maarten": "CONCACAF", "Suriname": "CONCACAF",
+    "Trinidad and Tobago": "CONCACAF", "Turks and Caicos Islands": "CONCACAF",
+    "United States": "CONCACAF", "United States Virgin Islands": "CONCACAF",
+
+    # --- CAF ---
+    "Algeria": "CAF", "Angola": "CAF", "Benin": "CAF", "Botswana": "CAF",
+    "Burkina Faso": "CAF", "Burundi": "CAF", "Cameroon": "CAF", "Cape Verde": "CAF",
+    "Central African Republic": "CAF", "Chad": "CAF", "Comoros": "CAF",
+    "Congo": "CAF", "DR Congo": "CAF", "Djibouti": "CAF", "Egypt": "CAF",
+    "Equatorial Guinea": "CAF", "Eritrea": "CAF", "Eswatini": "CAF",
+    "Ethiopia": "CAF", "Gabon": "CAF", "Gambia": "CAF", "Ghana": "CAF",
+    "Guinea": "CAF", "Guinea-Bissau": "CAF", "Ivory Coast": "CAF", "Kenya": "CAF",
+    "Lesotho": "CAF", "Liberia": "CAF", "Libya": "CAF", "Madagascar": "CAF",
+    "Malawi": "CAF", "Mali": "CAF", "Mauritania": "CAF", "Mauritius": "CAF",
+    "Mayotte": "CAF", "Morocco": "CAF", "Mozambique": "CAF", "Namibia": "CAF",
+    "Niger": "CAF", "Nigeria": "CAF", "Rwanda": "CAF",
+    "São Tomé and Príncipe": "CAF", "Senegal": "CAF", "Seychelles": "CAF",
+    "Sierra Leone": "CAF", "Somalia": "CAF", "South Africa": "CAF",
+    "South Sudan": "CAF", "Sudan": "CAF", "Tanzania": "CAF", "Togo": "CAF",
+    "Tunisia": "CAF", "Uganda": "CAF", "Zambia": "CAF", "Zanzibar": "CAF",
+    "Zimbabwe": "CAF",
+
+    # --- AFC ---
+    "Afghanistan": "AFC", "Australia": "AFC", "Bahrain": "AFC",
+    "Bangladesh": "AFC", "Bhutan": "AFC", "Brunei": "AFC", "Cambodia": "AFC",
+    "China": "AFC", "Taiwan": "AFC", "Guam": "AFC", "Hong Kong": "AFC",
+    "India": "AFC", "Indonesia": "AFC", "Iran": "AFC", "Iraq": "AFC",
+    "Japan": "AFC", "Jordan": "AFC", "Kuwait": "AFC", "Kyrgyzstan": "AFC",
+    "Laos": "AFC", "Lebanon": "AFC", "Macau": "AFC", "Malaysia": "AFC",
+    "Maldives": "AFC", "Mongolia": "AFC", "Myanmar": "AFC", "Nepal": "AFC",
+    "North Korea": "AFC", "Oman": "AFC", "Pakistan": "AFC", "Palestine": "AFC",
+    "Philippines": "AFC", "Qatar": "AFC", "Saudi Arabia": "AFC",
+    "Singapore": "AFC", "South Korea": "AFC", "Sri Lanka": "AFC", "Syria": "AFC",
+    "Tajikistan": "AFC", "Thailand": "AFC", "Timor-Leste": "AFC",
+    "Turkmenistan": "AFC", "United Arab Emirates": "AFC", "Uzbekistan": "AFC",
+    "Vietnam": "AFC", "Yemen": "AFC",
+    # tarihsel AFC üyeleri
+    "North Vietnam": "AFC", "Vietnam Republic": "AFC", "South Yemen": "AFC",
+    "Yemen DPR": "AFC",
+
+    # --- OFC ---
+    "American Samoa": "OFC", "Cook Islands": "OFC", "Fiji": "OFC",
+    "Kiribati": "OFC", "Marshall Islands": "OFC", "Micronesia": "OFC",
+    "New Caledonia": "OFC", "New Zealand": "OFC", "Niue": "OFC",
+    "Northern Mariana Islands": "OFC", "Palau": "OFC",
+    "Papua New Guinea": "OFC", "Samoa": "OFC", "Solomon Islands": "OFC",
+    "Tahiti": "OFC", "Tonga": "OFC", "Tuvalu": "OFC", "Vanuatu": "OFC",
+
+    # --- matches_2026.csv'de results.csv'den farklı yazılan adlar ---
+    "Bosnia-Herzegovina": "UEFA",
+    "Cape Verde Islands":  "CAF",
+    "Congo DR":            "CAF",
+    "Czechia":             "UEFA",
+}
+
+
 # --- Yardımcı fonksiyonlar ----------------------------------------------
 
 def get_k(tournament: str) -> float:
-    for key, k in TOURNAMENT_K.items():
-        if key.lower() in tournament.lower():
-            return k
-    return K_BASE
+    return TOURNAMENT_K.get(tournament, K_BASE)
 
 
 def expected_score(elo_a: float, elo_b: float) -> float:
@@ -106,9 +292,26 @@ class EloFeatureBuilder:
         self.elo_history: dict[str, list] = {}    # takım → [elo değerleri]
         self.goals_scored: dict[str, list] = {}   # takım → [attığı goller]
         self.goals_conceded: dict[str, list] = {} # takım → [yediği goller]
+        self.conf_sum: dict[str, float] = {}      # konfederasyon → ELO toplamı
+        self.conf_count: dict[str, int] = {}      # konfederasyon → takım sayısı
+
+    def _register(self, team: str):
+        """Takımı ilk karşılaşmasında ELO=INITIAL_ELO ile konfederasyonuna kaydeder."""
+        if team not in self.elos:
+            self.elos[team] = INITIAL_ELO
+            conf = CONFEDERATION.get(team, "OTHER")
+            self.conf_sum[conf]   = self.conf_sum.get(conf, 0.0) + INITIAL_ELO
+            self.conf_count[conf] = self.conf_count.get(conf, 0) + 1
 
     def get_elo(self, team: str) -> float:
-        return self.elos.get(team, INITIAL_ELO)
+        self._register(team)
+        return self.elos[team]
+
+    def get_conf_strength(self, team: str) -> float:
+        """Takımın bağlı olduğu konfederasyondaki o ana kadarki ortalama ELO."""
+        self._register(team)
+        conf = CONFEDERATION.get(team, "OTHER")
+        return self.conf_sum[conf] / self.conf_count[conf]
 
     def update_elo(self, home: str, away: str, home_goals: int,
                    away_goals: int, neutral: bool, tournament: str) -> Tuple[float, float]:
@@ -127,6 +330,12 @@ class EloFeatureBuilder:
 
         self.elos[home] = elo_h + delta
         self.elos[away] = elo_a - delta
+
+        # konfederasyon ortalamalarını güncelle
+        conf_h = CONFEDERATION.get(home, "OTHER")
+        conf_a = CONFEDERATION.get(away, "OTHER")
+        self.conf_sum[conf_h] = self.conf_sum.get(conf_h, 0.0) + delta
+        self.conf_sum[conf_a] = self.conf_sum.get(conf_a, 0.0) - delta
 
         # elo geçmişi güncelle
         self._update_elo_history(home, elo_h)
@@ -283,6 +492,13 @@ def build_features(kaggle_results_path: str,
         atk_a = builder.get_avg_scored(away)    # dep hücum gücü
         def_a = builder.get_avg_conceded(away)  # dep defans zayıflığı
         h2h_w, h2h_d, h2h_l = builder.get_h2h(home, away, h2h_records)
+        conf_h = builder.get_conf_strength(home)
+        conf_a = builder.get_conf_strength(away)
+
+        # ELO tabanlı beklenen sonuç (ev sahibi avantajı dahil)
+        elo_win_prob_home = expected_score(
+            elo_h + (0 if neut else HOME_ADVANTAGE), elo_a
+        )
 
         # Hedef değişken: 2=ev galip, 1=beraberlik, 0=deplasman galip
         if hg > ag:
@@ -322,6 +538,10 @@ def build_features(kaggle_results_path: str,
             "def_away":      def_a,
             "atk_vs_def_home": atk_h - def_a,  # ev hücum - dep defans
             "atk_vs_def_away": atk_a - def_h,  # dep hücum - ev defans
+            "elo_win_prob_home": elo_win_prob_home,
+            "conf_strength_home": conf_h,
+            "conf_strength_away": conf_a,
+            "conf_strength_diff": conf_h - conf_a,
             "outcome":       outcome,
         })
 
@@ -354,6 +574,9 @@ def build_features(kaggle_results_path: str,
             atk_a  = builder.get_avg_scored(away)
             def_a  = builder.get_avg_conceded(away)
             h2h_w, h2h_d, h2h_l = builder.get_h2h(home, away, h2h_records)
+            conf_h = builder.get_conf_strength(home)
+            conf_a = builder.get_conf_strength(away)
+            elo_win_prob_home = expected_score(elo_h, elo_a)  # nötr saha
 
             pred_rows.append({
                 "date":         row["date"],
@@ -382,6 +605,10 @@ def build_features(kaggle_results_path: str,
                 "def_away":      def_a,
                 "atk_vs_def_home": atk_h - def_a,
                 "atk_vs_def_away": atk_a - def_h,
+                "elo_win_prob_home": elo_win_prob_home,
+                "conf_strength_home": conf_h,
+                "conf_strength_away": conf_a,
+                "conf_strength_diff": conf_h - conf_a,
             })
 
     pred_df = pd.DataFrame(pred_rows)
@@ -396,6 +623,8 @@ FEATURE_COLS = [
     "elo_momentum_home", "elo_momentum_away", "elo_momentum_diff",
     "atk_home", "def_home", "atk_away", "def_away",
     "atk_vs_def_home", "atk_vs_def_away",
+    "elo_win_prob_home",
+    "conf_strength_home", "conf_strength_away", "conf_strength_diff",
 ]
 
 
