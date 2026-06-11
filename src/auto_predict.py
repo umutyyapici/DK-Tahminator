@@ -18,8 +18,8 @@ import pandas as pd
 from datetime import datetime, timezone, timedelta
 
 SUPABASE_URL = os.environ.get("SUPABASE_URL", "")
-SUPABASE_KEY = os.environ.get("SUPABASE_KEY", "")
-BOT_USER_ID  = os.environ.get("BOT_USER_ID", "")
+SUPABASE_KEY = os.environ.get("SUPABASE_KEY", "")  # service_role key
+BOT_USER_ID  = os.environ.get("BOT_USER_ID", "")   # senin user_id'n
 
 DATA_DIR     = os.path.join(os.path.dirname(__file__), "..", "data")
 
@@ -132,10 +132,34 @@ def auto_predict():
 
     print(f"[auto_predict] {len(upcoming)} maç için tahmin girilecek.")
 
-    # 2. Supabase'den maçları çek
-    sb_matches = supabase_get("matches", {"locked": "eq.false", "order": "match_datetime.asc"})
+    # 2. Supabase'den tüm maçları çek
+    # locked=false filtresi yerine Python'da kontrol ediyoruz
+    # çünkü bahis 1 saat önce kapanıyor ama locked henüz false olabilir
+    all_matches = supabase_get("matches", {"order": "match_datetime.asc"})
+    if not all_matches:
+        print("[auto_predict] Supabase'de maç bulunamadı.")
+        return
+
+    # Bahis hâlâ açık maçları filtrele (maçtan 1 saat öncesine kadar açık)
+    now_utc = datetime.now(timezone.utc)
+    cutoff = now_utc + timedelta(hours=1)  # 1 saat sonrasına kadar olan maçlara gir
+    sb_matches = []
+    for m in all_matches:
+        if m.get("locked"):
+            continue
+        dt_str = m.get("match_datetime", "")
+        if not dt_str:
+            continue
+        try:
+            from datetime import datetime as dt
+            match_dt = dt.fromisoformat(dt_str.replace("Z", "+00:00"))
+            if match_dt > cutoff:
+                sb_matches.append(m)
+        except Exception:
+            sb_matches.append(m)  # parse edilemezse dahil et
+
     if not sb_matches:
-        print("[auto_predict] Supabase'de kilitlenmemiş maç yok.")
+        print("[auto_predict] Bahis açık maç yok.")
         return
 
     # 3. predictions.csv ile Supabase maçlarını eşleştir
