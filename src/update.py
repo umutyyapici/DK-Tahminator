@@ -27,11 +27,40 @@ from auto_predict import auto_predict
 
 DATA_DIR     = os.path.join(os.path.dirname(__file__), "..", "data")
 ACCURACY_OUT = os.path.join(DATA_DIR, "accuracy.json")
+HISTORY_PATH = os.path.join(DATA_DIR, "predictions_history.csv")
+
+HISTORY_COLS = ["date", "home_team", "away_team", "predicted", "most_likely_score", "expected_home", "expected_away"]
+
+
+def archive_predictions():
+    """
+    predict() her çalıştığında predictions.csv'yi sıfırdan üretir ve artık
+    oynanmış maçları listeden düşürür. Bu yüzden bir maç bittiğinde tahmini
+    kaybolmadan önce predictions_history.csv'ye kalıcı olarak kaydedilir —
+    calc_accuracy() bu dosyayı kullanır.
+    """
+    preds_path = os.path.join(DATA_DIR, "predictions.csv")
+    if not os.path.exists(preds_path):
+        return
+
+    preds = pd.read_csv(preds_path)
+    preds = preds[[c for c in HISTORY_COLS if c in preds.columns]]
+
+    if os.path.exists(HISTORY_PATH):
+        history = pd.read_csv(HISTORY_PATH)
+        combined = pd.concat([history, preds], ignore_index=True)
+    else:
+        combined = preds
+
+    # Bir maç için en son yapılan tahmin (maça en yakın olan) saklanır
+    combined.drop_duplicates(subset=["date", "home_team", "away_team"], keep="last", inplace=True)
+    combined.to_csv(HISTORY_PATH, index=False)
+    print(f"[archive] Tahmin geçmişi güncellendi: {HISTORY_PATH} ({len(combined)} maç)")
 
 
 def calc_accuracy():
     matches_path = os.path.join(DATA_DIR, "matches_2026.csv")
-    preds_path   = os.path.join(DATA_DIR, "predictions.csv")
+    preds_path   = HISTORY_PATH
 
     if not os.path.exists(matches_path) or not os.path.exists(preds_path):
         print("[accuracy] Gerekli dosyalar bulunamadı, atlanıyor.")
@@ -126,28 +155,33 @@ def _save_accuracy(accuracy, correct, total, exact, exact_pct=0, top3=0, top3_pc
 
 def main():
     print("=" * 50)
-    print("ADIM 1/5: Maç sonuçları çekiliyor...")
+    print("ADIM 1/7: Maç sonuçları çekiliyor...")
     print("=" * 50)
     df = fetch_wc2026_matches()
     save_matches(df)
 
     print("\n" + "=" * 50)
-    print("ADIM 2/5: Model yeniden eğitiliyor...")
+    print("ADIM 2/7: Önceki tahminler arşivleniyor...")
+    print("=" * 50)
+    archive_predictions()
+
+    print("\n" + "=" * 50)
+    print("ADIM 3/7: Model yeniden eğitiliyor...")
     print("=" * 50)
     train()
 
     print("\n" + "=" * 50)
-    print("ADIM 3/5: Tahminler üretiliyor...")
+    print("ADIM 4/7: Tahminler üretiliyor...")
     print("=" * 50)
     predict()
 
     print("\n" + "=" * 50)
-    print("ADIM 4/5: Başarı oranı hesaplanıyor...")
+    print("ADIM 5/7: Başarı oranı hesaplanıyor...")
     print("=" * 50)
     calc_accuracy()
 
     print("\n" + "=" * 50)
-    print("ADIM 5/6: Backtest güncelleniyor...")
+    print("ADIM 6/7: Backtest güncelleniyor...")
     print("=" * 50)
     try:
         evaluate()
@@ -155,7 +189,7 @@ def main():
         print(f"[backtest] HATA: {e}")
 
     print("\n" + "=" * 50)
-    print("ADIM 6/6: Joker maçlar belirleniyor...")
+    print("ADIM 7/7: Joker maçlar belirleniyor...")
     print("=" * 50)
     try:
         auto_predict()
