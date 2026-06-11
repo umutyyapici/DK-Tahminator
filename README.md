@@ -31,7 +31,8 @@ Evaluated on 3,610 matches from major tournaments (2018–2025) across all confe
 4. ρ is estimated automatically via **time-weighted** maximum likelihood on historical results during training (recent matches count more) and stored in `models/rho.json`
 5. As 2026 WC matches are played, results are fetched automatically, ELO ratings are updated, and predictions for remaining matches are recalculated
 6. Completed matches are compared against predictions to compute a live accuracy score
-7. The web dashboard reads all output files dynamically — no redeployment needed
+7. For each upcoming day, the match with the highest expected points is marked as that day's "joker" (`is_joker` column in `predictions.csv`, shown with a 🃏 badge on the dashboard) — predictions and joker picks are entered into the prediction game manually
+8. The web dashboard reads all output files dynamically — no redeployment needed
 
 ## Setup
 
@@ -137,7 +138,7 @@ Each match's impact on ELO ratings (`K` factor) is set per tournament based on i
 |------|-------------|
 | `index.html` | Live web dashboard — reads all data files dynamically |
 | `data/matches_2026.csv` | Full 2026 WC schedule with results as they come in |
-| `data/predictions.csv` | Latest predictions with probabilities and expected scorelines |
+| `data/predictions.csv` | Latest predictions with probabilities, expected scorelines, and the daily `is_joker` pick |
 | `data/accuracy.json` | Live accuracy stats — updated after each match day |
 | `data/backtest.json` | Backtest results across 2018+ major tournaments (3,610 matches) |
 | `models/rho.json` | Fitted Dixon-Coles correlation parameter (ρ), re-estimated on every training run |
