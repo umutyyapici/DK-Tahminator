@@ -41,23 +41,32 @@ def calc_accuracy():
     finished = matches[matches["status"] == "FINISHED"].copy()
     if finished.empty:
         print("[accuracy] Henüz oynanmış maç yok.")
-        _save_accuracy(0, 0, 0, 0)
+        _save_accuracy(0, 0, 0, 0, 0, 0, 0)
         return
 
     merged = finished.merge(
-        preds[["home_team", "away_team", "date", "predicted", "most_likely_score"]],
+        preds[["home_team", "away_team", "date", "predicted", "most_likely_score", "expected_home", "expected_away"]],
         on=["home_team", "away_team", "date"],
         how="inner"
     )
 
     if merged.empty:
         print("[accuracy] Eşleşen tahmin bulunamadı.")
-        _save_accuracy(0, 0, 0, 0)
+        _save_accuracy(0, 0, 0, 0, 0, 0, 0)
         return
 
-    total   = len(merged)
-    correct = 0
-    exact   = 0
+    total    = len(merged)
+    correct  = 0
+    exact    = 0
+    top3_hit = 0
+
+    def top3_scores(lh, la, n=9):
+        from scipy.stats import poisson as sp
+        hp = sp.pmf(range(n), max(0.01, lh))
+        ap = sp.pmf(range(n), max(0.01, la))
+        flat = [(i, j, hp[i]*ap[j]) for i in range(n) for j in range(n)]
+        flat.sort(key=lambda x: -x[2])
+        return [(i, j) for i, j, _ in flat[:3]]
 
     for _, row in merged.iterrows():
         hg = int(row["home_score"])
@@ -70,6 +79,7 @@ def calc_accuracy():
         if row["predicted"] == actual:
             correct += 1
 
+        # 1. skor
         if pd.notna(row.get("most_likely_score", None)):
             try:
                 ph, pa = row["most_likely_score"].split("-")
@@ -78,20 +88,32 @@ def calc_accuracy():
             except Exception:
                 pass
 
-    accuracy  = round(correct / total * 100, 1) if total > 0 else 0
-    exact_pct = round(exact / total * 100, 1)   if total > 0 else 0
+        # Top 3
+        try:
+            lh = float(row.get("expected_home", 1.2))
+            la = float(row.get("expected_away", 1.0))
+            if any(h == hg and a == ag for h, a in top3_scores(lh, la)):
+                top3_hit += 1
+        except Exception:
+            pass
 
-    _save_accuracy(accuracy, correct, total, exact, exact_pct)
-    print(f"[accuracy] {correct}/{total} doğru → %{accuracy}  |  {exact} tam skor (%{exact_pct})")
+    accuracy   = round(correct  / total * 100, 1) if total > 0 else 0
+    exact_pct  = round(exact    / total * 100, 1) if total > 0 else 0
+    top3_pct   = round(top3_hit / total * 100, 1) if total > 0 else 0
+
+    _save_accuracy(accuracy, correct, total, exact, exact_pct, top3_hit, top3_pct)
+    print(f"[accuracy] {correct}/{total} doğru → %{accuracy}  |  1. skor: {exact} (%{exact_pct})  |  Top3: {top3_hit} (%{top3_pct})")
 
 
-def _save_accuracy(accuracy, correct, total, exact, exact_pct=0):
+def _save_accuracy(accuracy, correct, total, exact, exact_pct=0, top3=0, top3_pct=0):
     data = {
         "accuracy":   accuracy,
         "correct":    correct,
         "total":      total,
         "exact":      exact,
         "exact_pct":  exact_pct,
+        "top3":       top3,
+        "top3_pct":   top3_pct,
         "updated_at": datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC"),
     }
     os.makedirs(os.path.dirname(ACCURACY_OUT), exist_ok=True)
