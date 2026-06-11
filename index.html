@@ -243,7 +243,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 2px;
+      gap: 4px;
     }
 
     .score-display {
@@ -255,17 +255,38 @@
       text-shadow: 0 0 20px rgba(201,168,76,0.3);
     }
 
-    .xg-line {
-      font-size: 10px;
-      color: var(--muted);
-      letter-spacing: 0.5px;
-      margin-top: 1px;
-    }
-
     .score-label {
       font-size: 9px;
       text-transform: uppercase;
       letter-spacing: 1px;
+      color: var(--muted);
+    }
+
+    .top-scores {
+      display: flex;
+      gap: 6px;
+      margin-top: 2px;
+    }
+
+    .top-score-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1px;
+    }
+
+    .top-score-val {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 13px;
+      letter-spacing: 1px;
+      color: var(--text);
+      line-height: 1;
+    }
+
+    .top-score-val.first { color: var(--gold); font-size: 15px; }
+
+    .top-score-pct {
+      font-size: 9px;
       color: var(--muted);
     }
 
@@ -623,13 +644,32 @@
       const pa = parseFloat(match.prob_away) || 0;
       const total = ph + pd + pa || 100;
 
-      const score = match.most_likely_score || '?-?';
       const predicted = match.predicted || '';
       const eloH = match.elo_home ? Math.round(match.elo_home) : '—';
       const eloA = match.elo_away ? Math.round(match.elo_away) : '—';
-      const xgH = match.expected_home ? parseFloat(match.expected_home).toFixed(2) : null;
-      const xgA = match.expected_away ? parseFloat(match.expected_away).toFixed(2) : null;
-      const xgLine = xgH && xgA ? `<span class="xg-line">xG ${xgH} – ${xgA}</span>` : '';
+
+      // En olası 3 skoru Poisson matrisinden hesapla
+      function poissonPmf(k, lam) {
+        let p = Math.exp(-lam);
+        for (let i = 1; i <= k; i++) p *= lam / i;
+        return p;
+      }
+      const lh = parseFloat(match.expected_home) || 1.2;
+      const la = parseFloat(match.expected_away) || 1.0;
+      const maxG = 9;
+      const scores = [];
+      for (let i = 0; i < maxG; i++) {
+        for (let j = 0; j < maxG; j++) {
+          scores.push({ s: i + '-' + j, p: poissonPmf(i, lh) * poissonPmf(j, la) });
+        }
+      }
+      scores.sort((a, b) => b.p - a.p);
+      const top3 = scores.slice(0, 3);
+      const topScoresHtml = top3.map((s, idx) => `
+        <div class="top-score-item">
+          <span class="top-score-val${idx === 0 ? ' first' : ''}">${s.s}</span>
+          <span class="top-score-pct">%${(s.p * 100).toFixed(1)}</span>
+        </div>`).join('');
 
       const winnerText = predicted === 'Ev Sahibi'
         ? `🏅 ${match.home_team} galip bekleniyor`
@@ -647,9 +687,8 @@
               <span class="team-elo">ELO ${eloH}</span>
             </div>
             <div class="score-bubble">
-              <span class="score-display">${score}</span>
-              <span class="score-label">Tahmin</span>
-              ${xgLine}
+              <span class="score-label">En Olası Skorlar</span>
+              <div class="top-scores">${topScoresHtml}</div>
             </div>
             <div class="team-block away">
               ${flagImg(match.away_team)}
