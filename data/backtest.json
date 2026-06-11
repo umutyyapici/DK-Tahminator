@@ -4,9 +4,10 @@
   "train_matches": 28650,
   "accuracy": 60.8,
   "exact_acc": 13.3,
+  "top3_acc": 36.4,
   "log_loss": 0.861,
   "brier": 0.168,
   "baseline": 46.1,
   "train_accuracy": 58.4,
-  "updated_at": "2026-06-10 18:07 UTC"
+  "updated_at": "2026-06-11 05:27 UTC"
 }
