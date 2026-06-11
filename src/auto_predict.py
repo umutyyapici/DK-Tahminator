@@ -17,9 +17,9 @@ import requests
 import pandas as pd
 from datetime import datetime, timezone, timedelta
 
-SUPABASE_URL = os.environ.get("https://neladqqazztkettvppqk.supabase.co", "")
-SUPABASE_KEY = os.environ.get("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5lbGFkcXFhenp0a2V0dHZwcHFrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5MzQzNzcsImV4cCI6MjA5NjUxMDM3N30.0kCDySIUudqVtyMbTgKSdVLKMpPD5DZJ5YlKN_A2Pjs", "")  # service_role key
-BOT_USER_ID  = os.environ.get("74b8972c-047d-4a29-a5d4-b6e50a3583f0", "")   # senin user_id'n
+SUPABASE_URL = os.environ.get("SUPABASE_URL", "")
+SUPABASE_KEY = os.environ.get("SUPABASE_KEY", "")
+BOT_USER_ID  = os.environ.get("BOT_USER_ID", "")
 
 DATA_DIR     = os.path.join(os.path.dirname(__file__), "..", "data")
 
