@@ -118,6 +118,10 @@ def build_train_test(kaggle_path, former_names_path):
         form_a = builder.get_form(away)
         mom_h  = builder.get_elo_momentum(home)
         mom_a  = builder.get_elo_momentum(away)
+        atk_h  = builder.get_avg_scored(home)
+        def_h  = builder.get_avg_conceded(home)
+        atk_a  = builder.get_avg_scored(away)
+        def_a  = builder.get_avg_conceded(away)
         h2h_w, h2h_d, h2h_l = builder.get_h2h(home, away, h2h_records)
 
         feat = {
@@ -141,6 +145,12 @@ def build_train_test(kaggle_path, former_names_path):
             "elo_momentum_home":  mom_h,
             "elo_momentum_away":  mom_a,
             "elo_momentum_diff":  mom_h - mom_a,
+            "atk_home":           atk_h,
+            "def_home":           def_h,
+            "atk_away":           atk_a,
+            "def_away":           def_a,
+            "atk_vs_def_home":    atk_h - def_a,
+            "atk_vs_def_away":    atk_a - def_h,
         }
 
         if is_test_match(tourn, ds):
@@ -149,6 +159,8 @@ def build_train_test(kaggle_path, former_names_path):
             train_rows.append(feat)
 
         builder.update_elo(home, away, hg, ag, neut, tourn)
+        builder._update_goals(home, hg, ag)
+        builder._update_goals(away, ag, hg)
         key = (home, away)
         if key not in h2h_records:
             h2h_records[key] = []
@@ -255,9 +267,9 @@ def evaluate():
 
     # Modelleri eğit
     print("\n[eval] Modeller eğitiliyor...")
-    model_home = XGBRegressor(n_estimators=300, learning_rate=0.03, max_depth=4,
+    model_home = XGBRegressor(n_estimators=600, learning_rate=0.01, max_depth=4,
                                subsample=0.8, colsample_bytree=0.8, random_state=42, n_jobs=-1)
-    model_away = XGBRegressor(n_estimators=300, learning_rate=0.03, max_depth=4,
+    model_away = XGBRegressor(n_estimators=600, learning_rate=0.01, max_depth=4,
                                subsample=0.8, colsample_bytree=0.8, random_state=42, n_jobs=-1)
 
     X_train = train_df[FEATURE_COLS].values
