@@ -14,6 +14,7 @@ Sırayla:
 import sys
 import os
 import json
+import argparse
 import pandas as pd
 from datetime import datetime
 
@@ -155,44 +156,42 @@ def _save_accuracy(accuracy, correct, total, exact, exact_pct=0, top3=0, top3_pc
     print(f"[accuracy] Kaydedildi: {ACCURACY_OUT}")
 
 
-def main():
-    print("=" * 50)
-    print("ADIM 1/7: Maç sonuçları çekiliyor...")
-    print("=" * 50)
+def main(light: bool = False):
+    total = 5 if light else 7
+    step = 0
+
+    def header(title):
+        nonlocal step
+        step += 1
+        print("\n" + "=" * 50)
+        print(f"ADIM {step}/{total}: {title}")
+        print("=" * 50)
+
+    header("Maç sonuçları çekiliyor...")
     df = fetch_wc2026_matches()
     save_matches(df)
 
-    print("\n" + "=" * 50)
-    print("ADIM 2/7: Önceki tahminler arşivleniyor...")
-    print("=" * 50)
+    header("Önceki tahminler arşivleniyor...")
     archive_predictions()
 
-    print("\n" + "=" * 50)
-    print("ADIM 3/7: Model yeniden eğitiliyor...")
-    print("=" * 50)
-    train()
+    if not light:
+        header("Model yeniden eğitiliyor...")
+        train()
 
-    print("\n" + "=" * 50)
-    print("ADIM 4/7: Tahminler üretiliyor...")
-    print("=" * 50)
+    header("Tahminler üretiliyor...")
     predict()
 
-    print("\n" + "=" * 50)
-    print("ADIM 5/7: Başarı oranı hesaplanıyor...")
-    print("=" * 50)
+    header("Başarı oranı hesaplanıyor...")
     calc_accuracy()
 
-    print("\n" + "=" * 50)
-    print("ADIM 6/7: Backtest güncelleniyor...")
-    print("=" * 50)
-    try:
-        evaluate()
-    except Exception as e:
-        print(f"[backtest] HATA: {e}")
+    if not light:
+        header("Backtest güncelleniyor...")
+        try:
+            evaluate()
+        except Exception as e:
+            print(f"[backtest] HATA: {e}")
 
-    print("\n" + "=" * 50)
-    print("ADIM 7/7: Joker maçlar belirleniyor...")
-    print("=" * 50)
+    header("Joker maçlar belirleniyor...")
     try:
         auto_predict()
     except Exception as e:
@@ -202,4 +201,11 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(description="WC2026 veri güncelleme")
+    parser.add_argument(
+        "--light", action="store_true",
+        help="Sadece sonuçları/tahminleri günceller; model eğitimi (train) ve "
+             "backtest (evaluate) adımlarını atlar."
+    )
+    args = parser.parse_args()
+    main(light=args.light)
