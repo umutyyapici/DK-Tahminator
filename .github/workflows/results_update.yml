@@ -1,0 +1,59 @@
+name: Sonuç Güncelleme (Hafif)
+
+on:
+  schedule:
+    # Her 30 dakikada bir
+    - cron: "*/30 * * * *"
+  workflow_dispatch:  # Elle de tetiklenebilir
+
+permissions:
+  contents: write
+
+concurrency:
+  group: data-update
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Python kur
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Bağımlılıkları yükle
+        run: pip install -r requirements.txt
+
+      - name: Hafif güncelleme çalıştır
+        env:
+          FOOTBALL_DATA_API_KEY: ${{ secrets.FOOTBALL_DATA_API_KEY }}
+        run: python src/update.py --light
+
+      - name: Değişiklikleri commit et
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          for f in data/matches_2026.csv data/predictions.csv data/predictions_history.csv data/accuracy.json; do
+            [ -f "$f" ] && git add "$f"
+          done
+          if git diff --staged --quiet; then
+            echo "Değişiklik yok, commit atlanıyor."
+            exit 0
+          fi
+          git commit -m "chore: sonuç güncelleme $(date -u '+%Y-%m-%d %H:%M UTC')"
+          for i in 1 2 3 4 5; do
+            if git push; then
+              exit 0
+            fi
+            echo "Push reddedildi, rebase deneniyor (deneme $i)..."
+            git pull --rebase origin main
+          done
+          echo "Push 5 denemeden sonra başarısız oldu."
+          exit 1
