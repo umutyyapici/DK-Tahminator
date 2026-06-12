@@ -1,6 +1,6 @@
 # WC 2026 Match Predictor
 
-A machine learning project that predicts 2026 FIFA World Cup match outcomes using historical international football data and ELO ratings. Predictions are updated daily via GitHub Actions as the tournament progresses, and displayed on a live web dashboard.
+A machine learning project that predicts 2026 FIFA World Cup match outcomes using historical international football data and ELO ratings. Predictions and live match results are kept up to date via two GitHub Actions workflows as the tournament progresses, and displayed on a live web dashboard.
 
 ## Backtest Performance
 
@@ -34,7 +34,30 @@ Evaluated on 3,610 matches from major tournaments (2018–2025) across all confe
 7. For each upcoming day, the match with the highest expected points is marked as that day's "joker" (`is_joker` column in `predictions.csv`, shown with a 🃏 badge on the dashboard) — predictions and joker picks are entered into the prediction game manually
 8. The web dashboard reads all output files dynamically — no redeployment needed
 
+## Automation (GitHub Actions)
+
+Two scheduled workflows keep the data fresh, both driven by [src/update.py](src/update.py):
+
+| Workflow | Schedule | Command | What it updates |
+|---|---|---|---|
+| [Daily WC2026 Update](.github/workflows/daily_update.yml) | Once a day (10:00 UTC / 13:00 Türkiye) | `python src/update.py` | Full pipeline: fetches results, retrains both XGBoost models, regenerates predictions, recalculates accuracy and the backtest, and re-evaluates the daily joker. |
+| [Sonuç Güncelleme (Hafif)](.github/workflows/results_update.yml) | Every 30 minutes | `python src/update.py --light` | Lightweight pipeline: fetches the latest match results, archives finished predictions, regenerates predictions **with the existing trained models** (no retraining), recalculates accuracy, and re-evaluates the joker. Keeps live scores and accuracy on the dashboard current without the cost of retraining. |
+
+Both workflows share the same `data-update` concurrency group so they never push at the same time. The lightweight run only commits `data/matches_2026.csv`, `data/predictions.csv`, `data/predictions_history.csv`, and `data/accuracy.json` — model files (`models/*.pkl`) and `data/backtest.json` are only touched by the daily run.
+
+`src/update.py --light` can also be run manually or locally — it skips `train()` and `evaluate()` and runs the rest of the pipeline.
+
 ## Setup
 
 ```bash
 pip install -r requirements.txt
+```
+
+Set the `FOOTBALL_DATA_API_KEY` environment variable (or a repo secret for GitHub Actions) with your [football-data.org](https://www.football-data.org) API key, then run the full pipeline:
+
+```bash
+python src/update.py          # full pipeline (fetch, train, predict, evaluate, joker)
+python src/update.py --light  # lightweight pipeline (fetch, predict, joker — no retraining)
+```
+
+Open `index.html` in a browser (or serve the folder with any static file server) to view the dashboard.
