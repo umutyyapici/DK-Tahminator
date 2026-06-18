@@ -21,6 +21,7 @@ from datetime import datetime
 sys.path.insert(0, os.path.dirname(__file__))
 
 from fetch_matches import fetch_wc2026_matches, save_matches
+from fetch_rankings import fetch_fifa_rankings, save_rankings
 from train import train
 from predict import predict
 from evaluate import evaluate
@@ -157,7 +158,7 @@ def _save_accuracy(accuracy, correct, total, exact, exact_pct=0, top3=0, top3_pc
 
 
 def main(light: bool = False):
-    total = 5 if light else 7
+    total = 6 if light else 8
     step = 0
 
     def header(title):
@@ -167,7 +168,14 @@ def main(light: bool = False):
         print(f"ADIM {step}/{total}: {title}")
         print("=" * 50)
 
-    header("Maç sonuçları çekiliyor...")
+    header("FIFA siralamasi guncelleniyor...")
+    try:
+        rankings = fetch_fifa_rankings()
+        save_rankings(rankings)
+    except Exception as e:
+        print(f"[rankings] UYARI: FIFA siralamasi cekilemedi: {e}")
+
+    header("Mac sonuclari cekiliyor...")
     df = fetch_wc2026_matches()
     save_matches(df)
 
