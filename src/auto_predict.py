@@ -15,8 +15,11 @@ Mantık:
 import os
 from collections import defaultdict
 from datetime import datetime, timezone
+from zoneinfo import ZoneInfo
 
 import pandas as pd
+
+_TR = ZoneInfo("Europe/Istanbul")
 
 from poisson_model import score_matrix, load_rho, MAX_GOALS
 
@@ -89,7 +92,17 @@ def auto_predict():
 
     rho = load_rho()
 
-    # Her gün için beklenen puanları hesapla
+    # Her gün için beklenen puanları hesapla (TR saatine göre günlere grupla)
+    def _tr_date(row) -> str:
+        kickoff = str(row.get("kickoff_utc", ""))
+        if kickoff and kickoff != "nan":
+            try:
+                dt = datetime.fromisoformat(kickoff.replace("Z", "+00:00"))
+                return str(dt.astimezone(_TR).date())
+            except ValueError:
+                pass
+        return str(row["date"])
+
     by_date = defaultdict(list)
     for idx, row in upcoming.iterrows():
         pred_h = int(round(float(row["most_likely_score"].split("-")[0])))
@@ -97,15 +110,16 @@ def auto_predict():
         lambda_h = float(row.get("expected_home", 1.2))
         lambda_a = float(row.get("expected_away", 1.0))
         exp_pts = calc_expected_points(pred_h, pred_a, lambda_h, lambda_a, rho)
-        by_date[str(row["date"])].append((idx, exp_pts))
+        by_date[_tr_date(row)].append((idx, exp_pts))
 
-    # Her gün için en yüksek beklenen puanlı maçı joker yap
+    # Her gün için en yüksek beklenen puanlı maçı joker yap.
+    # Joker her model güncellemesinde yeniden hesaplanır; en güncel tercih geçerlidir.
     preds_df["is_joker"] = False
     for date_str, items in sorted(by_date.items()):
         joker_idx, joker_pts = max(items, key=lambda x: x[1])
         preds_df.loc[joker_idx, "is_joker"] = True
         joker_match = preds_df.loc[joker_idx]
-        print(f"[auto_predict] {date_str} joker → {joker_match['home_team']} vs {joker_match['away_team']} (E[puan]={joker_pts:.2f})")
+        print(f"[auto_predict] {date_str} joker -> {joker_match['home_team']} vs {joker_match['away_team']} (E[puan]={joker_pts:.2f})")
 
     preds_df.to_csv(PREDICTIONS_PATH, index=False)
     print(f"[auto_predict] {len(by_date)} gün için joker işaretlendi, predictions.csv güncellendi.")
