@@ -31,8 +31,19 @@ Evaluated on 3,610 matches from major tournaments (2018–2025) across all confe
 4. ρ is estimated automatically via **time-weighted** maximum likelihood on historical results during training (recent matches count more) and stored in `models/rho.json`
 5. As 2026 WC matches are played, results are fetched automatically, ELO ratings are updated, and predictions for remaining matches are recalculated
 6. Completed matches are compared against predictions to compute a live accuracy score
-7. For each upcoming day, the match with the highest expected points is marked as that day's "joker" (`is_joker` column in `predictions.csv`, shown with a 🃏 badge on the dashboard) — predictions and joker picks are entered into the prediction game manually
+7. For each upcoming match day, the match with the highest expected points is marked as that day's **joker** (`is_joker` column in `predictions.csv`, shown with a 🃏 badge on the dashboard). Days are grouped by **Turkey timezone (UTC+3)** so the joker always matches what appears on the dashboard. The joker is re-evaluated on every model update; the most recent pick is always used. Predictions and joker picks are entered into the prediction game manually
 8. The web dashboard reads all output files dynamically — no redeployment needed
+
+## Dashboard
+
+The dashboard (`index.html`) shows predictions in a **month-grid calendar** view:
+
+- Navigate between days using the ‹ / › arrow buttons or by clicking any highlighted date in the calendar grid
+- Match days are highlighted in green (past days slightly dimmer), today has a gold outline, and the selected day is shown in red
+- Within each day, matches are sorted by kickoff time (earliest first)
+- Each match card shows the predicted scoreline, top-3 most likely scores with probabilities, win/draw/loss percentages, and ELO ratings
+- The 🃏 **Joker** badge appears on the one unplayed match per day with the highest expected score in the prediction game
+- The accuracy bar at the top shows live **Sonuç / Tam Skor / Top 3** statistics as matches are played
 
 ## Automation (GitHub Actions)
 
@@ -40,7 +51,7 @@ Two scheduled workflows keep the data fresh, both driven by [src/update.py](src/
 
 | Workflow | Schedule | Command | What it updates |
 |---|---|---|---|
-| [Daily WC2026 Update](.github/workflows/daily_update.yml) | Once a day (10:00 UTC / 13:00 Türkiye) | `python src/update.py` | Full pipeline: fetches results, retrains both XGBoost models, regenerates predictions, recalculates accuracy and the backtest, and re-evaluates the daily joker. |
+| [Daily WC2026 Update](.github/workflows/daily_update.yml) | Once a day (10:00 UTC / 13:00 TR) | `python src/update.py` | Full pipeline: fetches results, retrains both XGBoost models, regenerates predictions, recalculates accuracy and the backtest, and re-evaluates the daily joker. |
 | [Sonuç Güncelleme (Hafif)](.github/workflows/results_update.yml) | Every 30 minutes | `python src/update.py --light` | Lightweight pipeline: fetches the latest match results, archives finished predictions, regenerates predictions **with the existing trained models** (no retraining), recalculates accuracy, and re-evaluates the joker. Keeps live scores and accuracy on the dashboard current without the cost of retraining. |
 
 Both workflows share the same `data-update` concurrency group so they never push at the same time. The lightweight run only commits `data/matches_2026.csv`, `data/predictions.csv`, `data/predictions_history.csv`, and `data/accuracy.json` — model files (`models/*.pkl`) and `data/backtest.json` are only touched by the daily run.
