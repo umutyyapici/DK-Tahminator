@@ -141,65 +141,129 @@
       padding: 32px 24px 60px;
     }
 
-    /* ── Day group ───────────────────────────────────────── */
-    .day-group { margin-bottom: 28px; }
-
-    .day-label {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 13px;
-      letter-spacing: 3px;
-      color: var(--gold);
-      text-transform: uppercase;
-      margin-bottom: 14px;
-      padding: 10px 4px 10px 0;
-      border-bottom: 1px solid rgba(201,168,76,0.15);
+    /* ── Calendar ────────────────────────────────────────── */
+    .cal-day-nav {
       display: flex;
       align-items: center;
-      gap: 10px;
+      justify-content: space-between;
+      background: var(--card);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: var(--radius);
+      padding: 12px 16px;
+      margin-bottom: 10px;
+    }
+
+    .cal-nav-btn {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 16px;
+      width: 36px; height: 36px;
       cursor: pointer;
-      user-select: none;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s;
+      flex-shrink: 0;
     }
+    .cal-nav-btn:hover:not(:disabled) { background: rgba(255,255,255,0.13); }
+    .cal-nav-btn:disabled { opacity: 0.25; cursor: default; }
 
-    .day-label:hover { color: #e8c95a; }
-
-    .day-label::after {
-      content: '';
+    .cal-day-label {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 18px;
+      letter-spacing: 3px;
+      color: var(--text);
+      text-align: center;
       flex: 1;
-      height: 1px;
-      background: linear-gradient(to right, rgba(201,168,76,0.15), transparent);
     }
 
-    .day-meta {
+    .cal-grid-wrap {
+      background: var(--card);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 20px;
+    }
+
+    .cal-month-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    .cal-month-label {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 15px;
+      letter-spacing: 2px;
+      color: var(--text);
+    }
+
+    .cal-weekdays {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      text-align: center;
+      margin-bottom: 6px;
+    }
+
+    .cal-wd {
       font-size: 10px;
+      color: var(--muted);
       letter-spacing: 1px;
-      color: var(--muted);
-      font-family: 'Inter', sans-serif;
-      font-weight: 400;
+      padding: 4px 0;
     }
 
-    .toggle-icon {
-      font-size: 11px;
-      color: var(--muted);
-      transition: transform 0.25s ease;
-      margin-left: auto;
-      order: 3;
+    .cal-days {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
     }
 
-    .day-group.collapsed .toggle-icon { transform: rotate(-90deg); }
+    .cal-day {
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
+      border: 1px solid transparent;
+    }
 
+    .cal-day.no-match { opacity: 0.2; }
+
+    .cal-day.has-match {
+      background: rgba(46,125,50,0.22);
+      border-color: rgba(76,175,80,0.35);
+      color: #66bb6a;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .cal-day.has-match:hover { background: rgba(46,125,50,0.42); }
+
+    .cal-day.has-match.past {
+      background: rgba(46,125,50,0.12);
+      border-color: rgba(76,175,80,0.18);
+      color: #4caf50;
+    }
+
+    .cal-day.today {
+      outline: 1.5px solid var(--gold);
+      outline-offset: -1.5px;
+    }
+
+    .cal-day.selected {
+      background: #c0392b !important;
+      border-color: #e74c3c !important;
+      color: #fff !important;
+    }
+
+    /* ── Cards ───────────────────────────────────────────── */
     .cards-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
       gap: 14px;
-      overflow: hidden;
-      max-height: 9999px;
-      transition: max-height 0.35s ease, opacity 0.25s ease;
-      opacity: 1;
-    }
-
-    .day-group.collapsed .cards-grid {
-      max-height: 0;
-      opacity: 0;
     }
 
     /* ── Match card ──────────────────────────────────────── */
@@ -661,6 +725,8 @@
 
   <main>
     <div class="filter-bar" id="filterBar"></div>
+    <div class="cal-day-nav" id="calDayNav"></div>
+    <div class="cal-grid-wrap" id="calGridWrap"></div>
     <div id="content"><div class="state-screen"><div class="spinner"></div><p>Tahminler yükleniyor…</p></div></div>
   </main>
 
@@ -815,7 +881,7 @@
           <span class="top-score-pct${idx === 0 ? ' first' : ''}">%${(s.p * 100).toFixed(1)}</span>
         </div>`).join('');
 
-      const jokerBadge = match.is_joker === 'True' ? '<div class="joker-badge">🃏 Joker</div>' : '';
+      const jokerBadge = match.is_joker === 'True' && !match.played ? '<div class="joker-badge">🃏 Joker</div>' : '';
 
       let scoreBubbleHtml;
       let winnerText;
@@ -893,64 +959,6 @@ ${scoreBubbleHtml}
         </div>`;
     }
 
-    // ── Group by date ──────────────────────────────────────
-    function groupByDate(matches) {
-      const groups = {};
-      matches.forEach(m => {
-        const d = matchDateTR(m);
-        if (!groups[d]) groups[d] = [];
-        groups[d].push(m);
-      });
-      return groups;
-    }
-
-    // ── Render all ─────────────────────────────────────────
-    function renderAll(matches, activeStage) {
-      const filtered = activeStage === 'ALL'
-        ? matches
-        : matches.filter(m => (m.stage || '') === activeStage);
-
-      if (filtered.length === 0) {
-        document.getElementById('content').innerHTML =
-          `<div class="state-screen"><p>Bu aşamada tahmin bulunamadı.</p></div>`;
-        return;
-      }
-
-      const todayStr = new Date().toLocaleDateString('sv-SE', { timeZone: 'Europe/Istanbul' });
-      const groups = groupByDate(filtered);
-      let html = '';
-      Object.keys(groups).sort().forEach(date => {
-        // Gün içi maçları saate göre sırala
-        groups[date].sort((a, b) => {
-          const ta = a.kickoff_utc ? new Date(a.kickoff_utc).getTime() : 0;
-          const tb = b.kickoff_utc ? new Date(b.kickoff_utc).getTime() : 0;
-          return ta - tb;
-        });
-
-        const isPast = date < todayStr;
-        const count = groups[date].length;
-        const collapsedClass = isPast ? ' collapsed' : '';
-        html += `<div class="day-group${collapsedClass}" data-date="${date}">
-          <div class="day-label">
-            ${formatDate(date)}
-            <span class="day-meta">${count} maç</span>
-            <span class="toggle-icon">▾</span>
-          </div>
-          <div class="cards-grid">
-            ${groups[date].map(renderCard).join('')}
-          </div>
-        </div>`;
-      });
-      document.getElementById('content').innerHTML = html;
-
-      // Accordion tıklama
-      document.querySelectorAll('.day-label').forEach(label => {
-        label.addEventListener('click', () => {
-          label.closest('.day-group').classList.toggle('collapsed');
-        });
-      });
-    }
-
     // ── Build filter buttons ───────────────────────────────
     function buildFilters(matches, activeStage, onSelect) {
       const stages = ['ALL', ...new Set(matches.map(m => m.stage || '').filter(Boolean))];
@@ -963,6 +971,9 @@ ${scoreBubbleHtml}
         btn.addEventListener('click', () => onSelect(btn.dataset.stage));
       });
     }
+
+    // ── Calendar rendering ─────────────────────────────────
+    // State: activeStage, selectedDate, calYear, calMonth declared in load()
 
     // ── Main load ──────────────────────────────────────────
     async function load() {
@@ -1045,14 +1056,135 @@ ${scoreBubbleHtml}
           ? `Son güncelleme: ${formatUpdatedAtTR(updatedAt)}`
           : 'Tahminler yüklendi';
 
-        // Filters + render
+        // ── Calendar state ───────────────────────────────────
+        const todayStr = new Date().toLocaleDateString('sv-SE', { timeZone: 'Europe/Istanbul' });
         let activeStage = 'ALL';
+        let selectedDate = null;
+        let calYear, calMonth;
+
+        function getMatchDates() {
+          const ms = activeStage === 'ALL' ? matches : matches.filter(m => (m.stage||'') === activeStage);
+          return [...new Set(ms.map(matchDateTR))].sort();
+        }
+
+        function selectDate(date) {
+          selectedDate = date;
+          const [y, mo] = date.split('-').map(Number);
+          calYear = y; calMonth = mo - 1;
+          draw();
+        }
+
+        function draw() {
+          const dates = getMatchDates();
+          // Geçersiz seçim varsa bugün/yakına çek
+          if (!selectedDate || !dates.includes(selectedDate)) {
+            selectedDate = dates.find(d => d >= todayStr) || dates[dates.length - 1] || null;
+            if (selectedDate) {
+              const [y, mo] = selectedDate.split('-').map(Number);
+              calYear = y; calMonth = mo - 1;
+            }
+          }
+          buildFilters(matches, activeStage, update);
+          _renderDayNav(dates);
+          _renderCalGrid(dates);
+          _renderDayCards();
+        }
+
+        function _renderDayNav(dates) {
+          const idx = selectedDate ? dates.indexOf(selectedDate) : -1;
+          const prev = idx > 0 ? dates[idx - 1] : null;
+          const next = idx < dates.length - 1 ? dates[idx + 1] : null;
+          const label = selectedDate ? formatDate(selectedDate).toUpperCase() : '—';
+          const el = document.getElementById('calDayNav');
+          el.innerHTML = `
+            <button class="cal-nav-btn" id="calPrev" ${!prev ? 'disabled' : ''}>‹</button>
+            <span class="cal-day-label">${label}</span>
+            <button class="cal-nav-btn" id="calNext" ${!next ? 'disabled' : ''}>›</button>
+          `;
+          if (prev) el.querySelector('#calPrev').addEventListener('click', () => selectDate(prev));
+          if (next) el.querySelector('#calNext').addEventListener('click', () => selectDate(next));
+        }
+
+        function _renderCalGrid(dates) {
+          if (!selectedDate) return;
+          const matchDateSet = new Set(dates);
+          const firstDay = new Date(Date.UTC(calYear, calMonth, 1));
+          const daysInMonth = new Date(Date.UTC(calYear, calMonth + 1, 0)).getUTCDate();
+          const startDow = (firstDay.getUTCDay() + 6) % 7; // Pzt=0
+          const DAYS = ['Pt', 'Sa', 'Ça', 'Pe', 'Cu', 'Ct', 'Pz'];
+          const monthLabel = firstDay.toLocaleDateString('tr-TR', { month: 'long', year: 'numeric', timeZone: 'UTC' }).toUpperCase();
+
+          let cells = '';
+          for (let i = 0; i < startDow; i++) cells += `<div class="cal-day empty"></div>`;
+          for (let d = 1; d <= daysInMonth; d++) {
+            const ds = `${calYear}-${String(calMonth + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+            const has = matchDateSet.has(ds);
+            let cls = 'cal-day' + (has ? ' has-match' : ' no-match')
+              + (ds === selectedDate ? ' selected' : '')
+              + (ds === todayStr ? ' today' : '')
+              + (has && ds < todayStr ? ' past' : '');
+            cells += `<div class="${cls}" data-date="${ds}">${d}</div>`;
+          }
+
+          document.getElementById('calGridWrap').innerHTML = `
+            <div class="cal-month-header">
+              <button class="cal-nav-btn" id="monthPrev">‹</button>
+              <span class="cal-month-label">${monthLabel}</span>
+              <button class="cal-nav-btn" id="monthNext">›</button>
+            </div>
+            <div class="cal-weekdays">${DAYS.map(d => `<div class="cal-wd">${d}</div>`).join('')}</div>
+            <div class="cal-days">${cells}</div>
+          `;
+
+          document.querySelectorAll('.cal-day.has-match').forEach(c =>
+            c.addEventListener('click', () => selectDate(c.dataset.date))
+          );
+          document.getElementById('monthPrev').addEventListener('click', () => {
+            let m = calMonth - 1, y = calYear;
+            if (m < 0) { m = 11; y--; }
+            calMonth = m; calYear = y;
+            _renderCalGrid(dates);
+          });
+          document.getElementById('monthNext').addEventListener('click', () => {
+            let m = calMonth + 1, y = calYear;
+            if (m > 11) { m = 0; y++; }
+            calMonth = m; calYear = y;
+            _renderCalGrid(dates);
+          });
+        }
+
+        function _renderDayCards() {
+          if (!selectedDate) {
+            document.getElementById('content').innerHTML = '<div class="state-screen"><p>Gün seçiniz.</p></div>';
+            return;
+          }
+          const ms = (activeStage === 'ALL' ? matches : matches.filter(m => (m.stage || '') === activeStage))
+            .filter(m => matchDateTR(m) === selectedDate)
+            .sort((a, b) => {
+              const ta = a.kickoff_utc ? new Date(a.kickoff_utc).getTime() : 0;
+              const tb = b.kickoff_utc ? new Date(b.kickoff_utc).getTime() : 0;
+              return ta - tb;
+            });
+          document.getElementById('content').innerHTML = ms.length
+            ? `<div class="cards-grid">${ms.map(renderCard).join('')}</div>`
+            : `<div class="state-screen"><p>Bu gün için maç yok.</p></div>`;
+        }
+
         function update(stage) {
           activeStage = stage;
-          buildFilters(matches, activeStage, update);
-          renderAll(matches, activeStage);
+          draw();
         }
-        update('ALL');
+
+        // İlk yükleme: bugün veya ilk yaklaşan maç gününü seç
+        {
+          const initDates = [...new Set(matches.map(matchDateTR))].sort();
+          selectedDate = initDates.find(d => d >= todayStr) || initDates[initDates.length - 1] || null;
+          if (selectedDate) {
+            const [y, mo] = selectedDate.split('-').map(Number);
+            calYear = y; calMonth = mo - 1;
+          }
+        }
+        draw();
 
       } catch (err) {
         document.getElementById('content').innerHTML = `
