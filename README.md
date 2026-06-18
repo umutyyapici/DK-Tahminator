@@ -8,10 +8,10 @@ Evaluated on 3,610 matches from major tournaments (2018–2025) across all confe
 
 | Metric | Value |
 |--------|-------|
-| Accuracy | 61.4% |
-| Exact Score | 13.0% |
-| Top-3 Score | 37.6% |
-| Log Loss | 0.853 |
+| Accuracy | 61.2% |
+| Exact Score | 13.1% |
+| Top-3 Score | 38.0% |
+| Log Loss | 0.852 |
 | Brier Score | 0.167 |
 | Baseline (always home) | 46.1% |
 | Dixon-Coles ρ (estimated) | -0.053 |
