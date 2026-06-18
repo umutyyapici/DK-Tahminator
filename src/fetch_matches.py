@@ -11,8 +11,7 @@ import requests
 import pandas as pd
 from datetime import datetime
 
-# EĞER ORTAM DEĞİŞKENİ BULUNAMAZSA, KENDİ API KEY'İNİ AŞAĞIDAKİ BOŞ TIRNAĞA YAZABİLİRSİN
-API_KEY = os.environ.get("FOOTBALL_DATA_API_KEY", "") or "74fbe308127a40e3b2e5a3f301a8f55a"
+API_KEY = os.environ.get("FOOTBALL_DATA_API_KEY", "")
 BASE_URL = "https://api.football-data.org/v4"
 HEADERS = {"X-Auth-Token": API_KEY}
 WC_CODE = "WC"  # football-data.org'daki Dünya Kupası kodu
