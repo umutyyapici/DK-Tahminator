@@ -32,10 +32,10 @@ from sklearn.metrics import log_loss, brier_score_loss
 BACKTEST_OUT = os.path.join(os.path.dirname(__file__), "..", "data", "backtest.json")
 
 sys.path.insert(0, os.path.dirname(__file__))
-from features import FEATURE_COLS, EloFeatureBuilder, HOME_ADVANTAGE
+from features import FEATURE_COLS, EloFeatureBuilder, HOME_ADVANTAGE, FORM_WINDOW_SHORT
 from features import actual_score, build_name_map, normalize_team, expected_score
 from poisson_model import score_matrix, top_n_scores, estimate_rho, time_decay_weights
-from train import make_model
+from train import make_xgb_model
 
 DATA_DIR  = os.path.join(os.path.dirname(__file__), "..", "data")
 
@@ -104,19 +104,22 @@ def build_train_test(kaggle_path, former_names_path):
         date  = row["date"]
         ds    = str(date)[:10]
 
-        elo_h  = builder.get_elo(home)
-        elo_a  = builder.get_elo(away)
-        form_h = builder.get_form(home)
-        form_a = builder.get_form(away)
-        mom_h  = builder.get_elo_momentum(home)
-        mom_a  = builder.get_elo_momentum(away)
-        atk_h  = builder.get_avg_scored(home)
-        def_h  = builder.get_avg_conceded(home)
-        atk_a  = builder.get_avg_scored(away)
-        def_a  = builder.get_avg_conceded(away)
-        h2h_w, h2h_d, h2h_l = builder.get_h2h(home, away, h2h_records)
-        conf_h = builder.get_conf_strength(home)
-        conf_a = builder.get_conf_strength(away)
+        elo_h   = builder.get_elo(home)
+        elo_a   = builder.get_elo(away)
+        form_h  = builder.get_form(home)
+        form_a  = builder.get_form(away)
+        form5_h = builder.get_form(home, window=FORM_WINDOW_SHORT)
+        form5_a = builder.get_form(away, window=FORM_WINDOW_SHORT)
+        mom_h   = builder.get_elo_momentum(home)
+        mom_a   = builder.get_elo_momentum(away)
+        atk_h   = builder.get_avg_scored(home)
+        def_h   = builder.get_avg_conceded(home)
+        atk_a   = builder.get_avg_scored(away)
+        def_a   = builder.get_avg_conceded(away)
+        h2h_w, h2h_d, h2h_l = builder.get_h2h(home, away, h2h_records,
+                                                current_date=date)
+        conf_h  = builder.get_conf_strength(home)
+        conf_a  = builder.get_conf_strength(away)
         elo_win_prob_home = expected_score(elo_h + (0 if neut else HOME_ADVANTAGE), elo_a)
 
         feat = {
@@ -132,6 +135,9 @@ def build_train_test(kaggle_path, former_names_path):
             "form_home":          form_h,
             "form_away":          form_a,
             "form_diff":          form_h - form_a,
+            "form5_home":         form5_h,
+            "form5_away":         form5_a,
+            "form5_diff":         form5_h - form5_a,
             "h2h_home_win":       h2h_w,
             "h2h_draw":           h2h_d,
             "h2h_away_win":       h2h_l,
@@ -150,6 +156,14 @@ def build_train_test(kaggle_path, former_names_path):
             "conf_strength_home": conf_h,
             "conf_strength_away": conf_a,
             "conf_strength_diff": conf_h - conf_a,
+            # FIFA rankings — use defaults for historical backtest
+            "fifa_rank_home":     212,
+            "fifa_rank_away":     212,
+            "fifa_points_home":   700.0,
+            "fifa_points_away":   700.0,
+            "fifa_points_diff":   0.0,
+            "fifa_movement_home": 0,
+            "fifa_movement_away": 0,
         }
 
         if is_test_match(tourn, ds):
@@ -158,12 +172,10 @@ def build_train_test(kaggle_path, former_names_path):
             train_rows.append(feat)
 
         builder.update_elo(home, away, hg, ag, neut, tourn)
-        builder._update_goals(home, hg, ag)
-        builder._update_goals(away, ag, hg)
         key = (home, away)
         if key not in h2h_records:
             h2h_records[key] = []
-        h2h_records[key].append(actual_score(hg, ag))
+        h2h_records[key].append((actual_score(hg, ag), date))
 
     return pd.DataFrame(train_rows), pd.DataFrame(test_rows)
 
@@ -266,8 +278,8 @@ def evaluate():
 
     # Modelleri eğit (train.py ile aynı, ayarlanmış hiperparametreler)
     print("\n[eval] Modeller eğitiliyor...")
-    model_home = make_model()
-    model_away = make_model()
+    model_home = make_xgb_model()
+    model_away = make_xgb_model()
 
     X_train = train_df[FEATURE_COLS].values
     model_home.fit(X_train, train_df["home_score"].values)
