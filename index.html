@@ -142,7 +142,7 @@
     }
 
     /* ── Day group ───────────────────────────────────────── */
-    .day-group { margin-bottom: 40px; }
+    .day-group { margin-bottom: 28px; }
 
     .day-label {
       font-family: 'Bebas Neue', sans-serif;
@@ -151,12 +151,16 @@
       color: var(--gold);
       text-transform: uppercase;
       margin-bottom: 14px;
-      padding-bottom: 8px;
+      padding: 10px 4px 10px 0;
       border-bottom: 1px solid rgba(201,168,76,0.15);
       display: flex;
       align-items: center;
       gap: 10px;
+      cursor: pointer;
+      user-select: none;
     }
+
+    .day-label:hover { color: #e8c95a; }
 
     .day-label::after {
       content: '';
@@ -165,10 +169,37 @@
       background: linear-gradient(to right, rgba(201,168,76,0.15), transparent);
     }
 
+    .day-meta {
+      font-size: 10px;
+      letter-spacing: 1px;
+      color: var(--muted);
+      font-family: 'Inter', sans-serif;
+      font-weight: 400;
+    }
+
+    .toggle-icon {
+      font-size: 11px;
+      color: var(--muted);
+      transition: transform 0.25s ease;
+      margin-left: auto;
+      order: 3;
+    }
+
+    .day-group.collapsed .toggle-icon { transform: rotate(-90deg); }
+
     .cards-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
       gap: 14px;
+      overflow: hidden;
+      max-height: 9999px;
+      transition: max-height 0.35s ease, opacity 0.25s ease;
+      opacity: 1;
+    }
+
+    .day-group.collapsed .cards-grid {
+      max-height: 0;
+      opacity: 0;
     }
 
     /* ── Match card ──────────────────────────────────────── */
@@ -454,6 +485,14 @@
       border: 1px solid rgba(255,255,255,0.07);
     }
 
+    .accuracy-detail strong { color: var(--gold); }
+
+    .acc-count {
+      color: var(--muted);
+      font-size: 0.9em;
+      margin-left: 1px;
+    }
+
     .accuracy-divider {
       width: 1px;
       height: 16px;
@@ -591,11 +630,10 @@
   <div class="accuracy-bar" id="accuracyBar">
     <div class="accuracy-inner">
       <span class="accuracy-label">🤖 Yapay Zeka Başarı Oranı</span>
-      <span class="accuracy-pct" id="accPct">—</span>
       <div class="accuracy-divider"></div>
-      <span class="accuracy-detail" id="accCorrect">— / — doğru tahmin</span>
-      <span class="accuracy-detail" id="accExact">— 1. skor</span>
-      <span class="accuracy-detail" id="accTop3">— top 3</span>
+      <span class="accuracy-detail">Sonuç: <strong id="accPct">—</strong> <span id="accCorrect" class="acc-count"></span></span>
+      <span class="accuracy-detail">Tam Skor: <strong id="accExact">—</strong> <span id="accExactCount" class="acc-count"></span></span>
+      <span class="accuracy-detail">Top 3 Skor: <strong id="accTop3">—</strong> <span id="accTop3Count" class="acc-count"></span></span>
     </div>
   </div>
 
@@ -878,17 +916,39 @@ ${scoreBubbleHtml}
         return;
       }
 
+      const todayStr = new Date().toLocaleDateString('sv-SE', { timeZone: 'Europe/Istanbul' });
       const groups = groupByDate(filtered);
       let html = '';
       Object.keys(groups).sort().forEach(date => {
-        html += `<div class="day-group">
-          <div class="day-label">${formatDate(date)}</div>
+        // Gün içi maçları saate göre sırala
+        groups[date].sort((a, b) => {
+          const ta = a.kickoff_utc ? new Date(a.kickoff_utc).getTime() : 0;
+          const tb = b.kickoff_utc ? new Date(b.kickoff_utc).getTime() : 0;
+          return ta - tb;
+        });
+
+        const isPast = date < todayStr;
+        const count = groups[date].length;
+        const collapsedClass = isPast ? ' collapsed' : '';
+        html += `<div class="day-group${collapsedClass}" data-date="${date}">
+          <div class="day-label">
+            ${formatDate(date)}
+            <span class="day-meta">${count} maç</span>
+            <span class="toggle-icon">▾</span>
+          </div>
           <div class="cards-grid">
             ${groups[date].map(renderCard).join('')}
           </div>
         </div>`;
       });
       document.getElementById('content').innerHTML = html;
+
+      // Accordion tıklama
+      document.querySelectorAll('.day-label').forEach(label => {
+        label.addEventListener('click', () => {
+          label.closest('.day-group').classList.toggle('collapsed');
+        });
+      });
     }
 
     // ── Build filter buttons ───────────────────────────────
@@ -945,10 +1005,12 @@ ${scoreBubbleHtml}
           if (accRes.ok) {
             const acc = await accRes.json();
             if (acc.total > 0) {
-              document.getElementById('accPct').textContent = '%' + acc.accuracy;
-              document.getElementById('accCorrect').textContent = acc.correct + ' / ' + acc.total + ' doğru tahmin';
-              document.getElementById('accExact').textContent = acc.exact + ' tam skor (%' + acc.exact_pct + ')';
-              document.getElementById('accTop3').textContent = acc.top3 + ' top 3 (%' + acc.top3_pct + ')';
+              document.getElementById('accPct').textContent       = '%' + acc.accuracy;
+              document.getElementById('accCorrect').textContent   = '(' + acc.correct + ' adet)';
+              document.getElementById('accExact').textContent     = '%' + acc.exact_pct;
+              document.getElementById('accExactCount').textContent = '(' + acc.exact + ' adet)';
+              document.getElementById('accTop3').textContent      = '%' + acc.top3_pct;
+              document.getElementById('accTop3Count').textContent  = '(' + acc.top3 + ' adet)';
               document.getElementById('accuracyBar').classList.add('loaded');
             }
           }
