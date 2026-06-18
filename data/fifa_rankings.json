@@ -265,47 +265,47 @@
     "prev_points": 1516.9466,
     "movement": -1
   },
-  "Czech Republic": {
-    "rank": 39,
-    "points": 1506.486,
-    "prev_rank": 40,
-    "prev_points": 1505.7379,
-    "movement": 1
-  },
   "Hungary": {
-    "rank": 40,
+    "rank": 39,
     "points": 1506.3937,
     "prev_rank": 39,
     "prev_points": 1506.3937,
-    "movement": -1
+    "movement": 0
   },
   "Panama": {
-    "rank": 41,
+    "rank": 40,
     "points": 1505.3289,
     "prev_rank": 34,
     "prev_points": 1539.1555,
-    "movement": -7
+    "movement": -6
   },
   "Serbia": {
-    "rank": 42,
+    "rank": 41,
     "points": 1502.1332,
     "prev_rank": 43,
     "prev_points": 1502.1332,
-    "movement": 1
+    "movement": 2
   },
   "Paraguay": {
-    "rank": 43,
+    "rank": 42,
     "points": 1488.049,
     "prev_rank": 41,
     "prev_points": 1505.3497,
-    "movement": -2
+    "movement": -1
   },
   "DR Congo": {
-    "rank": 44,
+    "rank": 43,
     "points": 1487.1832,
     "prev_rank": 46,
     "prev_points": 1474.4278,
-    "movement": 2
+    "movement": 3
+  },
+  "Czech Republic": {
+    "rank": 44,
+    "points": 1481.486,
+    "prev_rank": 40,
+    "prev_points": 1505.7379,
+    "movement": -4
   },
   "Cameroon": {
     "rank": 45,
@@ -419,26 +419,26 @@
     "prev_points": 1446.2796,
     "movement": -3
   },
-  "Burkina Faso": {
+  "South Africa": {
     "rank": 61,
+    "points": 1418.2118,
+    "prev_rank": 60,
+    "prev_points": 1428.3793,
+    "movement": -1
+  },
+  "Burkina Faso": {
+    "rank": 62,
     "points": 1406.9905,
     "prev_rank": 62,
     "prev_points": 1406.9905,
-    "movement": 1
+    "movement": 0
   },
   "Bosnia and Herzegovina": {
-    "rank": 62,
+    "rank": 63,
     "points": 1395.191,
     "prev_rank": 64,
     "prev_points": 1387.2158,
-    "movement": 2
-  },
-  "South Africa": {
-    "rank": 63,
-    "points": 1393.2118,
-    "prev_rank": 60,
-    "prev_points": 1428.3793,
-    "movement": -3
+    "movement": 1
   },
   "Cape Verde": {
     "rank": 64,
