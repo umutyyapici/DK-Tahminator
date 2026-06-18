@@ -127,7 +127,7 @@
   },
   "Switzerland": {
     "rank": 19,
-    "points": 1629.9393,
+    "points": 1654.9393,
     "prev_rank": 19,
     "prev_points": 1650.0642,
     "movement": 0
@@ -216,19 +216,19 @@
     "prev_points": 1571.0333,
     "movement": -3
   },
-  "Canada": {
-    "rank": 32,
-    "points": 1551.5041,
-    "prev_rank": 30,
-    "prev_points": 1559.4793,
-    "movement": -2
-  },
   "Ukraine": {
-    "rank": 33,
+    "rank": 32,
     "points": 1549.2872,
     "prev_rank": 32,
     "prev_points": 1549.2872,
-    "movement": -1
+    "movement": 0
+  },
+  "Canada": {
+    "rank": 33,
+    "points": 1547.1334,
+    "prev_rank": 30,
+    "prev_points": 1559.4793,
+    "movement": -3
   },
   "Sweden": {
     "rank": 34,
@@ -337,7 +337,7 @@
   },
   "Qatar": {
     "rank": 49,
-    "points": 1459.4469,
+    "points": 1463.8176,
     "prev_rank": 56,
     "prev_points": 1450.3077,
     "movement": 7
@@ -433,19 +433,19 @@
     "prev_points": 1406.9905,
     "movement": 0
   },
-  "Bosnia and Herzegovina": {
-    "rank": 63,
-    "points": 1406.1766,
-    "prev_rank": 64,
-    "prev_points": 1387.2158,
-    "movement": 1
-  },
   "Cape Verde": {
-    "rank": 64,
+    "rank": 63,
     "points": 1389.7851,
     "prev_rank": 67,
     "prev_points": 1371.108,
-    "movement": 3
+    "movement": 4
+  },
+  "Bosnia and Herzegovina": {
+    "rank": 64,
+    "points": 1381.1766,
+    "prev_rank": 64,
+    "prev_points": 1387.2158,
+    "movement": 0
   },
   "Ghana": {
     "rank": 65,
