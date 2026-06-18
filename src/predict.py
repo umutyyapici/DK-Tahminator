@@ -17,20 +17,30 @@ DATA_DIR        = os.path.join(os.path.dirname(__file__), "..", "data")
 MODELS_DIR      = os.path.join(os.path.dirname(__file__), "..", "models")
 MODEL_HOME_PATH = os.path.join(MODELS_DIR, "model_home.pkl")
 MODEL_AWAY_PATH = os.path.join(MODELS_DIR, "model_away.pkl")
+LGB_HOME_PATH   = os.path.join(MODELS_DIR, "model_home_lgb.pkl")
+LGB_AWAY_PATH   = os.path.join(MODELS_DIR, "model_away_lgb.pkl")
 PREDICTIONS_OUT = os.path.join(DATA_DIR, "predictions.csv")
 
 
 def predict():
-    # 1. Modelleri yükle
+    # 1. Modelleri yukle
     for path in [MODEL_HOME_PATH, MODEL_AWAY_PATH]:
         if not os.path.exists(path):
             raise FileNotFoundError(
-                f"Model bulunamadı: {path}\n"
-                "Önce `python train.py` çalıştırın."
+                f"Model bulunamadi: {path}\n"
+                "Once `python train.py` calistirin."
             )
     model_home = joblib.load(MODEL_HOME_PATH)
     model_away = joblib.load(MODEL_AWAY_PATH)
-    print(f"[predict] Modeller yüklendi: {MODELS_DIR}")
+
+    # LightGBM modelleri (varsa ensemble, yoksa sadece XGBoost)
+    lgb_home = joblib.load(LGB_HOME_PATH) if os.path.exists(LGB_HOME_PATH) else None
+    lgb_away = joblib.load(LGB_AWAY_PATH) if os.path.exists(LGB_AWAY_PATH) else None
+
+    if lgb_home:
+        print(f"[predict] 4 model yueklendi (XGB + LGB ensemble): {MODELS_DIR}")
+    else:
+        print(f"[predict] 2 model yueklendi (sadece XGB): {MODELS_DIR}")
 
     # 2. Feature'ları oluştur
     _, pred_df = build_features(
@@ -47,10 +57,19 @@ def predict():
     pred_df = pred_df[pred_df["home_team"].notna() & pred_df["away_team"].notna()].copy()
     print(f"[predict] {len(pred_df)} maç için tahmin üretiliyor...")
 
-    # 3. Beklenen gol sayıları (lambda)
+    # 3. Beklenen gol sayilari (lambda) — XGB + LGB ensemble
     X = pred_df[FEATURE_COLS].values
-    lambda_home = model_home.predict(X)
-    lambda_away = model_away.predict(X)
+    xgb_lh = model_home.predict(X)
+    xgb_la = model_away.predict(X)
+
+    if lgb_home:
+        lgb_lh = lgb_home.predict(X)
+        lgb_la = lgb_away.predict(X)
+        lambda_home = (xgb_lh + lgb_lh) / 2
+        lambda_away = (xgb_la + lgb_la) / 2
+    else:
+        lambda_home = xgb_lh
+        lambda_away = xgb_la
 
     # 4. Poisson olasılıkları (Dixon-Coles düşük skor düzeltmesi ile)
     rho = load_rho()
