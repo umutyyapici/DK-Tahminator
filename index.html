@@ -175,7 +175,11 @@
       color: var(--text);
       text-align: center;
       flex: 1;
+      cursor: pointer;
+      user-select: none;
     }
+    .cal-day-label:hover { color: var(--gold); }
+    .cal-chevron { font-size: 12px; margin-left: 6px; opacity: 0.7; }
 
     .cal-grid-wrap {
       background: var(--card);
@@ -183,7 +187,9 @@
       border-radius: var(--radius);
       padding: 16px;
       margin-bottom: 20px;
+      max-width: 380px;
     }
+    .cal-grid-wrap.cal-collapsed { display: none; }
 
     .cal-month-header {
       display: flex;
@@ -633,36 +639,6 @@
 
     .state-screen p { font-size: 13px; }
 
-    /* ── Filter bar ──────────────────────────────────────── */
-    .filter-bar {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-bottom: 28px;
-    }
-
-    .filter-btn {
-      background: var(--surface);
-      border: 1px solid rgba(255,255,255,0.08);
-      color: var(--muted);
-      font-family: 'Inter', sans-serif;
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      padding: 6px 14px;
-      border-radius: 20px;
-      cursor: pointer;
-      transition: all 0.15s;
-    }
-
-    .filter-btn:hover { border-color: var(--gold-dim); color: var(--text); }
-
-    .filter-btn.active {
-      background: var(--gold);
-      border-color: var(--gold);
-      color: #0A0E1A;
-      font-weight: 600;
-    }
 
     /* ── Responsive ──────────────────────────────────────── */
     @media (max-width: 600px) {
@@ -724,7 +700,6 @@
   </div>
 
   <main>
-    <div class="filter-bar" id="filterBar"></div>
     <div class="cal-day-nav" id="calDayNav"></div>
     <div class="cal-grid-wrap" id="calGridWrap"></div>
     <div id="content"><div class="state-screen"><div class="spinner"></div><p>Tahminler yükleniyor…</p></div></div>
@@ -959,21 +934,8 @@ ${scoreBubbleHtml}
         </div>`;
     }
 
-    // ── Build filter buttons ───────────────────────────────
-    function buildFilters(matches, activeStage, onSelect) {
-      const stages = ['ALL', ...new Set(matches.map(m => m.stage || '').filter(Boolean))];
-      const bar = document.getElementById('filterBar');
-      bar.innerHTML = stages.map(s => `
-        <button class="filter-btn ${s === activeStage ? 'active' : ''}" data-stage="${s}">
-          ${s === 'ALL' ? 'Tümü' : stageLabel(s)}
-        </button>`).join('');
-      bar.querySelectorAll('.filter-btn').forEach(btn => {
-        btn.addEventListener('click', () => onSelect(btn.dataset.stage));
-      });
-    }
-
     // ── Calendar rendering ─────────────────────────────────
-    // State: activeStage, selectedDate, calYear, calMonth declared in load()
+    // State: selectedDate, calYear, calMonth declared in load()
 
     // ── Main load ──────────────────────────────────────────
     async function load() {
@@ -1008,7 +970,13 @@ ${scoreBubbleHtml}
           }
         } catch(e) { /* maç sonucu/tahmin geçmişi henüz yok */ }
 
-        const matches = [...finished, ...upcoming];
+        // Aynı maç hem history'de hem predictions.csv'de olabilir → played=true öncelikli al
+        const matchMap = new Map();
+        for (const m of [...finished, ...upcoming]) {
+          const key = `${m.date}|${m.home_team}|${m.away_team}`;
+          if (!matchMap.has(key) || m.played) matchMap.set(key, m);
+        }
+        const matches = [...matchMap.values()];
 
         // Accuracy banner
         try {
@@ -1058,13 +1026,12 @@ ${scoreBubbleHtml}
 
         // ── Calendar state ───────────────────────────────────
         const todayStr = new Date().toLocaleDateString('sv-SE', { timeZone: 'Europe/Istanbul' });
-        let activeStage = 'ALL';
         let selectedDate = null;
         let calYear, calMonth;
+        let calOpen = true;
 
         function getMatchDates() {
-          const ms = activeStage === 'ALL' ? matches : matches.filter(m => (m.stage||'') === activeStage);
-          return [...new Set(ms.map(matchDateTR))].sort();
+          return [...new Set(matches.map(matchDateTR))].sort();
         }
 
         function selectDate(date) {
@@ -1084,7 +1051,6 @@ ${scoreBubbleHtml}
               calYear = y; calMonth = mo - 1;
             }
           }
-          buildFilters(matches, activeStage, update);
           _renderDayNav(dates);
           _renderCalGrid(dates);
           _renderDayCards();
@@ -1098,11 +1064,16 @@ ${scoreBubbleHtml}
           const el = document.getElementById('calDayNav');
           el.innerHTML = `
             <button class="cal-nav-btn" id="calPrev" ${!prev ? 'disabled' : ''}>‹</button>
-            <span class="cal-day-label">${label}</span>
+            <span class="cal-day-label" id="calDateLabel">${label}<span class="cal-chevron">${calOpen ? '▾' : '▸'}</span></span>
             <button class="cal-nav-btn" id="calNext" ${!next ? 'disabled' : ''}>›</button>
           `;
           if (prev) el.querySelector('#calPrev').addEventListener('click', () => selectDate(prev));
           if (next) el.querySelector('#calNext').addEventListener('click', () => selectDate(next));
+          el.querySelector('#calDateLabel').addEventListener('click', () => {
+            calOpen = !calOpen;
+            document.getElementById('calGridWrap').classList.toggle('cal-collapsed', !calOpen);
+            el.querySelector('.cal-chevron').textContent = calOpen ? '▾' : '▸';
+          });
         }
 
         function _renderCalGrid(dates) {
@@ -1158,7 +1129,7 @@ ${scoreBubbleHtml}
             document.getElementById('content').innerHTML = '<div class="state-screen"><p>Gün seçiniz.</p></div>';
             return;
           }
-          const ms = (activeStage === 'ALL' ? matches : matches.filter(m => (m.stage || '') === activeStage))
+          const ms = matches
             .filter(m => matchDateTR(m) === selectedDate)
             .sort((a, b) => {
               const ta = a.kickoff_utc ? new Date(a.kickoff_utc).getTime() : 0;
@@ -1170,10 +1141,6 @@ ${scoreBubbleHtml}
             : `<div class="state-screen"><p>Bu gün için maç yok.</p></div>`;
         }
 
-        function update(stage) {
-          activeStage = stage;
-          draw();
-        }
 
         // İlk yükleme: bugün veya ilk yaklaşan maç gününü seç
         {
