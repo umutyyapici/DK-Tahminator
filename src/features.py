@@ -1,13 +1,15 @@
 """
 features.py
 -----------
-1. Kaggle results.csv + data/matches_2026.csv'yi birleştirir
-2. former_names.csv ile takım adı normalizasyonu yapar
-3. Her maç için ELO tabanlı feature'lar üretir
-4. Eğitim dataseti ve 2026 tahmin dataseti döndürür
+1. Kaggle results.csv + data/matches_2026.csv birlestirir
+2. former_names.csv ile takim adi normalizasyonu yapar
+3. data/fifa_rankings.json ile FIFA siralamasi ekler (varsa)
+4. Her mac icin ELO tabanli + FIFA + form feature'lar ueretir
+5. Egitim dataseti ve 2026 tahmin dataseti doendueruer
 """
 
 import os
+import json
 import pandas as pd
 import numpy as np
 from typing import Tuple
@@ -17,46 +19,43 @@ DATA_DIR = os.path.join(os.path.dirname(__file__), "..", "data")
 # --- Sabitler -----------------------------------------------------------
 
 INITIAL_ELO    = 1500.0
-K_BASE         = 32        # tanımlı olmayan turnuvalar / küçük davetiyeli kupalar
-K_WC           = 60        # Dünya Kupası finalleri (en üst düzey)
-K_FRIENDLY     = 20        # hazırlık maçları
-HOME_ADVANTAGE = 100       # nötr sahada uygulanmaz
+K_BASE         = 32
+K_WC           = 60
+K_FRIENDLY     = 20
+HOME_ADVANTAGE = 100
 
-# Turnuva → K katsayısı, rekabet seviyesine göre kademeli (tam eşleşme).
-# Önceki sürümde alt-dize eşleşmesi kullanılıyordu; bu da örn.
-# "FIFA World Cup qualification"in "FIFA World Cup" ile eşleşip final
-# maçlarıyla AYNI (en yüksek) katsayıyı almasına yol açıyordu. Artık her
-# turnuva adı kendi katsayısını alıyor; eşleşmeyenler K_BASE'e düşer.
 TOURNAMENT_K = {
-    # --- Tier S: Dünya Kupası finalleri -------------------------------
+    # --- Tier S ---
     "FIFA World Cup":                       K_WC,
 
-    # --- Tier A: Kıtasal şampiyonalar / Konfederasyonlar Kupası -------
+    # --- Tier A ---
     "UEFA Euro":                            50,
+    "Copa America":                         50,
     "Copa América":                         50,
     "African Cup of Nations":               50,
     "AFC Asian Cup":                        50,
     "Confederations Cup":                   50,
 
-    # --- Tier B: Dünya Kupası elemeleri (yüksek rekabet, final değil) -
+    # --- Tier B ---
     "FIFA World Cup qualification":         40,
 
-    # --- Tier C: Avrupa elemeleri / UEFA Uluslar Ligi -----------------
+    # --- Tier C ---
     "UEFA Euro qualification":              35,
     "UEFA Nations League":                  35,
+    "Copa America qualification":           35,
     "Copa América qualification":           35,
 
-    # --- Tier D: Diğer kıtasal elemeler / Nations League'ler ----------
+    # --- Tier D ---
     "African Cup of Nations qualification": 28,
     "AFC Asian Cup qualification":          28,
     "CONCACAF Nations League":              28,
     "CONCACAF Nations League qualification": 28,
-    "CONCACAF Championship":                28,   # Gold Cup öncesi adı
+    "CONCACAF Championship":                28,
     "CONCACAF Championship qualification":  28,
     "Gold Cup":                             28,
     "Gold Cup qualification":               28,
 
-    # --- Tier E: Bölgesel kupalar (düşük rekabet yoğunluğu) -----------
+    # --- Tier E ---
     "CECAFA Cup":                           22,
     "CFU Caribbean Cup":                    22,
     "CFU Caribbean Cup qualification":      22,
@@ -82,11 +81,11 @@ TOURNAMENT_K = {
     "Oceania Nations Cup qualification":    22,
     "Pan American Championship":            22,
 
-    # --- Tier F: Hazırlık maçları / FIFA pencereleri ------------------
+    # --- Tier F ---
     "Friendly":                             K_FRIENDLY,
     "FIFA Series":                          K_FRIENDLY,
 
-    # --- Tier G: Çok branşlı oyunlar / amatör / CONIFA ----------------
+    # --- Tier G ---
     "Olympic Games":                        14,
     "Island Games":                         14,
     "Asian Games":                          14,
@@ -117,16 +116,16 @@ TOURNAMENT_K = {
     "Viva World Cup":                       14,
 }
 
-FORM_WINDOW = 10           # son kaç maç forma hesabında kullanılır
+FORM_WINDOW       = 10   # uzun form penceresi
+FORM_WINDOW_SHORT = 5    # kisa form penceresi
+
+# FIFA siralamasi bilinmeyen takim icin varsayilan degerler
+FIFA_DEFAULT_RANK     = 212    # son sirali (211) + 1
+FIFA_DEFAULT_POINTS   = 700.0  # alt limitin altinda
+FIFA_DEFAULT_MOVEMENT = 0
 
 
-# --- Konfederasyon haritası ----------------------------------------------
-# FIFA'nın 6 konfederasyonuna göre üye ülkeler. Eşleşmeyen (CONIFA üyeleri,
-# tarihsel/bölgesel takımlar vb.) "OTHER" konfederasyonuna düşer ve kendi
-# ortalamasını oluşturur. "conf_strength" feature'ı, bir takımın bağlı
-# olduğu konfederasyondaki takımların o ana kadarki ortalama ELO'sudur —
-# örn. CONMEBOL'un ortalama gücü ile UEFA'nın ortalama gücü arasındaki
-# farkı modele açıkça gösterir.
+# --- Konfederasyon haritasi ----------------------------------------------
 CONFEDERATION = {
     # --- UEFA ---
     "Albania": "UEFA", "Andorra": "UEFA", "Armenia": "UEFA", "Austria": "UEFA",
@@ -146,7 +145,6 @@ CONFEDERATION = {
     "Serbia": "UEFA", "Slovakia": "UEFA", "Slovenia": "UEFA", "Spain": "UEFA",
     "Sweden": "UEFA", "Switzerland": "UEFA", "Turkey": "UEFA", "Ukraine": "UEFA",
     "Wales": "UEFA",
-    # tarihsel UEFA üyeleri
     "Czechoslovakia": "UEFA", "Yugoslavia": "UEFA", "German DR": "UEFA",
 
     # --- CONMEBOL ---
@@ -160,18 +158,19 @@ CONFEDERATION = {
     "Bahamas": "CONCACAF", "Barbados": "CONCACAF", "Belize": "CONCACAF",
     "Bermuda": "CONCACAF", "Bonaire": "CONCACAF", "British Virgin Islands": "CONCACAF",
     "Canada": "CONCACAF", "Cayman Islands": "CONCACAF", "Costa Rica": "CONCACAF",
-    "Cuba": "CONCACAF", "Curaçao": "CONCACAF", "Dominica": "CONCACAF",
-    "Dominican Republic": "CONCACAF", "El Salvador": "CONCACAF",
-    "French Guiana": "CONCACAF", "Grenada": "CONCACAF", "Guadeloupe": "CONCACAF",
-    "Guatemala": "CONCACAF", "Guyana": "CONCACAF", "Haiti": "CONCACAF",
-    "Honduras": "CONCACAF", "Jamaica": "CONCACAF", "Martinique": "CONCACAF",
-    "Mexico": "CONCACAF", "Montserrat": "CONCACAF", "Nicaragua": "CONCACAF",
-    "Panama": "CONCACAF", "Puerto Rico": "CONCACAF",
-    "Saint Kitts and Nevis": "CONCACAF", "Saint Lucia": "CONCACAF",
-    "Saint Martin": "CONCACAF", "Saint Vincent and the Grenadines": "CONCACAF",
-    "Sint Maarten": "CONCACAF", "Suriname": "CONCACAF",
-    "Trinidad and Tobago": "CONCACAF", "Turks and Caicos Islands": "CONCACAF",
-    "United States": "CONCACAF", "United States Virgin Islands": "CONCACAF",
+    "Cuba": "CONCACAF", "Curacao": "CONCACAF", "Curaçao": "CONCACAF",
+    "Dominica": "CONCACAF", "Dominican Republic": "CONCACAF",
+    "El Salvador": "CONCACAF", "French Guiana": "CONCACAF",
+    "Grenada": "CONCACAF", "Guadeloupe": "CONCACAF", "Guatemala": "CONCACAF",
+    "Guyana": "CONCACAF", "Haiti": "CONCACAF", "Honduras": "CONCACAF",
+    "Jamaica": "CONCACAF", "Martinique": "CONCACAF", "Mexico": "CONCACAF",
+    "Montserrat": "CONCACAF", "Nicaragua": "CONCACAF", "Panama": "CONCACAF",
+    "Puerto Rico": "CONCACAF", "Saint Kitts and Nevis": "CONCACAF",
+    "Saint Lucia": "CONCACAF", "Saint Martin": "CONCACAF",
+    "Saint Vincent and the Grenadines": "CONCACAF", "Sint Maarten": "CONCACAF",
+    "Suriname": "CONCACAF", "Trinidad and Tobago": "CONCACAF",
+    "Turks and Caicos Islands": "CONCACAF", "United States": "CONCACAF",
+    "United States Virgin Islands": "CONCACAF",
 
     # --- CAF ---
     "Algeria": "CAF", "Angola": "CAF", "Benin": "CAF", "Botswana": "CAF",
@@ -185,11 +184,11 @@ CONFEDERATION = {
     "Malawi": "CAF", "Mali": "CAF", "Mauritania": "CAF", "Mauritius": "CAF",
     "Mayotte": "CAF", "Morocco": "CAF", "Mozambique": "CAF", "Namibia": "CAF",
     "Niger": "CAF", "Nigeria": "CAF", "Rwanda": "CAF",
-    "São Tomé and Príncipe": "CAF", "Senegal": "CAF", "Seychelles": "CAF",
-    "Sierra Leone": "CAF", "Somalia": "CAF", "South Africa": "CAF",
-    "South Sudan": "CAF", "Sudan": "CAF", "Tanzania": "CAF", "Togo": "CAF",
-    "Tunisia": "CAF", "Uganda": "CAF", "Zambia": "CAF", "Zanzibar": "CAF",
-    "Zimbabwe": "CAF",
+    "Sao Tome and Principe": "CAF", "São Tomé e Príncipe": "CAF",
+    "Senegal": "CAF", "Seychelles": "CAF", "Sierra Leone": "CAF",
+    "Somalia": "CAF", "South Africa": "CAF", "South Sudan": "CAF",
+    "Sudan": "CAF", "Tanzania": "CAF", "Togo": "CAF", "Tunisia": "CAF",
+    "Uganda": "CAF", "Zambia": "CAF", "Zanzibar": "CAF", "Zimbabwe": "CAF",
 
     # --- AFC ---
     "Afghanistan": "AFC", "Australia": "AFC", "Bahrain": "AFC",
@@ -205,9 +204,8 @@ CONFEDERATION = {
     "Tajikistan": "AFC", "Thailand": "AFC", "Timor-Leste": "AFC",
     "Turkmenistan": "AFC", "United Arab Emirates": "AFC", "Uzbekistan": "AFC",
     "Vietnam": "AFC", "Yemen": "AFC",
-    # tarihsel AFC üyeleri
-    "North Vietnam": "AFC", "Vietnam Republic": "AFC", "South Yemen": "AFC",
-    "Yemen DPR": "AFC",
+    "North Vietnam": "AFC", "Vietnam Republic": "AFC",
+    "South Yemen": "AFC", "Yemen DPR": "AFC",
 
     # --- OFC ---
     "American Samoa": "OFC", "Cook Islands": "OFC", "Fiji": "OFC",
@@ -217,7 +215,7 @@ CONFEDERATION = {
     "Papua New Guinea": "OFC", "Samoa": "OFC", "Solomon Islands": "OFC",
     "Tahiti": "OFC", "Tonga": "OFC", "Tuvalu": "OFC", "Vanuatu": "OFC",
 
-    # --- matches_2026.csv'de results.csv'den farklı yazılan adlar ---
+    # --- matches_2026.csv ve diger alternatif adlar ---
     "Bosnia-Herzegovina": "UEFA",
     "Cape Verde Islands":  "CAF",
     "Congo DR":            "CAF",
@@ -225,19 +223,17 @@ CONFEDERATION = {
 }
 
 
-# --- Yardımcı fonksiyonlar ----------------------------------------------
+# --- Yardimci fonksiyonlar ----------------------------------------------
 
 def get_k(tournament: str) -> float:
     return TOURNAMENT_K.get(tournament, K_BASE)
 
 
 def expected_score(elo_a: float, elo_b: float) -> float:
-    """A takımının beklenen skoru (0-1 arası)."""
     return 1.0 / (1.0 + 10 ** ((elo_b - elo_a) / 400.0))
 
 
 def actual_score(home_goals: int, away_goals: int) -> float:
-    """Ev sahibi açısından sonuç: 1=galibiyet, 0.5=beraberlik, 0=mağlubiyet."""
     if home_goals > away_goals:
         return 1.0
     elif home_goals == away_goals:
@@ -246,10 +242,6 @@ def actual_score(home_goals: int, away_goals: int) -> float:
 
 
 def goal_diff_multiplier(goal_diff: int) -> float:
-    """
-    Büyük farkla kazanmak daha fazla ELO değişimine yol açar.
-    FIFA'nın kullandığı yaklaşıma benzer.
-    """
     gd = abs(goal_diff)
     if gd <= 1:
         return 1.0
@@ -259,13 +251,9 @@ def goal_diff_multiplier(goal_diff: int) -> float:
         return 1.75 + (gd - 3) * 0.1
 
 
-# --- Takım adı normalizasyonu -------------------------------------------
+# --- Takim adi normalizasyonu -------------------------------------------
 
 def build_name_map(former_names_path: str) -> dict:
-    """
-    former_names.csv'den {eski_ad: güncel_ad} sözlüğü oluşturur.
-    Tarih aralığı göz ardı edilir; güncel ada map'leme yeterli.
-    """
     if not os.path.exists(former_names_path):
         return {}
     df = pd.read_csv(former_names_path)
@@ -276,27 +264,20 @@ def normalize_team(name: str, name_map: dict) -> str:
     return name_map.get(name, name)
 
 
-# --- Ana sınıf ----------------------------------------------------------
+# --- Ana sinif ----------------------------------------------------------
 
 class EloFeatureBuilder:
-    """
-    Tarihsel maçları kronolojik sırayla işleyerek:
-    - Her takım için ELO rating tutar
-    - Her takım için son N maç formunu tutar
-    - Her maç için feature vektörü üretir
-    """
 
     def __init__(self):
         self.elos: dict[str, float] = {}
-        self.history: dict[str, list] = {}        # takım → [sonuçlar]
-        self.elo_history: dict[str, list] = {}    # takım → [elo değerleri]
-        self.goals_scored: dict[str, list] = {}   # takım → [attığı goller]
-        self.goals_conceded: dict[str, list] = {} # takım → [yediği goller]
-        self.conf_sum: dict[str, float] = {}      # konfederasyon → ELO toplamı
-        self.conf_count: dict[str, int] = {}      # konfederasyon → takım sayısı
+        self.history: dict[str, list] = {}
+        self.elo_history: dict[str, list] = {}
+        self.goals_scored: dict[str, list] = {}
+        self.goals_conceded: dict[str, list] = {}
+        self.conf_sum: dict[str, float] = {}
+        self.conf_count: dict[str, int] = {}
 
     def _register(self, team: str):
-        """Takımı ilk karşılaşmasında ELO=INITIAL_ELO ile konfederasyonuna kaydeder."""
         if team not in self.elos:
             self.elos[team] = INITIAL_ELO
             conf = CONFEDERATION.get(team, "OTHER")
@@ -308,14 +289,12 @@ class EloFeatureBuilder:
         return self.elos[team]
 
     def get_conf_strength(self, team: str) -> float:
-        """Takımın bağlı olduğu konfederasyondaki o ana kadarki ortalama ELO."""
         self._register(team)
         conf = CONFEDERATION.get(team, "OTHER")
         return self.conf_sum[conf] / self.conf_count[conf]
 
     def update_elo(self, home: str, away: str, home_goals: int,
                    away_goals: int, neutral: bool, tournament: str) -> Tuple[float, float]:
-        """ELO'ları günceller, eski değerleri döndürür (feature için)."""
         k = get_k(tournament)
         ha = 0 if neutral else HOME_ADVANTAGE
 
@@ -331,25 +310,19 @@ class EloFeatureBuilder:
         self.elos[home] = elo_h + delta
         self.elos[away] = elo_a - delta
 
-        # konfederasyon ortalamalarını güncelle
         conf_h = CONFEDERATION.get(home, "OTHER")
         conf_a = CONFEDERATION.get(away, "OTHER")
         self.conf_sum[conf_h] = self.conf_sum.get(conf_h, 0.0) + delta
         self.conf_sum[conf_a] = self.conf_sum.get(conf_a, 0.0) - delta
 
-        # elo geçmişi güncelle
         self._update_elo_history(home, elo_h)
         self._update_elo_history(away, elo_a)
-
-        # forma güncelle
         self._update_form(home, act_h)
         self._update_form(away, 1.0 - act_h)
-
-        # gol geçmişi güncelle
         self._update_goals(home, home_goals, away_goals)
         self._update_goals(away, away_goals, home_goals)
 
-        return elo_h, elo_a  # maç öncesi değerler
+        return elo_h, elo_a
 
     def _update_form(self, team: str, result: float):
         if team not in self.history:
@@ -364,17 +337,15 @@ class EloFeatureBuilder:
         self.goals_conceded[team].append(conceded)
 
     def get_avg_scored(self, team: str, window: int = FORM_WINDOW) -> float:
-        """Son N maçtaki ortalama atılan gol."""
         hist = self.goals_scored.get(team, [])
         if not hist:
-            return 1.2  # genel ortalama
+            return 1.2
         return float(np.mean(hist[-window:]))
 
     def get_avg_conceded(self, team: str, window: int = FORM_WINDOW) -> float:
-        """Son N maçtaki ortalama yenilen gol."""
         hist = self.goals_conceded.get(team, [])
         if not hist:
-            return 1.0  # genel ortalama
+            return 1.0
         return float(np.mean(hist[-window:]))
 
     def _update_elo_history(self, team: str, elo: float):
@@ -383,7 +354,6 @@ class EloFeatureBuilder:
         self.elo_history[team].append(elo)
 
     def get_elo_momentum(self, team: str, window: int = 5) -> float:
-        """Son N maçtaki ELO değişimi. Pozitif = yükselen, negatif = düşen."""
         hist = self.elo_history.get(team, [])
         if len(hist) < 2:
             return 0.0
@@ -391,33 +361,42 @@ class EloFeatureBuilder:
         return float(recent[-1] - recent[0])
 
     def get_form(self, team: str, window: int = FORM_WINDOW) -> float:
-        """Son N maçtaki ortalama puan (0-1 arası)."""
         hist = self.history.get(team, [])
         if not hist:
             return 0.5
         return float(np.mean(hist[-window:]))
 
     def get_h2h(self, home: str, away: str,
-                h2h_records: dict) -> Tuple[float, float, float]:
+                h2h_records: dict,
+                current_date=None) -> Tuple[float, float, float]:
         """
-        İki takım arasındaki kafa kafaya win/draw/loss oranları.
-        h2h_records: {(home, away): [sonuçlar]} sözlüğü
+        Kafa kafaya istatistikler. Yakin tarihli maclara daha yuksek agirlik
+        verilir (ustel azalim, yari omur ~7 yil). h2h_records yapisi:
+        {(home, away): [(result, date)]}
         """
-        key = (home, away)
+        if current_date is None:
+            current_date = pd.Timestamp.now()
+
+        key     = (home, away)
         key_rev = (away, home)
 
-        results = []
-        for r in h2h_records.get(key, []):
-            results.append(r)          # 1=home win, 0.5=draw, 0=away win
-        for r in h2h_records.get(key_rev, []):
-            results.append(1.0 - r)   # ters çevir
+        all_entries = []
+        for r, date in h2h_records.get(key, []):
+            years_ago = max(0.0, (current_date - date).days / 365.25)
+            w = np.exp(-0.1 * years_ago)
+            all_entries.append((r, w))
+        for r, date in h2h_records.get(key_rev, []):
+            years_ago = max(0.0, (current_date - date).days / 365.25)
+            w = np.exp(-0.1 * years_ago)
+            all_entries.append((1.0 - r, w))
 
-        if not results:
-            return 0.33, 0.33, 0.34   # no data → uniform
+        if not all_entries:
+            return 0.33, 0.33, 0.34
 
-        wins   = sum(1 for r in results if r == 1.0) / len(results)
-        draws  = sum(1 for r in results if r == 0.5) / len(results)
-        losses = 1.0 - wins - draws
+        total_w = sum(w for _, w in all_entries)
+        wins    = sum(w for r, w in all_entries if r == 1.0) / total_w
+        draws   = sum(w for r, w in all_entries if r == 0.5) / total_w
+        losses  = 1.0 - wins - draws
         return wins, draws, losses
 
 
@@ -427,11 +406,27 @@ def build_features(kaggle_results_path: str,
                    wc2026_path: str,
                    former_names_path: str) -> Tuple[pd.DataFrame, pd.DataFrame]:
     """
-    Döndürür:
-        train_df  — home_score ve away_score bilinen tüm tarihsel maçlar + feature'lar
-        pred_df   — 2026 WC'de henüz oynanmamış maçlar + feature'lar
+    Doendueruer:
+        train_df  -- home/away score bilinen tum tarihsel maclar + feature'lar
+        pred_df   -- 2026 WC'de oynanmamis maclar + feature'lar
     """
-    # 1. Veri yükle
+    # 0. FIFA siralamalarini yukle (varsa)
+    ranking_path = os.path.join(DATA_DIR, "fifa_rankings.json")
+    _rankings: dict = {}
+    if os.path.exists(ranking_path):
+        with open(ranking_path, "r", encoding="utf-8") as _f:
+            _rankings = json.load(_f)
+        print(f"[features] FIFA siralamasi yueklendi: {len(_rankings)} takim")
+
+    def _fifa(team: str) -> dict:
+        d = _rankings.get(team, {})
+        return {
+            "rank":     d.get("rank",     FIFA_DEFAULT_RANK),
+            "points":   d.get("points",   FIFA_DEFAULT_POINTS),
+            "movement": d.get("movement", FIFA_DEFAULT_MOVEMENT),
+        }
+
+    # 1. Veri yukle
     hist = pd.read_csv(kaggle_results_path, parse_dates=["date"])
 
     wc2026 = pd.DataFrame()
@@ -440,9 +435,8 @@ def build_features(kaggle_results_path: str,
 
     name_map = build_name_map(former_names_path)
 
-    # 2. Birleştir
+    # 2. Birlestir
     if not wc2026.empty:
-        # Sadece oynanmış WC2026 maçlarını tarihsel veriye ekle
         played = wc2026[wc2026["status"] == "FINISHED"][
             ["date", "home_team", "away_team", "home_score",
              "away_score", "tournament", "neutral"]
@@ -452,21 +446,20 @@ def build_features(kaggle_results_path: str,
     hist.sort_values("date", inplace=True)
     hist.reset_index(drop=True, inplace=True)
 
-    # 3. Takım adlarını normalize et
+    # 3. Takim adlarini normalize et
     for col in ["home_team", "away_team"]:
         hist[col] = hist[col].map(lambda x: normalize_team(x, name_map))
         if not wc2026.empty:
             wc2026[col] = wc2026[col].map(lambda x: normalize_team(x, name_map))
 
-    # 4. neutral sütununu bool'a çevir
+    # 4. neutral bool'a cevir
     hist["neutral"] = hist["neutral"].map(
         lambda x: True if str(x).upper() == "TRUE" else False
     )
 
-    # 5. ELO + feature'ları hesapla
+    # 5. ELO + feature hesapla
     builder = EloFeatureBuilder()
-    h2h_records: dict = {}
-
+    h2h_records: dict = {}  # {(home, away): [(result, date)]}
     feature_rows = []
 
     for _, row in hist.iterrows():
@@ -479,28 +472,32 @@ def build_features(kaggle_results_path: str,
         ag    = int(row["away_score"])
         neut  = bool(row["neutral"])
         tourn = str(row["tournament"])
+        date  = row["date"]
 
-        # Maç öncesi feature'lar (güncelleme öncesi alınır)
-        elo_h = builder.get_elo(home)
-        elo_a = builder.get_elo(away)
+        # Mac oncesi feature'lar
+        elo_h  = builder.get_elo(home)
+        elo_a  = builder.get_elo(away)
         form_h = builder.get_form(home)
         form_a = builder.get_form(away)
-        mom_h = builder.get_elo_momentum(home)
-        mom_a = builder.get_elo_momentum(away)
-        atk_h = builder.get_avg_scored(home)    # ev hücum gücü
-        def_h = builder.get_avg_conceded(home)  # ev defans zayıflığı
-        atk_a = builder.get_avg_scored(away)    # dep hücum gücü
-        def_a = builder.get_avg_conceded(away)  # dep defans zayıflığı
-        h2h_w, h2h_d, h2h_l = builder.get_h2h(home, away, h2h_records)
+        form5_h = builder.get_form(home, window=FORM_WINDOW_SHORT)
+        form5_a = builder.get_form(away, window=FORM_WINDOW_SHORT)
+        mom_h  = builder.get_elo_momentum(home)
+        mom_a  = builder.get_elo_momentum(away)
+        atk_h  = builder.get_avg_scored(home)
+        def_h  = builder.get_avg_conceded(home)
+        atk_a  = builder.get_avg_scored(away)
+        def_a  = builder.get_avg_conceded(away)
+        h2h_w, h2h_d, h2h_l = builder.get_h2h(home, away, h2h_records,
+                                                current_date=date)
         conf_h = builder.get_conf_strength(home)
         conf_a = builder.get_conf_strength(away)
-
-        # ELO tabanlı beklenen sonuç (ev sahibi avantajı dahil)
         elo_win_prob_home = expected_score(
             elo_h + (0 if neut else HOME_ADVANTAGE), elo_a
         )
 
-        # Hedef değişken: 2=ev galip, 1=beraberlik, 0=deplasman galip
+        fifa_h = _fifa(home)
+        fifa_a = _fifa(away)
+
         if hg > ag:
             outcome = 2
         elif hg == ag:
@@ -509,97 +506,133 @@ def build_features(kaggle_results_path: str,
             outcome = 0
 
         feature_rows.append({
-            "date":          row["date"],
+            "date":          date,
             "home_team":     home,
             "away_team":     away,
             "home_score":    hg,
             "away_score":    ag,
             "tournament":    tourn,
             "neutral":       neut,
-            # --- Feature'lar ---
+            # ELO
             "elo_home":      elo_h,
             "elo_away":      elo_a,
             "elo_diff":      elo_h - elo_a,
             "elo_home_adj":  elo_h + (0 if neut else HOME_ADVANTAGE),
+            # Form (uzun + kisa pencere)
             "form_home":     form_h,
             "form_away":     form_a,
             "form_diff":     form_h - form_a,
+            "form5_home":    form5_h,
+            "form5_away":    form5_a,
+            "form5_diff":    form5_h - form5_a,
+            # H2H
             "h2h_home_win":  h2h_w,
             "h2h_draw":      h2h_d,
             "h2h_away_win":  h2h_l,
+            # Baglam
             "is_wc":         1 if "world cup" in tourn.lower() else 0,
             "is_neutral":    1 if neut else 0,
+            # ELO momentum
             "elo_momentum_home": mom_h,
             "elo_momentum_away": mom_a,
             "elo_momentum_diff": mom_h - mom_a,
+            # Hucum / Defans
             "atk_home":      atk_h,
             "def_home":      def_h,
             "atk_away":      atk_a,
             "def_away":      def_a,
-            "atk_vs_def_home": atk_h - def_a,  # ev hücum - dep defans
-            "atk_vs_def_away": atk_a - def_h,  # dep hücum - ev defans
+            "atk_vs_def_home": atk_h - def_a,
+            "atk_vs_def_away": atk_a - def_h,
             "elo_win_prob_home": elo_win_prob_home,
+            # Konfederasyon
             "conf_strength_home": conf_h,
             "conf_strength_away": conf_a,
             "conf_strength_diff": conf_h - conf_a,
+            # FIFA siralama
+            "fifa_rank_home":     fifa_h["rank"],
+            "fifa_rank_away":     fifa_a["rank"],
+            "fifa_points_home":   fifa_h["points"],
+            "fifa_points_away":   fifa_a["points"],
+            "fifa_points_diff":   fifa_h["points"] - fifa_a["points"],
+            "fifa_movement_home": fifa_h["movement"],
+            "fifa_movement_away": fifa_a["movement"],
+            # Hedef
             "outcome":       outcome,
         })
 
-        # ELO + H2H güncelle
+        # ELO guncelle
         builder.update_elo(home, away, hg, ag, neut, tourn)
+
+        # H2H guncelle — (sonuc, tarih) olarak sakla
         key = (home, away)
         if key not in h2h_records:
             h2h_records[key] = []
-        h2h_records[key].append(actual_score(hg, ag))
+        h2h_records[key].append((actual_score(hg, ag), date))
 
     train_df = pd.DataFrame(feature_rows)
 
-    # 6. 2026 tahmin feature'ları (oynanmamış maçlar)
+    # 6. 2026 tahmin feature'lari (oynanmamis maclar)
     pred_rows = []
     if not wc2026.empty:
         unplayed = wc2026[wc2026["status"] != "FINISHED"].copy()
         for _, row in unplayed.iterrows():
-            home  = row["home_team"]
-            away  = row["away_team"]
-            neut  = True  # WC nötr saha
+            home = row["home_team"]
+            away = row["away_team"]
+            neut = True
+            date = row["date"]
 
             elo_h  = builder.get_elo(home)
             elo_a  = builder.get_elo(away)
             form_h = builder.get_form(home)
             form_a = builder.get_form(away)
+            form5_h = builder.get_form(home, window=FORM_WINDOW_SHORT)
+            form5_a = builder.get_form(away, window=FORM_WINDOW_SHORT)
             mom_h  = builder.get_elo_momentum(home)
             mom_a  = builder.get_elo_momentum(away)
             atk_h  = builder.get_avg_scored(home)
             def_h  = builder.get_avg_conceded(home)
             atk_a  = builder.get_avg_scored(away)
             def_a  = builder.get_avg_conceded(away)
-            h2h_w, h2h_d, h2h_l = builder.get_h2h(home, away, h2h_records)
+            h2h_w, h2h_d, h2h_l = builder.get_h2h(home, away, h2h_records,
+                                                    current_date=date)
             conf_h = builder.get_conf_strength(home)
             conf_a = builder.get_conf_strength(away)
-            elo_win_prob_home = expected_score(elo_h, elo_a)  # nötr saha
+            elo_win_prob_home = expected_score(elo_h, elo_a)
+
+            fifa_h = _fifa(home)
+            fifa_a = _fifa(away)
 
             pred_rows.append({
-                "date":         row["date"],
+                "date":         date,
                 "home_team":    home,
                 "away_team":    away,
                 "stage":        row.get("stage", ""),
                 "match_id":     row.get("match_id", ""),
                 "kickoff_utc":  row.get("kickoff_utc", ""),
+                # ELO
                 "elo_home":     elo_h,
                 "elo_away":     elo_a,
                 "elo_diff":     elo_h - elo_a,
-                "elo_home_adj": elo_h,   # nötr saha, avantaj yok
+                "elo_home_adj": elo_h,
+                # Form
                 "form_home":    form_h,
                 "form_away":    form_a,
                 "form_diff":    form_h - form_a,
+                "form5_home":   form5_h,
+                "form5_away":   form5_a,
+                "form5_diff":   form5_h - form5_a,
+                # H2H
                 "h2h_home_win": h2h_w,
                 "h2h_draw":     h2h_d,
                 "h2h_away_win": h2h_l,
+                # Baglam
                 "is_wc":        1,
                 "is_neutral":   1,
+                # ELO momentum
                 "elo_momentum_home": mom_h,
                 "elo_momentum_away": mom_a,
                 "elo_momentum_diff": mom_h - mom_a,
+                # Hucum / Defans
                 "atk_home":      atk_h,
                 "def_home":      def_h,
                 "atk_away":      atk_a,
@@ -607,9 +640,18 @@ def build_features(kaggle_results_path: str,
                 "atk_vs_def_home": atk_h - def_a,
                 "atk_vs_def_away": atk_a - def_h,
                 "elo_win_prob_home": elo_win_prob_home,
+                # Konfederasyon
                 "conf_strength_home": conf_h,
                 "conf_strength_away": conf_a,
                 "conf_strength_diff": conf_h - conf_a,
+                # FIFA siralama
+                "fifa_rank_home":     fifa_h["rank"],
+                "fifa_rank_away":     fifa_a["rank"],
+                "fifa_points_home":   fifa_h["points"],
+                "fifa_points_away":   fifa_a["points"],
+                "fifa_points_diff":   fifa_h["points"] - fifa_a["points"],
+                "fifa_movement_home": fifa_h["movement"],
+                "fifa_movement_away": fifa_a["movement"],
             })
 
     pred_df = pd.DataFrame(pred_rows)
@@ -617,15 +659,28 @@ def build_features(kaggle_results_path: str,
 
 
 FEATURE_COLS = [
+    # ELO
     "elo_diff", "elo_home_adj", "elo_away",
+    # Form (uzun pencere)
     "form_home", "form_away", "form_diff",
+    # Form (kisa pencere — guncel form)
+    "form5_home", "form5_away", "form5_diff",
+    # H2H
     "h2h_home_win", "h2h_draw", "h2h_away_win",
+    # Baglam
     "is_wc", "is_neutral",
+    # ELO momentum
     "elo_momentum_home", "elo_momentum_away", "elo_momentum_diff",
+    # Hucum / Defans
     "atk_home", "def_home", "atk_away", "def_away",
     "atk_vs_def_home", "atk_vs_def_away",
     "elo_win_prob_home",
+    # Konfederasyon
     "conf_strength_home", "conf_strength_away", "conf_strength_diff",
+    # FIFA siralama
+    "fifa_rank_home", "fifa_rank_away",
+    "fifa_points_home", "fifa_points_away", "fifa_points_diff",
+    "fifa_movement_home", "fifa_movement_away",
 ]
 
 
@@ -635,6 +690,6 @@ if __name__ == "__main__":
         wc2026_path=os.path.join(DATA_DIR, "matches_2026.csv"),
         former_names_path=os.path.join(DATA_DIR, "former_names.csv"),
     )
-    print(f"Eğitim seti: {len(train)} maç")
-    print(f"Tahmin seti: {len(pred)} maç")
+    print(f"Egitim seti: {len(train)} mac, {len(FEATURE_COLS)} feature")
+    print(f"Tahmin seti: {len(pred)} mac")
     print(train[["date", "home_team", "away_team", "elo_diff", "outcome"]].tail())
