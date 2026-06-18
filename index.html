@@ -701,7 +701,7 @@
 
   <main>
     <div class="cal-day-nav" id="calDayNav"></div>
-    <div class="cal-grid-wrap" id="calGridWrap"></div>
+    <div class="cal-grid-wrap cal-collapsed" id="calGridWrap"></div>
     <div id="content"><div class="state-screen"><div class="spinner"></div><p>Tahminler yükleniyor…</p></div></div>
   </main>
 
@@ -1028,7 +1028,7 @@ ${scoreBubbleHtml}
         const todayStr = new Date().toLocaleDateString('sv-SE', { timeZone: 'Europe/Istanbul' });
         let selectedDate = null;
         let calYear, calMonth;
-        let calOpen = true;
+        let calOpen = false;
 
         function getMatchDates() {
           return [...new Set(matches.map(matchDateTR))].sort();
@@ -1071,6 +1071,11 @@ ${scoreBubbleHtml}
           if (next) el.querySelector('#calNext').addEventListener('click', () => selectDate(next));
           el.querySelector('#calDateLabel').addEventListener('click', () => {
             calOpen = !calOpen;
+            if (calOpen && selectedDate) {
+              const [y, mo] = selectedDate.split('-').map(Number);
+              calYear = y; calMonth = mo - 1;
+              _renderCalGrid(dates);
+            }
             document.getElementById('calGridWrap').classList.toggle('cal-collapsed', !calOpen);
             el.querySelector('.cal-chevron').textContent = calOpen ? '▾' : '▸';
           });
@@ -1108,7 +1113,11 @@ ${scoreBubbleHtml}
           `;
 
           document.querySelectorAll('.cal-day.has-match').forEach(c =>
-            c.addEventListener('click', () => selectDate(c.dataset.date))
+            c.addEventListener('click', () => {
+              calOpen = false;
+              document.getElementById('calGridWrap').classList.add('cal-collapsed');
+              selectDate(c.dataset.date);
+            })
           );
           document.getElementById('monthPrev').addEventListener('click', () => {
             let m = calMonth - 1, y = calYear;
