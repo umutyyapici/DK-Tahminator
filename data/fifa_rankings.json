@@ -27,19 +27,19 @@
     "prev_points": 1828.0219,
     "movement": 0
   },
-  "Brazil": {
+  "Morocco": {
     "rank": 5,
+    "points": 1769.977,
+    "prev_rank": 7,
+    "prev_points": 1755.1002,
+    "movement": 2
+  },
+  "Brazil": {
+    "rank": 6,
     "points": 1765.3404,
     "prev_rank": 6,
     "prev_points": 1765.8563,
-    "movement": 1
-  },
-  "Morocco": {
-    "rank": 6,
-    "points": 1755.6161,
-    "prev_rank": 7,
-    "prev_points": 1755.1002,
-    "movement": 1
+    "movement": 0
   },
   "Portugal": {
     "rank": 7,
@@ -251,33 +251,33 @@
     "prev_points": 1526.1834,
     "movement": 0
   },
-  "Scotland": {
-    "rank": 37,
-    "points": 1518.7685,
-    "prev_rank": 42,
-    "prev_points": 1503.3403,
-    "movement": 5
-  },
   "Wales": {
-    "rank": 38,
+    "rank": 37,
     "points": 1516.9466,
     "prev_rank": 37,
     "prev_points": 1516.9466,
-    "movement": -1
+    "movement": 0
   },
   "Hungary": {
-    "rank": 39,
+    "rank": 38,
     "points": 1506.3937,
     "prev_rank": 39,
     "prev_points": 1506.3937,
-    "movement": 0
+    "movement": 1
   },
   "Panama": {
-    "rank": 40,
+    "rank": 39,
     "points": 1505.3289,
     "prev_rank": 34,
     "prev_points": 1539.1555,
-    "movement": -6
+    "movement": -5
+  },
+  "Scotland": {
+    "rank": 40,
+    "points": 1504.4076,
+    "prev_rank": 42,
+    "prev_points": 1503.3403,
+    "movement": 2
   },
   "Serbia": {
     "rank": 41,
