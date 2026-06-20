@@ -41,19 +41,19 @@
     "prev_points": 1755.1002,
     "movement": 1
   },
-  "Portugal": {
+  "Netherlands": {
     "rank": 7,
+    "points": 1764.3969,
+    "prev_rank": 8,
+    "prev_points": 1753.5719,
+    "movement": 1
+  },
+  "Portugal": {
+    "rank": 8,
     "points": 1755.0936,
     "prev_rank": 5,
     "prev_points": 1767.849,
-    "movement": -2
-  },
-  "Netherlands": {
-    "rank": 8,
-    "points": 1749.2041,
-    "prev_rank": 8,
-    "prev_points": 1753.5719,
-    "movement": 0
+    "movement": -3
   },
   "Germany": {
     "rank": 9,
@@ -230,26 +230,26 @@
     "prev_points": 1549.2872,
     "movement": -1
   },
-  "Sweden": {
-    "rank": 34,
-    "points": 1533.1863,
-    "prev_rank": 38,
-    "prev_points": 1509.7854,
-    "movement": 4
-  },
   "Russia": {
-    "rank": 35,
+    "rank": 34,
     "points": 1529.6028,
     "prev_rank": 35,
     "prev_points": 1529.6028,
-    "movement": 0
+    "movement": 1
   },
   "Poland": {
-    "rank": 36,
+    "rank": 35,
     "points": 1526.1834,
     "prev_rank": 36,
     "prev_points": 1526.1834,
-    "movement": 0
+    "movement": 1
+  },
+  "Sweden": {
+    "rank": 36,
+    "points": 1517.9935,
+    "prev_rank": 38,
+    "prev_points": 1509.7854,
+    "movement": 2
   },
   "Paraguay": {
     "rank": 37,
