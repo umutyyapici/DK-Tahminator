@@ -58,7 +58,7 @@ def predict():
     print(f"[predict] {len(pred_df)} maç için tahmin üretiliyor...")
 
     # 3. Beklenen gol sayilari (lambda) — XGB + LGB ensemble
-    X = pred_df[FEATURE_COLS].values
+    X = pred_df[FEATURE_COLS]
     xgb_lh = model_home.predict(X)
     xgb_la = model_away.predict(X)
 
