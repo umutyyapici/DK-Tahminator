@@ -189,7 +189,7 @@ def outcome_label(hg, ag):
 
 
 def evaluate_predictions(df, model_home, model_away, label="", rho=0.0):
-    X  = df[FEATURE_COLS].values
+    X  = df[FEATURE_COLS]
     lh = model_home.predict(X)
     la = model_away.predict(X)
 
@@ -281,7 +281,7 @@ def evaluate():
     model_home = make_xgb_model()
     model_away = make_xgb_model()
 
-    X_train = train_df[FEATURE_COLS].values
+    X_train = train_df[FEATURE_COLS]
     model_home.fit(X_train, train_df["home_score"].values)
     model_away.fit(X_train, train_df["away_score"].values)
 
