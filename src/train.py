@@ -71,7 +71,7 @@ def train():
     train_df = train_df[train_df["date"] >= "1990-01-01"].copy()
     print(f"[train] Egitim seti: {len(train_df)} mac (1990 sonrasi)")
 
-    X      = train_df[FEATURE_COLS].values
+    X      = train_df[FEATURE_COLS]
     y_home = train_df["home_score"].values
     y_away = train_df["away_score"].values
 
