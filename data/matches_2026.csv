@@ -1,7 +1,7 @@
 date,kickoff_utc,home_team,away_team,home_score,away_score,tournament,city,country,neutral,status,stage,matchday,match_id
 2026-06-11,2026-06-11T19:00:00Z,Mexico,South Africa,2.0,0.0,FIFA World Cup,,USA/Mexico/Canada,True,FINISHED,GROUP_STAGE,1.0,537327
 2026-06-12,2026-06-12T02:00:00Z,South Korea,Czechia,2.0,1.0,FIFA World Cup,,USA/Mexico/Canada,True,FINISHED,GROUP_STAGE,1.0,537328
-2026-06-12,2026-06-12T19:00:00Z,Canada,Bosnia-Herzegovina,,,FIFA World Cup,,USA/Mexico/Canada,True,FINISHED,GROUP_STAGE,1.0,537333
+2026-06-12,2026-06-12T19:00:00Z,Canada,Bosnia-Herzegovina,1.0,1.0,FIFA World Cup,,USA/Mexico/Canada,True,FINISHED,GROUP_STAGE,1.0,537333
 2026-06-13,2026-06-13T01:00:00Z,United States,Paraguay,4.0,1.0,FIFA World Cup,,USA/Mexico/Canada,True,FINISHED,GROUP_STAGE,1.0,537345
 2026-06-13,2026-06-13T19:00:00Z,Qatar,Switzerland,1.0,1.0,FIFA World Cup,,USA/Mexico/Canada,True,FINISHED,GROUP_STAGE,1.0,537334
 2026-06-13,2026-06-13T22:00:00Z,Brazil,Morocco,1.0,1.0,FIFA World Cup,,USA/Mexico/Canada,True,FINISHED,GROUP_STAGE,1.0,537339
@@ -36,8 +36,8 @@ date,kickoff_utc,home_team,away_team,home_score,away_score,tournament,city,count
 2026-06-21,2026-06-21T22:00:00Z,Uruguay,Cape Verde Islands,,,FIFA World Cup,,USA/Mexico/Canada,True,TIMED,GROUP_STAGE,2.0,537372
 2026-06-21,2026-06-21T16:00:00Z,Spain,Saudi Arabia,,,FIFA World Cup,,USA/Mexico/Canada,True,TIMED,GROUP_STAGE,2.0,537371
 2026-06-21,2026-06-21T19:00:00Z,Belgium,Iran,,,FIFA World Cup,,USA/Mexico/Canada,True,TIMED,GROUP_STAGE,2.0,537365
-2026-06-21,2026-06-21T00:00:00Z,Ecuador,Curaçao,,,FIFA World Cup,,USA/Mexico/Canada,True,IN_PLAY,GROUP_STAGE,2.0,537354
-2026-06-21,2026-06-21T04:00:00Z,Tunisia,Japan,,,FIFA World Cup,,USA/Mexico/Canada,True,TIMED,GROUP_STAGE,2.0,537360
+2026-06-21,2026-06-21T00:00:00Z,Ecuador,Curaçao,0.0,0.0,FIFA World Cup,,USA/Mexico/Canada,True,FINISHED,GROUP_STAGE,2.0,537354
+2026-06-21,2026-06-21T04:00:00Z,Tunisia,Japan,,,FIFA World Cup,,USA/Mexico/Canada,True,IN_PLAY,GROUP_STAGE,2.0,537360
 2026-06-22,2026-06-22T01:00:00Z,New Zealand,Egypt,,,FIFA World Cup,,USA/Mexico/Canada,True,TIMED,GROUP_STAGE,2.0,537366
 2026-06-22,2026-06-22T17:00:00Z,Argentina,Austria,,,FIFA World Cup,,USA/Mexico/Canada,True,TIMED,GROUP_STAGE,2.0,537399
 2026-06-22,2026-06-22T21:00:00Z,France,Iraq,,,FIFA World Cup,,USA/Mexico/Canada,True,TIMED,GROUP_STAGE,2.0,537393
