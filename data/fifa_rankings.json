@@ -111,19 +111,19 @@
     "prev_points": 1661.5762,
     "movement": 2
   },
-  "Senegal": {
+  "Uruguay": {
     "rank": 17,
+    "points": 1674.9641,
+    "prev_rank": 16,
+    "prev_points": 1673.0686,
+    "movement": -1
+  },
+  "Senegal": {
+    "rank": 18,
     "points": 1667.6584,
     "prev_rank": 15,
     "prev_points": 1684.0699,
-    "movement": -2
-  },
-  "Uruguay": {
-    "rank": 18,
-    "points": 1661.9497,
-    "prev_rank": 16,
-    "prev_points": 1673.0686,
-    "movement": -2
+    "movement": -3
   },
   "Switzerland": {
     "rank": 19,
@@ -433,33 +433,33 @@
     "prev_points": 1406.9905,
     "movement": 0
   },
-  "Cape Verde": {
-    "rank": 63,
-    "points": 1389.7851,
-    "prev_rank": 67,
-    "prev_points": 1371.108,
-    "movement": 4
-  },
   "Bosnia and Herzegovina": {
-    "rank": 64,
+    "rank": 63,
     "points": 1381.1766,
     "prev_rank": 64,
     "prev_points": 1387.2158,
-    "movement": 0
+    "movement": 1
   },
   "Ghana": {
-    "rank": 65,
+    "rank": 64,
     "points": 1380.7078,
     "prev_rank": 73,
     "prev_points": 1346.8812,
-    "movement": 8
+    "movement": 9
   },
   "Honduras": {
-    "rank": 66,
+    "rank": 65,
     "points": 1378.9703,
     "prev_rank": 65,
     "prev_points": 1378.9703,
-    "movement": -1
+    "movement": 0
+  },
+  "Cape Verde": {
+    "rank": 66,
+    "points": 1376.7707,
+    "prev_rank": 67,
+    "prev_points": 1371.108,
+    "movement": 1
   },
   "Albania": {
     "rank": 67,
