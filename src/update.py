@@ -33,7 +33,7 @@ HISTORY_PATH = os.path.join(DATA_DIR, "predictions_history.csv")
 
 HISTORY_COLS = ["date", "kickoff_utc", "home_team", "away_team", "stage", "predicted", "most_likely_score",
                 "expected_home", "expected_away", "prob_home", "prob_draw", "prob_away", "elo_home", "elo_away",
-                "top1_score", "top1_prob", "top2_score", "top2_prob", "top3_score", "top3_prob"]
+                "top1_score", "top1_prob", "top2_score", "top2_prob", "top3_score", "top3_prob", "is_joker"]
 
 
 def archive_predictions():
