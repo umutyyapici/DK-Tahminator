@@ -38,7 +38,7 @@ date,kickoff_utc,home_team,away_team,home_score,away_score,tournament,city,count
 2026-06-21,2026-06-21T19:00:00Z,Belgium,Iran,0.0,0.0,FIFA World Cup,,USA/Mexico/Canada,True,FINISHED,GROUP_STAGE,2.0,537365
 2026-06-21,2026-06-21T00:00:00Z,Ecuador,Curaçao,0.0,0.0,FIFA World Cup,,USA/Mexico/Canada,True,FINISHED,GROUP_STAGE,2.0,537354
 2026-06-21,2026-06-21T04:00:00Z,Tunisia,Japan,0.0,4.0,FIFA World Cup,,USA/Mexico/Canada,True,FINISHED,GROUP_STAGE,2.0,537360
-2026-06-22,2026-06-22T01:00:00Z,New Zealand,Egypt,,,FIFA World Cup,,USA/Mexico/Canada,True,PAUSED,GROUP_STAGE,2.0,537366
+2026-06-22,2026-06-22T01:00:00Z,New Zealand,Egypt,1.0,3.0,FIFA World Cup,,USA/Mexico/Canada,True,FINISHED,GROUP_STAGE,2.0,537366
 2026-06-22,2026-06-22T17:00:00Z,Argentina,Austria,,,FIFA World Cup,,USA/Mexico/Canada,True,TIMED,GROUP_STAGE,2.0,537399
 2026-06-22,2026-06-22T21:00:00Z,France,Iraq,,,FIFA World Cup,,USA/Mexico/Canada,True,TIMED,GROUP_STAGE,2.0,537393
 2026-06-23,2026-06-23T00:00:00Z,Norway,Senegal,,,FIFA World Cup,,USA/Mexico/Canada,True,TIMED,GROUP_STAGE,2.0,537394

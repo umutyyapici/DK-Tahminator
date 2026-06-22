@@ -174,61 +174,61 @@
     "prev_points": 1579.3426,
     "movement": 2
   },
-  "Norway": {
+  "Egypt": {
     "rank": 26,
+    "points": 1583.3728,
+    "prev_rank": 29,
+    "prev_points": 1562.3672,
+    "movement": 3
+  },
+  "Norway": {
+    "rank": 27,
     "points": 1577.1848,
     "prev_rank": 31,
     "prev_points": 1557.4377,
-    "movement": 5
+    "movement": 4
   },
   "Canada": {
-    "rank": 27,
+    "rank": 28,
     "points": 1572.1334,
     "prev_rank": 30,
     "prev_points": 1559.4793,
-    "movement": 3
+    "movement": 2
   },
   "Algeria": {
-    "rank": 28,
+    "rank": 29,
     "points": 1559.2376,
     "prev_rank": 28,
     "prev_points": 1571.0333,
-    "movement": 0
+    "movement": -1
   },
   "Ecuador": {
-    "rank": 29,
+    "rank": 30,
     "points": 1558.3521,
     "prev_rank": 23,
     "prev_points": 1598.5158,
-    "movement": -6
+    "movement": -7
   },
   "Ivory Coast": {
-    "rank": 30,
+    "rank": 31,
     "points": 1551.7132,
     "prev_rank": 33,
     "prev_points": 1540.8695,
-    "movement": 3
+    "movement": 2
   },
   "Turkey": {
-    "rank": 31,
+    "rank": 32,
     "points": 1550.1252,
     "prev_rank": 22,
     "prev_points": 1605.7309,
-    "movement": -9
+    "movement": -10
   },
   "Ukraine": {
-    "rank": 32,
+    "rank": 33,
     "points": 1549.2872,
     "prev_rank": 32,
     "prev_points": 1549.2872,
-    "movement": 0
-  },
-  "Egypt": {
-    "rank": 33,
-    "points": 1533.3728,
-    "prev_rank": 29,
-    "prev_points": 1562.3672,
-    "movement": -4
+    "movement": -1
   },
   "Russia": {
     "rank": 34,
@@ -531,61 +531,61 @@
     "prev_points": 1333.904,
     "movement": 0
   },
-  "New Zealand": {
-    "rank": 77,
-    "points": 1327.3372,
-    "prev_rank": 85,
-    "prev_points": 1275.5811,
-    "movement": 8
-  },
   "Bolivia": {
-    "rank": 78,
+    "rank": 77,
     "points": 1325.9954,
     "prev_rank": 77,
     "prev_points": 1325.9954,
-    "movement": -1
+    "movement": 0
   },
   "Kosovo": {
-    "rank": 79,
+    "rank": 78,
     "points": 1319.1209,
     "prev_rank": 78,
     "prev_points": 1319.1209,
-    "movement": -1
+    "movement": 0
   },
   "Oman": {
-    "rank": 80,
+    "rank": 79,
     "points": 1306.9017,
     "prev_rank": 79,
     "prev_points": 1306.9017,
-    "movement": -1
+    "movement": 0
   },
   "Montenegro": {
-    "rank": 81,
+    "rank": 80,
     "points": 1301.9772,
     "prev_rank": 80,
     "prev_points": 1301.9772,
-    "movement": -1
+    "movement": 0
   },
   "Curaçao": {
-    "rank": 82,
+    "rank": 81,
     "points": 1299.4057,
     "prev_rank": 82,
     "prev_points": 1294.7691,
-    "movement": 0
+    "movement": 1
   },
   "Guinea": {
-    "rank": 83,
+    "rank": 82,
     "points": 1295.5988,
     "prev_rank": 81,
     "prev_points": 1295.5988,
-    "movement": -2
+    "movement": -1
   },
   "Syria": {
-    "rank": 84,
+    "rank": 83,
     "points": 1283.0519,
     "prev_rank": 84,
     "prev_points": 1283.0519,
-    "movement": 0
+    "movement": 1
+  },
+  "New Zealand": {
+    "rank": 84,
+    "points": 1277.3372,
+    "prev_rank": 85,
+    "prev_points": 1275.5811,
+    "movement": 1
   },
   "Gabon": {
     "rank": 85,

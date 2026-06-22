@@ -1,10 +1,10 @@
 {
-  "accuracy": 53.8,
-  "correct": 21,
-  "total": 39,
+  "accuracy": 55.0,
+  "correct": 22,
+  "total": 40,
   "exact": 5,
-  "exact_pct": 12.8,
+  "exact_pct": 12.5,
   "top3": 11,
-  "top3_pct": 28.2,
-  "updated_at": "2026-06-22 02:03 UTC"
+  "top3_pct": 27.5,
+  "updated_at": "2026-06-22 03:43 UTC"
 }
