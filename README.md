@@ -8,10 +8,10 @@ Evaluated on 3,610 matches from major tournaments (2018–2025) across all confe
 
 | Metric | Value |
 |--------|-------|
-| Accuracy | 61.2% |
-| Exact Score | 13.1% |
-| Top-3 Score | 38.0% |
-| Log Loss | 0.852 |
+| Accuracy | 61.4% |
+| Exact Score | 13.0% |
+| Top-3 Score | 37.6% |
+| Log Loss | 0.853 |
 | Brier Score | 0.167 |
 | Baseline (always home) | 46.1% |
 | Dixon-Coles ρ (estimated) | -0.053 |
@@ -35,7 +35,7 @@ Evaluated on 3,610 matches from major tournaments (2018–2025) across all confe
 7. ρ is estimated automatically via **time-weighted** maximum likelihood on ensemble predictions during training and stored in `models/rho.json`
 8. As 2026 WC matches are played, results are fetched automatically, ELO ratings are updated, and predictions for remaining matches are recalculated
 9. Completed matches are compared against predictions to compute a live accuracy score
-10. For each upcoming match day, the match with the highest expected points is marked as that day's **joker** (`is_joker` column in `predictions.csv`, shown with a 🃏 badge on the dashboard). Days are grouped by **Turkey timezone (UTC+3)**. The joker is re-evaluated on every model update; the most recent pick is always used
+10. For each upcoming match day, the match with the highest expected points is marked as that day's **joker** (`is_joker` column in `predictions.csv`, shown with a 🃏 badge on the dashboard). Days are grouped by **Turkey timezone (UTC+3)**. The joker selection is persisted in `data/joker_locks.json`. Once the chosen joker match is played (FINISHED), the selection is locked and will not be reassigned — even if a later model update would prefer a different match
 11. The web dashboard reads all output files dynamically — no redeployment needed
 
 ## Feature Engineering
@@ -74,8 +74,8 @@ Two scheduled workflows keep the data fresh, both driven by [src/update.py](src/
 
 | Workflow | Schedule | Command | What it updates |
 |---|---|---|---|
-| [Daily WC2026 Update](.github/workflows/daily_update.yml) | Once a day (10:00 UTC / 13:00 TR) | `python src/update.py` | Full pipeline: fetches FIFA rankings, fetches results, retrains XGBoost + LightGBM models (time-weighted), regenerates ensemble predictions, recalculates accuracy and backtest, re-evaluates the daily joker. Commits data files, model files, and `data/fifa_rankings.json`. |
-| [Sonuç Güncelleme (Hafif)](.github/workflows/results_update.yml) | Every 30 minutes | `python src/update.py --light` | Lightweight pipeline: fetches FIFA rankings and latest match results, archives finished predictions, regenerates predictions **with the existing trained models** (no retraining), recalculates accuracy, re-evaluates the joker. Commits data files and `data/fifa_rankings.json`. |
+| [Daily WC2026 Update](.github/workflows/daily_update.yml) | Once a day (10:00 UTC / 13:00 TR) | `python src/update.py` | Full pipeline: fetches FIFA rankings, fetches results, retrains XGBoost + LightGBM models (time-weighted), regenerates ensemble predictions, recalculates accuracy and backtest, updates joker locks. Commits data files, model files, `data/fifa_rankings.json`, and `data/joker_locks.json`. |
+| [Sonuç Güncelleme (Hafif)](.github/workflows/results_update.yml) | Every 30 minutes | `python src/update.py --light` | Lightweight pipeline: fetches FIFA rankings and latest match results, archives finished predictions, regenerates predictions **with the existing trained models** (no retraining), recalculates accuracy, updates joker locks. Commits data files, `data/fifa_rankings.json`, and `data/joker_locks.json`. |
 
 Both workflows share the same `data-update` concurrency group so they never push at the same time. Model files (`models/*.pkl`, `models/rho.json`) are committed by the daily run and reused by the lightweight run.
 
@@ -92,7 +92,7 @@ Both workflows share the same `data-update` concurrency group so they never push
 | `src/predict.py` | Generates ensemble predictions and Poisson probabilities |
 | `src/poisson_model.py` | Poisson distribution, Dixon-Coles correction, ρ estimation |
 | `src/evaluate.py` | Backtests model on 2018+ major tournaments |
-| `src/auto_predict.py` | Selects daily joker by expected points |
+| `src/auto_predict.py` | Selects daily joker by expected points; locks selection once the joker match is played (`data/joker_locks.json`) |
 | `src/update.py` | Orchestrates the full and lightweight pipelines |
 
 ## Setup
