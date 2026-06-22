@@ -1,7 +1,7 @@
 {
   "Argentina": {
     "rank": 1,
-    "points": 1889.0623,
+    "points": 1901.9279,
     "prev_rank": 1,
     "prev_points": 1877.2666,
     "movement": 0
@@ -139,19 +139,19 @@
     "prev_points": 1619.4742,
     "movement": 1
   },
-  "Austria": {
-    "rank": 21,
-    "points": 1612.856,
-    "prev_rank": 24,
-    "prev_points": 1597.4041,
-    "movement": 3
-  },
   "Iran": {
-    "rank": 22,
+    "rank": 21,
     "points": 1611.1777,
     "prev_rank": 20,
     "prev_points": 1619.5816,
-    "movement": -2
+    "movement": -1
+  },
+  "Austria": {
+    "rank": 22,
+    "points": 1599.9903,
+    "prev_rank": 24,
+    "prev_points": 1597.4041,
+    "movement": 2
   },
   "South Korea": {
     "rank": 23,

@@ -1,0 +1,37 @@
+{
+  "2026-06-22": {
+    "home_team": "Argentina",
+    "away_team": "Austria",
+    "played": false
+  },
+  "2026-06-23": {
+    "home_team": "France",
+    "away_team": "Iraq",
+    "played": false
+  },
+  "2026-06-24": {
+    "home_team": "Colombia",
+    "away_team": "Congo DR",
+    "played": false
+  },
+  "2026-06-25": {
+    "home_team": "Czechia",
+    "away_team": "Mexico",
+    "played": false
+  },
+  "2026-06-26": {
+    "home_team": "Senegal",
+    "away_team": "Iraq",
+    "played": false
+  },
+  "2026-06-27": {
+    "home_team": "New Zealand",
+    "away_team": "Belgium",
+    "played": false
+  },
+  "2026-06-28": {
+    "home_team": "Jordan",
+    "away_team": "Argentina",
+    "played": false
+  }
+}
