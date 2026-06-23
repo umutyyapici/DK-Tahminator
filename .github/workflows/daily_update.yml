@@ -40,7 +40,7 @@ jobs:
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          for f in data/matches_2026.csv data/predictions.csv data/predictions_history.csv data/accuracy.json data/backtest.json data/fifa_rankings.json data/joker_locks.json models/model_home.pkl models/model_away.pkl models/model_home_lgb.pkl models/model_away_lgb.pkl models/rho.json; do
+          for f in data/matches_2026.csv data/matches_2026.json data/predictions.csv data/predictions.json data/predictions_history.csv data/predictions_history.json data/accuracy.json data/backtest.json data/fifa_rankings.json data/joker_locks.json data/elo_cache.json models/model_home.pkl models/model_away.pkl models/model_home_lgb.pkl models/model_away_lgb.pkl models/rho.json; do
             [ -f "$f" ] && git add "$f"
           done
           if git diff --staged --quiet; then
