@@ -43,7 +43,7 @@ date,kickoff_utc,home_team,away_team,home_score,away_score,tournament,city,count
 2026-06-22,2026-06-22T21:00:00Z,France,Iraq,3.0,0.0,FIFA World Cup,,USA/Mexico/Canada,True,FINISHED,GROUP_STAGE,2.0,537393
 2026-06-23,2026-06-23T00:00:00Z,Norway,Senegal,3.0,2.0,FIFA World Cup,,USA/Mexico/Canada,True,FINISHED,GROUP_STAGE,2.0,537394
 2026-06-23,2026-06-23T03:00:00Z,Jordan,Algeria,1.0,2.0,FIFA World Cup,,USA/Mexico/Canada,True,FINISHED,GROUP_STAGE,2.0,537400
-2026-06-23,2026-06-23T17:00:00Z,Portugal,Uzbekistan,,,FIFA World Cup,,USA/Mexico/Canada,True,TIMED,GROUP_STAGE,2.0,537405
+2026-06-23,2026-06-23T17:00:00Z,Portugal,Uzbekistan,,,FIFA World Cup,,USA/Mexico/Canada,True,IN_PLAY,GROUP_STAGE,2.0,537405
 2026-06-23,2026-06-23T20:00:00Z,England,Ghana,,,FIFA World Cup,,USA/Mexico/Canada,True,TIMED,GROUP_STAGE,2.0,537411
 2026-06-23,2026-06-23T23:00:00Z,Panama,Croatia,,,FIFA World Cup,,USA/Mexico/Canada,True,TIMED,GROUP_STAGE,2.0,537412
 2026-06-24,2026-06-24T22:00:00Z,Morocco,Haiti,,,FIFA World Cup,,USA/Mexico/Canada,True,TIMED,GROUP_STAGE,3.0,537344
@@ -72,15 +72,15 @@ date,kickoff_utc,home_team,away_team,home_score,away_score,tournament,city,count
 2026-06-28,2026-06-28T02:00:00Z,Jordan,Argentina,,,FIFA World Cup,,USA/Mexico/Canada,True,TIMED,GROUP_STAGE,3.0,537401
 2026-06-28,2026-06-28T02:00:00Z,Algeria,Austria,,,FIFA World Cup,,USA/Mexico/Canada,True,TIMED,GROUP_STAGE,3.0,537402
 2026-06-28,2026-06-28T19:00:00Z,,,,,FIFA World Cup,,USA/Mexico/Canada,True,TIMED,LAST_32,,537417
-2026-06-29,2026-06-29T20:30:00Z,,,,,FIFA World Cup,,USA/Mexico/Canada,True,TIMED,LAST_32,,537415
+2026-06-29,2026-06-29T20:30:00Z,Germany,,,,FIFA World Cup,,USA/Mexico/Canada,True,TIMED,LAST_32,,537415
 2026-06-29,2026-06-29T17:00:00Z,,,,,FIFA World Cup,,USA/Mexico/Canada,True,TIMED,LAST_32,,537423
 2026-06-30,2026-06-30T21:00:00Z,,,,,FIFA World Cup,,USA/Mexico/Canada,True,TIMED,LAST_32,,537416
 2026-06-30,2026-06-30T17:00:00Z,,,,,FIFA World Cup,,USA/Mexico/Canada,True,TIMED,LAST_32,,537424
 2026-06-30,2026-06-30T01:00:00Z,,,,,FIFA World Cup,,USA/Mexico/Canada,True,TIMED,LAST_32,,537418
-2026-07-01,2026-07-01T01:00:00Z,,,,,FIFA World Cup,,USA/Mexico/Canada,True,TIMED,LAST_32,,537425
+2026-07-01,2026-07-01T01:00:00Z,Mexico,,,,FIFA World Cup,,USA/Mexico/Canada,True,TIMED,LAST_32,,537425
 2026-07-01,2026-07-01T16:00:00Z,,,,,FIFA World Cup,,USA/Mexico/Canada,True,TIMED,LAST_32,,537426
 2026-07-01,2026-07-01T20:00:00Z,,,,,FIFA World Cup,,USA/Mexico/Canada,True,TIMED,LAST_32,,537422
-2026-07-02,2026-07-02T00:00:00Z,,,,,FIFA World Cup,,USA/Mexico/Canada,True,TIMED,LAST_32,,537421
+2026-07-02,2026-07-02T00:00:00Z,United States,,,,FIFA World Cup,,USA/Mexico/Canada,True,TIMED,LAST_32,,537421
 2026-07-02,2026-07-02T19:00:00Z,,,,,FIFA World Cup,,USA/Mexico/Canada,True,TIMED,LAST_32,,537420
 2026-07-02,2026-07-02T23:00:00Z,,,,,FIFA World Cup,,USA/Mexico/Canada,True,TIMED,LAST_32,,537419
 2026-07-03,2026-07-03T03:00:00Z,,,,,FIFA World Cup,,USA/Mexico/Canada,True,TIMED,LAST_32,,537429

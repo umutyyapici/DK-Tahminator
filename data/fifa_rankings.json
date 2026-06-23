@@ -41,26 +41,26 @@
     "prev_points": 1755.1002,
     "movement": 1
   },
-  "Netherlands": {
+  "Portugal": {
     "rank": 7,
+    "points": 1766.7385,
+    "prev_rank": 5,
+    "prev_points": 1767.849,
+    "movement": -2
+  },
+  "Netherlands": {
+    "rank": 8,
     "points": 1764.3969,
     "prev_rank": 8,
     "prev_points": 1753.5719,
-    "movement": 1
+    "movement": 0
   },
   "Germany": {
-    "rank": 8,
+    "rank": 9,
     "points": 1760.4554,
     "prev_rank": 10,
     "prev_points": 1735.772,
-    "movement": 2
-  },
-  "Portugal": {
-    "rank": 9,
-    "points": 1755.0936,
-    "prev_rank": 5,
-    "prev_points": 1767.849,
-    "movement": -4
+    "movement": 1
   },
   "Belgium": {
     "rank": 10,
@@ -370,40 +370,40 @@
     "prev_points": 1455.5867,
     "movement": 2
   },
-  "Uzbekistan": {
-    "rank": 54,
-    "points": 1444.4818,
-    "prev_rank": 50,
-    "prev_points": 1458.7341,
-    "movement": -4
-  },
   "Republic of Ireland": {
-    "rank": 55,
+    "rank": 54,
     "points": 1441.0969,
     "prev_rank": 58,
     "prev_points": 1441.0969,
-    "movement": 3
+    "movement": 4
   },
   "Slovenia": {
-    "rank": 56,
+    "rank": 55,
     "points": 1441.0872,
     "prev_rank": 59,
     "prev_points": 1441.0872,
-    "movement": 3
+    "movement": 4
   },
   "Qatar": {
-    "rank": 57,
+    "rank": 56,
     "points": 1438.8176,
     "prev_rank": 56,
     "prev_points": 1450.3077,
-    "movement": -1
+    "movement": 0
   },
   "Tunisia": {
-    "rank": 58,
+    "rank": 57,
     "points": 1437.6861,
     "prev_rank": 45,
     "prev_points": 1476.4051,
-    "movement": -13
+    "movement": -12
+  },
+  "Uzbekistan": {
+    "rank": 58,
+    "points": 1432.8368,
+    "prev_rank": 50,
+    "prev_points": 1458.7341,
+    "movement": -8
   },
   "Saudi Arabia": {
     "rank": 59,
