@@ -53,7 +53,8 @@ jobs:
               exit 0
             fi
             echo "Push reddedildi, rebase deneniyor (deneme $i)..."
-            git pull --rebase origin main
+            git rebase --abort 2>/dev/null || true
+            git pull --rebase -X theirs origin main
           done
           echo "Push 5 denemeden sonra başarısız oldu."
           exit 1
