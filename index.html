@@ -6,6 +6,7 @@
   <title>WC 2026 · AI Tahmin Bülteni</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://flagcdn.com" />
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -738,7 +739,7 @@
 
     function flagImg(team) {
       const code = getCountryCode(team);
-      return `<img src="https://flagcdn.com/w80/${code}.png" alt="${team}" class="team-flag-img" />`;
+      return `<img src="https://flagcdn.com/w80/${code}.png" alt="${team}" class="team-flag-img" loading="lazy" />`;
     }
 
     // ── Stage label map ────────────────────────────────────
@@ -756,6 +757,16 @@
       return STAGE_MAP[s] || s || "Maç";
     }
 
+    // ── Poisson PMF (memoized) ─────────────────────────────
+    const _pmfCache = {};
+    function poissonPmf(k, lam) {
+      const key = k + ':' + lam.toFixed(4);
+      if (_pmfCache[key] !== undefined) return _pmfCache[key];
+      let p = Math.exp(-lam);
+      for (let i = 1; i <= k; i++) p *= lam / i;
+      return (_pmfCache[key] = p);
+    }
+
     // ── "Ev Sahibi"/"Deplasman"/"Beraberlik" -> takım adı ───
     function winnerLabel(result, match) {
       return result === 'Ev Sahibi' ? match.home_team
@@ -763,7 +774,7 @@
            : 'Beraberlik';
     }
 
-    // ── CSV parser ─────────────────────────────────────────
+    // ── CSV parser (yedek: virgül içermeyen basit CSV için) ───────────────
     function parseCSV(text) {
       const lines = text.trim().split('\n');
       const headers = lines[0].split(',').map(h => h.trim());
@@ -775,41 +786,56 @@
       });
     }
 
-    // ── Format date ────────────────────────────────────────
-    function formatDate(dateStr) {
-      const d = new Date(dateStr);
-      if (isNaN(d)) return dateStr;
-      // dateStr salt bir takvim günü ("YYYY-MM-DD") temsil eder; izleyicinin
-      // tarayıcı saat dilimi UTC'nin gerisindeyse gün kaymasın diye UTC'de biçimlendirilir.
-      return d.toLocaleDateString('tr-TR', { weekday:'long', day:'numeric', month:'long', timeZone: 'UTC' });
+    // ── JSON → CSV yedekli veri yükleme ───────────────────────────────────
+    // Önce .json dener; başarısız olursa (üretilmemişse) .csv'ye düşer.
+    async function fetchData(baseName, t) {
+      try {
+        const r = await fetch(`data/${baseName}.json?t=${t}`);
+        if (r.ok) return await r.json();
+      } catch (_) { /* json yok, csv'ye düş */ }
+      const r = await fetch(`data/${baseName}.csv?t=${t}`);
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      return parseCSV(await r.text());
     }
 
-    // ── Maçın TR (Europe/Istanbul) takvim gününü döndürür ───
-    // kickoff_utc varsa (örn. "2026-06-11T22:00:00Z") TR saatine
-    // çevirip o günü döndürür; yoksa "date" alanına düşer.
-    function matchDateTR(match) {
-      if (match.kickoff_utc) {
-        const d = new Date(match.kickoff_utc);
-        if (!isNaN(d)) {
-          // sv-SE -> "YYYY-MM-DD" formatı verir
-          return d.toLocaleDateString('sv-SE', { timeZone: 'Europe/Istanbul' });
+    // ── Tarih yardımcıları (timezone sabiti tek yerde) ────────
+    const DateUtils = {
+      TZ_TR: 'Europe/Istanbul',
+
+      // "YYYY-MM-DD" string → Türkçe uzun tarih (Pazartesi, 11 Haziran)
+      // Gün kaymasını önlemek için UTC'de yorumlanır
+      format(dateStr) {
+        const d = new Date(dateStr);
+        if (isNaN(d)) return dateStr;
+        return d.toLocaleDateString('tr-TR', { weekday:'long', day:'numeric', month:'long', timeZone: 'UTC' });
+      },
+
+      // Maçın İstanbul takvim gününü "YYYY-MM-DD" olarak döndürür
+      matchDay(match) {
+        if (match.kickoff_utc) {
+          const d = new Date(match.kickoff_utc);
+          if (!isNaN(d)) return d.toLocaleDateString('sv-SE', { timeZone: this.TZ_TR });
         }
-      }
-      return match.date?.slice(0, 10) || 'Bilinmiyor';
-    }
+        return match.date?.slice(0, 10) || 'Bilinmiyor';
+      },
 
-    // ── "YYYY-MM-DD HH:MM UTC" -> Türkiye saati ─────────────
-    function formatUpdatedAtTR(utcStr) {
-      const iso = utcStr.replace(' UTC', '').replace(' ', 'T') + 'Z';
-      const d = new Date(iso);
-      if (isNaN(d)) return utcStr;
-      const formatted = d.toLocaleString('tr-TR', {
-        day: 'numeric', month: 'long', year: 'numeric',
-        hour: '2-digit', minute: '2-digit',
-        timeZone: 'Europe/Istanbul'
-      });
-      return `${formatted} (TR)`;
-    }
+      // "YYYY-MM-DD HH:MM UTC" → İstanbul saati
+      formatUpdatedAt(utcStr) {
+        const iso = utcStr.replace(' UTC', '').replace(' ', 'T') + 'Z';
+        const d = new Date(iso);
+        if (isNaN(d)) return utcStr;
+        return d.toLocaleString('tr-TR', {
+          day: 'numeric', month: 'long', year: 'numeric',
+          hour: '2-digit', minute: '2-digit',
+          timeZone: this.TZ_TR
+        }) + ' (TR)';
+      },
+    };
+
+    // Geriye dönük uyumluluk için kısa takma adlar
+    const formatDate        = s    => DateUtils.format(s);
+    const matchDateTR       = m    => DateUtils.matchDay(m);
+    const formatUpdatedAtTR = utcs => DateUtils.formatUpdatedAt(utcs);
 
     // ── Render card ────────────────────────────────────────
     function renderCard(match) {
@@ -833,22 +859,23 @@
           .filter(rank => match[`top${rank}_score`])
           .map(rank => ({ s: match[`top${rank}_score`], p: parseFloat(match[`top${rank}_prob`]) / 100 }));
       } else {
-        function poissonPmf(k, lam) {
-          let p = Math.exp(-lam);
-          for (let i = 1; i <= k; i++) p *= lam / i;
-          return p;
-        }
         const lh = parseFloat(match.expected_home) || 1.2;
         const la = parseFloat(match.expected_away) || 1.0;
         const maxG = 9;
-        const scores = [];
+        top3 = [];
         for (let i = 0; i < maxG; i++) {
           for (let j = 0; j < maxG; j++) {
-            scores.push({ s: i + '-' + j, p: poissonPmf(i, lh) * poissonPmf(j, la) });
+            const p = poissonPmf(i, lh) * poissonPmf(j, la);
+            const item = { s: i + '-' + j, p };
+            if (top3.length < 3) {
+              top3.push(item);
+              top3.sort((a, b) => b.p - a.p);
+            } else if (p > top3[2].p) {
+              top3[2] = item;
+              top3.sort((a, b) => b.p - a.p);
+            }
           }
         }
-        scores.sort((a, b) => b.p - a.p);
-        top3 = scores.slice(0, 3);
       }
       const topScoresHtml = top3.map((s, idx) => `
         <div class="top-score-item">
@@ -856,7 +883,7 @@
           <span class="top-score-pct${idx === 0 ? ' first' : ''}">%${(s.p * 100).toFixed(1)}</span>
         </div>`).join('');
 
-      const jokerBadge = match.is_joker === 'True' && !match.played ? '<div class="joker-badge">🃏 Joker</div>' : '';
+      const jokerBadge = (match.is_joker === 'True' || match.is_joker === true) && !match.played ? '<div class="joker-badge">🃏 Joker</div>' : '';
 
       let scoreBubbleHtml;
       let winnerText;
@@ -940,23 +967,19 @@ ${scoreBubbleHtml}
     // ── Main load ──────────────────────────────────────────
     async function load() {
       try {
-        const res = await fetch('data/predictions.csv?t=' + Date.now());
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const text = await res.text();
-        const upcoming = parseCSV(text).filter(m => m.home_team && m.away_team);
+        const t = Date.now();
+        const upcoming = (await fetchData('predictions', t)).filter(m => m.home_team && m.away_team);
 
-        // Oynanmış maçlar: matches_2026.csv'den gerçek skor + predictions_history.csv'den
+        // Oynanmış maçlar: matches_2026'dan gerçek skor + predictions_history'den
         // o maç için yapılmış son tahmin birleştirilir, böylece kart kaybolmadan
         // gerçek sonuç + modelin tahminini gösterebilir.
         let finished = [];
         try {
-          const [matchesRes, histRes] = await Promise.all([
-            fetch('data/matches_2026.csv?t=' + Date.now()),
-            fetch('data/predictions_history.csv?t=' + Date.now()),
+          const [allMatches, history] = await Promise.all([
+            fetchData('matches_2026', t),
+            fetchData('predictions_history', t),
           ]);
-          if (matchesRes.ok && histRes.ok) {
-            const allMatches = parseCSV(await matchesRes.text());
-            const history = parseCSV(await histRes.text());
+          {
             const histMap = {};
             history.forEach(h => {
               histMap[`${h.date}|${h.home_team}|${h.away_team}`] = h;
@@ -1056,29 +1079,38 @@ ${scoreBubbleHtml}
           _renderDayCards();
         }
 
-        function _renderDayNav(dates) {
-          const idx = selectedDate ? dates.indexOf(selectedDate) : -1;
-          const prev = idx > 0 ? dates[idx - 1] : null;
-          const next = idx < dates.length - 1 ? dates[idx + 1] : null;
-          const label = selectedDate ? formatDate(selectedDate).toUpperCase() : '—';
-          const el = document.getElementById('calDayNav');
-          el.innerHTML = `
-            <button class="cal-nav-btn" id="calPrev" ${!prev ? 'disabled' : ''}>‹</button>
-            <span class="cal-day-label" id="calDateLabel">${label}<span class="cal-chevron">${calOpen ? '▾' : '▸'}</span></span>
-            <button class="cal-nav-btn" id="calNext" ${!next ? 'disabled' : ''}>›</button>
-          `;
-          if (prev) el.querySelector('#calPrev').addEventListener('click', () => selectDate(prev));
-          if (next) el.querySelector('#calNext').addEventListener('click', () => selectDate(next));
-          el.querySelector('#calDateLabel').addEventListener('click', () => {
+        // _renderDayNav state: prev/next korunur, delegation bir kez kurulur
+        let _dayNavPrev = null, _dayNavNext = null, _dayNavDatesRef = null;
+        const _dayNavEl = document.getElementById('calDayNav');
+        _dayNavEl.addEventListener('click', e => {
+          const btn = e.target.closest('button, .cal-day-label');
+          if (!btn) return;
+          if (btn.id === 'calPrev' && _dayNavPrev) { selectDate(_dayNavPrev); return; }
+          if (btn.id === 'calNext' && _dayNavNext) { selectDate(_dayNavNext); return; }
+          if (btn.id === 'calDateLabel') {
             calOpen = !calOpen;
             if (calOpen && selectedDate) {
               const [y, mo] = selectedDate.split('-').map(Number);
               calYear = y; calMonth = mo - 1;
-              _renderCalGrid(dates);
+              _renderCalGrid(_dayNavDatesRef || []);
             }
             document.getElementById('calGridWrap').classList.toggle('cal-collapsed', !calOpen);
-            el.querySelector('.cal-chevron').textContent = calOpen ? '▾' : '▸';
-          });
+            const chev = _dayNavEl.querySelector('.cal-chevron');
+            if (chev) chev.textContent = calOpen ? '▾' : '▸';
+          }
+        });
+
+        function _renderDayNav(dates) {
+          _dayNavDatesRef = dates;
+          const idx = selectedDate ? dates.indexOf(selectedDate) : -1;
+          _dayNavPrev = idx > 0 ? dates[idx - 1] : null;
+          _dayNavNext = idx < dates.length - 1 ? dates[idx + 1] : null;
+          const label = selectedDate ? formatDate(selectedDate).toUpperCase() : '—';
+          _dayNavEl.innerHTML = `
+            <button class="cal-nav-btn" id="calPrev" ${!_dayNavPrev ? 'disabled' : ''}>‹</button>
+            <span class="cal-day-label" id="calDateLabel">${label}<span class="cal-chevron">${calOpen ? '▾' : '▸'}</span></span>
+            <button class="cal-nav-btn" id="calNext" ${!_dayNavNext ? 'disabled' : ''}>›</button>
+          `;
         }
 
         function _renderCalGrid(dates) {
@@ -1112,25 +1144,28 @@ ${scoreBubbleHtml}
             <div class="cal-days">${cells}</div>
           `;
 
-          document.querySelectorAll('.cal-day.has-match').forEach(c =>
-            c.addEventListener('click', () => {
+          // Event delegation: tüm takvim tıklamaları bir dinleyiciyle yakalanır
+          const wrap = document.getElementById('calGridWrap');
+          wrap.onclick = e => {
+            const day = e.target.closest('.cal-day.has-match');
+            if (day) {
               calOpen = false;
-              document.getElementById('calGridWrap').classList.add('cal-collapsed');
-              selectDate(c.dataset.date);
-            })
-          );
-          document.getElementById('monthPrev').addEventListener('click', () => {
-            let m = calMonth - 1, y = calYear;
-            if (m < 0) { m = 11; y--; }
-            calMonth = m; calYear = y;
-            _renderCalGrid(dates);
-          });
-          document.getElementById('monthNext').addEventListener('click', () => {
-            let m = calMonth + 1, y = calYear;
-            if (m > 11) { m = 0; y++; }
-            calMonth = m; calYear = y;
-            _renderCalGrid(dates);
-          });
+              wrap.classList.add('cal-collapsed');
+              selectDate(day.dataset.date);
+              return;
+            }
+            if (e.target.id === 'monthPrev' || e.target.closest('#monthPrev')) {
+              let m = calMonth - 1, y = calYear;
+              if (m < 0) { m = 11; y--; }
+              calMonth = m; calYear = y;
+              _renderCalGrid(dates);
+            } else if (e.target.id === 'monthNext' || e.target.closest('#monthNext')) {
+              let m = calMonth + 1, y = calYear;
+              if (m > 11) { m = 0; y++; }
+              calMonth = m; calYear = y;
+              _renderCalGrid(dates);
+            }
+          };
         }
 
         function _renderDayCards() {
