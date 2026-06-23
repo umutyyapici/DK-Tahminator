@@ -2,8 +2,10 @@ name: Sonuç Güncelleme (Hafif)
 
 on:
   schedule:
-    # Her 30 dakikada bir
-    - cron: "*/30 * * * *"
+    # Haziran-Temmuz 2026 (turnuva dönemi): 12-23 UTC arası her 30 dakika
+    - cron: "*/30 12-23 * 6-7 *"
+    # Diğer dönemler veya gece saatleri: 2 saatte bir (gereksiz çalışmayı engeller)
+    - cron: "0 */2 * * *"
   workflow_dispatch:  # Elle de tetiklenebilir
 
 permissions:
@@ -40,7 +42,7 @@ jobs:
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          for f in data/matches_2026.csv data/predictions.csv data/predictions_history.csv data/accuracy.json data/fifa_rankings.json data/joker_locks.json; do
+          for f in data/matches_2026.csv data/matches_2026.json data/predictions.csv data/predictions.json data/predictions_history.csv data/predictions_history.json data/accuracy.json data/fifa_rankings.json data/joker_locks.json data/elo_cache.json; do
             [ -f "$f" ] && git add "$f"
           done
           if git diff --staged --quiet; then
