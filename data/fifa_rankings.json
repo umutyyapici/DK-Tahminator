@@ -99,7 +99,7 @@
   },
   "Croatia": {
     "rank": 15,
-    "points": 1695.21,
+    "points": 1686.4841,
     "prev_rank": 11,
     "prev_points": 1714.8656,
     "movement": -4
@@ -265,19 +265,19 @@
     "prev_points": 1516.9466,
     "movement": -1
   },
-  "Hungary": {
+  "Panama": {
     "rank": 39,
+    "points": 1514.0549,
+    "prev_rank": 34,
+    "prev_points": 1539.1555,
+    "movement": -5
+  },
+  "Hungary": {
+    "rank": 40,
     "points": 1506.3937,
     "prev_rank": 39,
     "prev_points": 1506.3937,
-    "movement": 0
-  },
-  "Panama": {
-    "rank": 40,
-    "points": 1505.3289,
-    "prev_rank": 34,
-    "prev_points": 1539.1555,
-    "movement": -6
+    "movement": -1
   },
   "Scotland": {
     "rank": 41,
