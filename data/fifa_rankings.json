@@ -22,7 +22,7 @@
   },
   "England": {
     "rank": 4,
-    "points": 1847.6775,
+    "points": 1829.8185,
     "prev_rank": 4,
     "prev_points": 1828.0219,
     "movement": 0
@@ -440,19 +440,19 @@
     "prev_points": 1371.108,
     "movement": 4
   },
-  "Bosnia and Herzegovina": {
+  "Ghana": {
     "rank": 64,
+    "points": 1398.5668,
+    "prev_rank": 73,
+    "prev_points": 1346.8812,
+    "movement": 9
+  },
+  "Bosnia and Herzegovina": {
+    "rank": 65,
     "points": 1381.1766,
     "prev_rank": 64,
     "prev_points": 1387.2158,
-    "movement": 0
-  },
-  "Ghana": {
-    "rank": 65,
-    "points": 1380.7078,
-    "prev_rank": 73,
-    "prev_points": 1346.8812,
-    "movement": 8
+    "movement": -1
   },
   "Honduras": {
     "rank": 66,
