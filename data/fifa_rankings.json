@@ -188,19 +188,19 @@
     "prev_points": 1562.3672,
     "movement": 2
   },
-  "Canada": {
+  "Algeria": {
     "rank": 28,
+    "points": 1575.6353,
+    "prev_rank": 28,
+    "prev_points": 1571.0333,
+    "movement": 0
+  },
+  "Canada": {
+    "rank": 29,
     "points": 1572.1334,
     "prev_rank": 30,
     "prev_points": 1559.4793,
-    "movement": 2
-  },
-  "Algeria": {
-    "rank": 29,
-    "points": 1559.2376,
-    "prev_rank": 28,
-    "prev_points": 1571.0333,
-    "movement": -1
+    "movement": 1
   },
   "Ecuador": {
     "rank": 30,
@@ -468,40 +468,40 @@
     "prev_points": 1376.0332,
     "movement": -1
   },
-  "Jordan": {
-    "rank": 68,
-    "points": 1372.2863,
-    "prev_rank": 63,
-    "prev_points": 1387.7382,
-    "movement": -5
-  },
   "United Arab Emirates": {
-    "rank": 69,
+    "rank": 68,
     "points": 1370.4694,
     "prev_rank": 68,
     "prev_points": 1370.4694,
-    "movement": -1
+    "movement": 0
   },
   "North Macedonia": {
-    "rank": 70,
+    "rank": 69,
     "points": 1369.1593,
     "prev_rank": 69,
     "prev_points": 1369.1593,
-    "movement": -1
+    "movement": 0
   },
   "Northern Ireland": {
-    "rank": 71,
+    "rank": 70,
     "points": 1365.2965,
     "prev_rank": 70,
     "prev_points": 1365.2965,
-    "movement": -1
+    "movement": 0
   },
   "Jamaica": {
-    "rank": 72,
+    "rank": 71,
     "points": 1357.8401,
     "prev_rank": 71,
     "prev_points": 1357.8401,
-    "movement": -1
+    "movement": 0
+  },
+  "Jordan": {
+    "rank": 72,
+    "points": 1355.8886,
+    "prev_rank": 63,
+    "prev_points": 1387.7382,
+    "movement": -9
   },
   "Georgia": {
     "rank": 73,
