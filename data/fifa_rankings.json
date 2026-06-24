@@ -113,7 +113,7 @@
   },
   "Switzerland": {
     "rank": 17,
-    "points": 1654.9393,
+    "points": 1651.0002,
     "prev_rank": 19,
     "prev_points": 1650.0642,
     "movement": 2
@@ -188,19 +188,19 @@
     "prev_points": 1562.3672,
     "movement": 2
   },
-  "Algeria": {
+  "Canada": {
     "rank": 28,
+    "points": 1576.0726,
+    "prev_rank": 30,
+    "prev_points": 1559.4793,
+    "movement": 2
+  },
+  "Algeria": {
+    "rank": 29,
     "points": 1575.6353,
     "prev_rank": 28,
     "prev_points": 1571.0333,
-    "movement": 0
-  },
-  "Canada": {
-    "rank": 29,
-    "points": 1572.1334,
-    "prev_rank": 30,
-    "prev_points": 1559.4793,
-    "movement": 1
+    "movement": -1
   },
   "Ecuador": {
     "rank": 30,
@@ -384,19 +384,19 @@
     "prev_points": 1441.0872,
     "movement": 4
   },
-  "Qatar": {
-    "rank": 56,
-    "points": 1438.8176,
-    "prev_rank": 56,
-    "prev_points": 1450.3077,
-    "movement": 0
-  },
   "Tunisia": {
-    "rank": 57,
+    "rank": 56,
     "points": 1437.6861,
     "prev_rank": 45,
     "prev_points": 1476.4051,
-    "movement": -12
+    "movement": -11
+  },
+  "Qatar": {
+    "rank": 57,
+    "points": 1436.0637,
+    "prev_rank": 56,
+    "prev_points": 1450.3077,
+    "movement": -1
   },
   "Uzbekistan": {
     "rank": 58,
@@ -449,7 +449,7 @@
   },
   "Bosnia and Herzegovina": {
     "rank": 65,
-    "points": 1381.1766,
+    "points": 1383.9305,
     "prev_rank": 64,
     "prev_points": 1387.2158,
     "movement": -1
