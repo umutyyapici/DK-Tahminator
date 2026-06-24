@@ -113,7 +113,7 @@
   },
   "Switzerland": {
     "rank": 17,
-    "points": 1651.0002,
+    "points": 1676.0002,
     "prev_rank": 19,
     "prev_points": 1650.0642,
     "movement": 2
@@ -188,33 +188,33 @@
     "prev_points": 1562.3672,
     "movement": 2
   },
-  "Canada": {
-    "rank": 28,
-    "points": 1576.0726,
-    "prev_rank": 30,
-    "prev_points": 1559.4793,
-    "movement": 2
-  },
   "Algeria": {
-    "rank": 29,
+    "rank": 28,
     "points": 1575.6353,
     "prev_rank": 28,
     "prev_points": 1571.0333,
-    "movement": -1
+    "movement": 0
   },
   "Ecuador": {
-    "rank": 30,
+    "rank": 29,
     "points": 1558.3521,
     "prev_rank": 23,
     "prev_points": 1598.5158,
-    "movement": -7
+    "movement": -6
   },
   "Ivory Coast": {
-    "rank": 31,
+    "rank": 30,
     "points": 1551.7132,
     "prev_rank": 33,
     "prev_points": 1540.8695,
-    "movement": 2
+    "movement": 3
+  },
+  "Canada": {
+    "rank": 31,
+    "points": 1551.0726,
+    "prev_rank": 30,
+    "prev_points": 1559.4793,
+    "movement": -1
   },
   "Turkey": {
     "rank": 32,
