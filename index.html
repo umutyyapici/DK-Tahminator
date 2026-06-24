@@ -982,12 +982,12 @@ ${scoreBubbleHtml}
           {
             const histMap = {};
             history.forEach(h => {
-              histMap[`${h.date}|${h.home_team}|${h.away_team}`] = h;
+              histMap[`${h.date.slice(0,10)}|${h.home_team}|${h.away_team}`] = h;
             });
             finished = allMatches
               .filter(m => m.status === 'FINISHED' && m.home_team && m.away_team)
               .map(m => {
-                const hist = histMap[`${m.date}|${m.home_team}|${m.away_team}`] || {};
+                const hist = histMap[`${m.date.slice(0,10)}|${m.home_team}|${m.away_team}`] || {};
                 return { ...hist, ...m, played: true };
               });
           }
