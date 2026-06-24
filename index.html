@@ -721,7 +721,7 @@
         'switzerland': 'ch', 'turkey': 'tr',
         'argentina': 'ar', 'brazil': 'br', 'colombia': 'co',
         'ecuador': 'ec', 'paraguay': 'py', 'uruguay': 'uy',
-        'canada': 'ca', 'curacao': 'cw', 'cura\u00e7ao': 'cw',
+        'canada': 'ca', 'curacao': 'cw', 'curaçao': 'cw',
         'haiti': 'ht', 'mexico': 'mx', 'panama': 'pa',
         'united states': 'us', 'usa': 'us',
         'algeria': 'dz', 'cape verde': 'cv', 'cape verde islands': 'cv',
@@ -982,12 +982,12 @@ ${scoreBubbleHtml}
           {
             const histMap = {};
             history.forEach(h => {
-              histMap[`${h.date}|${h.home_team}|${h.away_team}`] = h;
+              histMap[`${h.date.slice(0,10)}|${h.home_team}|${h.away_team}`] = h;
             });
             finished = allMatches
               .filter(m => m.status === 'FINISHED' && m.home_team && m.away_team)
               .map(m => {
-                const hist = histMap[`${m.date}|${m.home_team}|${m.away_team}`] || {};
+                const hist = histMap[`${m.date.slice(0,10)}|${m.home_team}|${m.away_team}`] || {};
                 return { ...hist, ...m, played: true };
               });
           }
