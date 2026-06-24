@@ -391,68 +391,68 @@
     "prev_points": 1476.4051,
     "movement": -11
   },
-  "Qatar": {
-    "rank": 57,
-    "points": 1436.0637,
-    "prev_rank": 56,
-    "prev_points": 1450.3077,
-    "movement": -1
-  },
   "Uzbekistan": {
-    "rank": 58,
+    "rank": 57,
     "points": 1432.8368,
     "prev_rank": 50,
     "prev_points": 1458.7341,
-    "movement": -8
+    "movement": -7
   },
   "Saudi Arabia": {
-    "rank": 59,
+    "rank": 58,
     "points": 1426.7108,
     "prev_rank": 61,
     "prev_points": 1423.8812,
-    "movement": 2
+    "movement": 3
   },
   "Iraq": {
-    "rank": 60,
+    "rank": 59,
     "points": 1419.24,
     "prev_rank": 57,
     "prev_points": 1446.2796,
-    "movement": -3
+    "movement": -2
   },
   "South Africa": {
-    "rank": 61,
+    "rank": 60,
     "points": 1418.2118,
     "prev_rank": 60,
     "prev_points": 1428.3793,
-    "movement": -1
+    "movement": 0
+  },
+  "Qatar": {
+    "rank": 61,
+    "points": 1411.0637,
+    "prev_rank": 56,
+    "prev_points": 1450.3077,
+    "movement": -5
+  },
+  "Bosnia and Herzegovina": {
+    "rank": 62,
+    "points": 1408.9305,
+    "prev_rank": 64,
+    "prev_points": 1387.2158,
+    "movement": 2
   },
   "Burkina Faso": {
-    "rank": 62,
+    "rank": 63,
     "points": 1406.9905,
     "prev_rank": 62,
     "prev_points": 1406.9905,
-    "movement": 0
+    "movement": -1
   },
   "Cape Verde": {
-    "rank": 63,
+    "rank": 64,
     "points": 1401.7707,
     "prev_rank": 67,
     "prev_points": 1371.108,
-    "movement": 4
+    "movement": 3
   },
   "Ghana": {
-    "rank": 64,
+    "rank": 65,
     "points": 1398.5668,
     "prev_rank": 73,
     "prev_points": 1346.8812,
-    "movement": 9
-  },
-  "Bosnia and Herzegovina": {
-    "rank": 65,
-    "points": 1383.9305,
-    "prev_rank": 64,
-    "prev_points": 1387.2158,
-    "movement": -1
+    "movement": 8
   },
   "Honduras": {
     "rank": 66,
