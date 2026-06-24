@@ -29,38 +29,38 @@
   },
   "Brazil": {
     "rank": 5,
-    "points": 1772.0087,
+    "points": 1785.1925,
     "prev_rank": 6,
     "prev_points": 1765.8563,
     "movement": 1
   },
-  "Morocco": {
-    "rank": 6,
-    "points": 1769.977,
-    "prev_rank": 7,
-    "prev_points": 1755.1002,
-    "movement": 1
-  },
   "Portugal": {
-    "rank": 7,
+    "rank": 6,
     "points": 1766.7385,
     "prev_rank": 5,
     "prev_points": 1767.849,
-    "movement": -2
+    "movement": -1
   },
   "Netherlands": {
-    "rank": 8,
+    "rank": 7,
     "points": 1764.3969,
     "prev_rank": 8,
     "prev_points": 1753.5719,
-    "movement": 0
+    "movement": 1
   },
   "Germany": {
-    "rank": 9,
+    "rank": 8,
     "points": 1760.4554,
     "prev_rank": 10,
     "prev_points": 1735.772,
-    "movement": 1
+    "movement": 2
+  },
+  "Morocco": {
+    "rank": 9,
+    "points": 1751.3986,
+    "prev_rank": 7,
+    "prev_points": 1755.1002,
+    "movement": -2
   },
   "Belgium": {
     "rank": 10,
@@ -272,19 +272,19 @@
     "prev_points": 1506.3937,
     "movement": 0
   },
-  "Scotland": {
-    "rank": 40,
-    "points": 1504.4076,
-    "prev_rank": 42,
-    "prev_points": 1503.3403,
-    "movement": 2
-  },
   "Serbia": {
-    "rank": 41,
+    "rank": 40,
     "points": 1502.1332,
     "prev_rank": 43,
     "prev_points": 1502.1332,
-    "movement": 2
+    "movement": 3
+  },
+  "Scotland": {
+    "rank": 41,
+    "points": 1491.2239,
+    "prev_rank": 42,
+    "prev_points": 1503.3403,
+    "movement": 1
   },
   "Panama": {
     "rank": 42,
@@ -573,40 +573,40 @@
     "prev_points": 1295.5988,
     "movement": -1
   },
-  "Syria": {
+  "Haiti": {
     "rank": 83,
+    "points": 1289.5784,
+    "prev_rank": 83,
+    "prev_points": 1293.0966,
+    "movement": 0
+  },
+  "Syria": {
+    "rank": 84,
     "points": 1283.0519,
     "prev_rank": 84,
     "prev_points": 1283.0519,
-    "movement": 1
+    "movement": 0
   },
   "New Zealand": {
-    "rank": 84,
+    "rank": 85,
     "points": 1277.3372,
     "prev_rank": 85,
     "prev_points": 1275.5811,
-    "movement": 1
+    "movement": 0
   },
   "Gabon": {
-    "rank": 85,
+    "rank": 86,
     "points": 1272.5081,
     "prev_rank": 86,
     "prev_points": 1272.5081,
-    "movement": 1
+    "movement": 0
   },
   "Bulgaria": {
-    "rank": 86,
+    "rank": 87,
     "points": 1271.6833,
     "prev_rank": 87,
     "prev_points": 1271.6833,
-    "movement": 1
-  },
-  "Haiti": {
-    "rank": 87,
-    "points": 1271.0,
-    "prev_rank": 83,
-    "prev_points": 1293.0966,
-    "movement": -4
+    "movement": 0
   },
   "Angola": {
     "rank": 88,
