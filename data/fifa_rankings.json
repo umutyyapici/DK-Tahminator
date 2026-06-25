@@ -57,7 +57,7 @@
   },
   "Germany": {
     "rank": 9,
-    "points": 1760.4554,
+    "points": 1751.2188,
     "prev_rank": 10,
     "prev_points": 1735.772,
     "movement": 1
@@ -188,26 +188,26 @@
     "prev_points": 1571.0333,
     "movement": 1
   },
-  "South Korea": {
+  "Ecuador": {
     "rank": 28,
+    "points": 1567.5887,
+    "prev_rank": 23,
+    "prev_points": 1598.5158,
+    "movement": -5
+  },
+  "Ivory Coast": {
+    "rank": 29,
+    "points": 1565.4745,
+    "prev_rank": 33,
+    "prev_points": 1540.8695,
+    "movement": 4
+  },
+  "South Korea": {
+    "rank": 30,
     "points": 1558.7195,
     "prev_rank": 25,
     "prev_points": 1591.6309,
-    "movement": -3
-  },
-  "Ecuador": {
-    "rank": 29,
-    "points": 1558.3521,
-    "prev_rank": 23,
-    "prev_points": 1598.5158,
-    "movement": -6
-  },
-  "Ivory Coast": {
-    "rank": 30,
-    "points": 1551.7132,
-    "prev_rank": 33,
-    "prev_points": 1540.8695,
-    "movement": 3
+    "movement": -5
   },
   "Canada": {
     "rank": 31,
@@ -559,19 +559,19 @@
     "prev_points": 1301.9772,
     "movement": 0
   },
-  "Curaçao": {
-    "rank": 81,
-    "points": 1299.4057,
-    "prev_rank": 82,
-    "prev_points": 1294.7691,
-    "movement": 1
-  },
   "Guinea": {
-    "rank": 82,
+    "rank": 81,
     "points": 1295.5988,
     "prev_rank": 81,
     "prev_points": 1295.5988,
-    "movement": -1
+    "movement": 0
+  },
+  "Curaçao": {
+    "rank": 82,
+    "points": 1285.6444,
+    "prev_rank": 82,
+    "prev_points": 1294.7691,
+    "movement": 0
   },
   "Syria": {
     "rank": 83,
