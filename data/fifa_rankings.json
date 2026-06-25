@@ -55,33 +55,33 @@
     "prev_points": 1753.5719,
     "movement": 0
   },
-  "Germany": {
-    "rank": 9,
-    "points": 1751.2188,
-    "prev_rank": 10,
-    "prev_points": 1735.772,
-    "movement": 1
-  },
   "Mexico": {
-    "rank": 10,
+    "rank": 9,
     "points": 1736.0082,
     "prev_rank": 14,
     "prev_points": 1687.4818,
-    "movement": 4
+    "movement": 5
   },
   "Belgium": {
-    "rank": 11,
+    "rank": 10,
     "points": 1727.8782,
     "prev_rank": 9,
     "prev_points": 1742.2359,
-    "movement": -2
+    "movement": -1
   },
   "Colombia": {
-    "rank": 12,
+    "rank": 11,
     "points": 1727.4181,
     "prev_rank": 13,
     "prev_points": 1698.3519,
-    "movement": 1
+    "movement": 2
+  },
+  "Germany": {
+    "rank": 12,
+    "points": 1726.2188,
+    "prev_rank": 10,
+    "prev_points": 1735.772,
+    "movement": -2
   },
   "Croatia": {
     "rank": 13,
@@ -160,40 +160,40 @@
     "prev_points": 1597.4041,
     "movement": 1
   },
-  "Nigeria": {
+  "Ecuador": {
     "rank": 24,
+    "points": 1592.5887,
+    "prev_rank": 23,
+    "prev_points": 1598.5158,
+    "movement": -1
+  },
+  "Nigeria": {
+    "rank": 25,
     "points": 1585.0171,
     "prev_rank": 26,
     "prev_points": 1585.0171,
-    "movement": 2
+    "movement": 1
   },
   "Australia": {
-    "rank": 25,
+    "rank": 26,
     "points": 1584.5523,
     "prev_rank": 27,
     "prev_points": 1579.3426,
-    "movement": 2
+    "movement": 1
   },
   "Egypt": {
-    "rank": 26,
+    "rank": 27,
     "points": 1583.3728,
     "prev_rank": 29,
     "prev_points": 1562.3672,
-    "movement": 3
+    "movement": 2
   },
   "Algeria": {
-    "rank": 27,
+    "rank": 28,
     "points": 1575.6353,
     "prev_rank": 28,
     "prev_points": 1571.0333,
-    "movement": 1
-  },
-  "Ecuador": {
-    "rank": 28,
-    "points": 1567.5887,
-    "prev_rank": 23,
-    "prev_points": 1598.5158,
-    "movement": -5
+    "movement": 0
   },
   "Ivory Coast": {
     "rank": 29,
