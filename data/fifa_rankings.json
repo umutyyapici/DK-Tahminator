@@ -62,26 +62,26 @@
     "prev_points": 1735.772,
     "movement": 1
   },
-  "Belgium": {
+  "Mexico": {
     "rank": 10,
+    "points": 1736.0082,
+    "prev_rank": 14,
+    "prev_points": 1687.4818,
+    "movement": 4
+  },
+  "Belgium": {
+    "rank": 11,
     "points": 1727.8782,
     "prev_rank": 9,
     "prev_points": 1742.2359,
-    "movement": -1
+    "movement": -2
   },
   "Colombia": {
-    "rank": 11,
+    "rank": 12,
     "points": 1727.4181,
     "prev_rank": 13,
     "prev_points": 1698.3519,
-    "movement": 2
-  },
-  "Mexico": {
-    "rank": 12,
-    "points": 1721.7824,
-    "prev_rank": 14,
-    "prev_points": 1687.4818,
-    "movement": 2
+    "movement": 1
   },
   "Croatia": {
     "rank": 13,
@@ -160,40 +160,40 @@
     "prev_points": 1597.4041,
     "movement": 1
   },
-  "South Korea": {
-    "rank": 24,
-    "points": 1591.7496,
-    "prev_rank": 25,
-    "prev_points": 1591.6309,
-    "movement": 1
-  },
   "Nigeria": {
-    "rank": 25,
+    "rank": 24,
     "points": 1585.0171,
     "prev_rank": 26,
     "prev_points": 1585.0171,
-    "movement": 1
+    "movement": 2
   },
   "Australia": {
-    "rank": 26,
+    "rank": 25,
     "points": 1584.5523,
     "prev_rank": 27,
     "prev_points": 1579.3426,
-    "movement": 1
+    "movement": 2
   },
   "Egypt": {
-    "rank": 27,
+    "rank": 26,
     "points": 1583.3728,
     "prev_rank": 29,
     "prev_points": 1562.3672,
-    "movement": 2
+    "movement": 3
   },
   "Algeria": {
-    "rank": 28,
+    "rank": 27,
     "points": 1575.6353,
     "prev_rank": 28,
     "prev_points": 1571.0333,
-    "movement": 0
+    "movement": 1
+  },
+  "South Korea": {
+    "rank": 28,
+    "points": 1558.7195,
+    "prev_rank": 25,
+    "prev_points": 1591.6309,
+    "movement": -3
   },
   "Ecuador": {
     "rank": 29,
@@ -293,47 +293,47 @@
     "prev_points": 1539.1555,
     "movement": -8
   },
-  "Czech Republic": {
-    "rank": 43,
-    "points": 1481.486,
-    "prev_rank": 40,
-    "prev_points": 1505.7379,
-    "movement": -3
-  },
   "Cameroon": {
-    "rank": 44,
+    "rank": 43,
     "points": 1481.2352,
     "prev_rank": 44,
     "prev_points": 1481.2352,
-    "movement": 0
+    "movement": 1
   },
   "Slovakia": {
-    "rank": 45,
+    "rank": 44,
     "points": 1473.6607,
     "prev_rank": 47,
     "prev_points": 1473.6607,
-    "movement": 2
+    "movement": 3
   },
   "Greece": {
-    "rank": 46,
+    "rank": 45,
     "points": 1473.1873,
     "prev_rank": 48,
     "prev_points": 1473.1873,
-    "movement": 2
+    "movement": 3
   },
   "DR Congo": {
-    "rank": 47,
+    "rank": 46,
     "points": 1472.3693,
     "prev_rank": 46,
     "prev_points": 1474.4278,
-    "movement": -1
+    "movement": 0
   },
   "Venezuela": {
-    "rank": 48,
+    "rank": 47,
     "points": 1469.1777,
     "prev_rank": 49,
     "prev_points": 1469.1777,
-    "movement": 1
+    "movement": 2
+  },
+  "Czech Republic": {
+    "rank": 48,
+    "points": 1467.2602,
+    "prev_rank": 40,
+    "prev_points": 1505.7379,
+    "movement": -8
   },
   "Chile": {
     "rank": 49,
@@ -370,54 +370,54 @@
     "prev_points": 1455.5867,
     "movement": 2
   },
-  "Republic of Ireland": {
+  "South Africa": {
     "rank": 54,
+    "points": 1451.2419,
+    "prev_rank": 60,
+    "prev_points": 1428.3793,
+    "movement": 6
+  },
+  "Republic of Ireland": {
+    "rank": 55,
     "points": 1441.0969,
     "prev_rank": 58,
     "prev_points": 1441.0969,
-    "movement": 4
+    "movement": 3
   },
   "Slovenia": {
-    "rank": 55,
+    "rank": 56,
     "points": 1441.0872,
     "prev_rank": 59,
     "prev_points": 1441.0872,
-    "movement": 4
+    "movement": 3
   },
   "Tunisia": {
-    "rank": 56,
+    "rank": 57,
     "points": 1437.6861,
     "prev_rank": 45,
     "prev_points": 1476.4051,
-    "movement": -11
+    "movement": -12
   },
   "Uzbekistan": {
-    "rank": 57,
+    "rank": 58,
     "points": 1432.8368,
     "prev_rank": 50,
     "prev_points": 1458.7341,
-    "movement": -7
+    "movement": -8
   },
   "Saudi Arabia": {
-    "rank": 58,
+    "rank": 59,
     "points": 1426.7108,
     "prev_rank": 61,
     "prev_points": 1423.8812,
-    "movement": 3
+    "movement": 2
   },
   "Iraq": {
-    "rank": 59,
+    "rank": 60,
     "points": 1419.24,
     "prev_rank": 57,
     "prev_points": 1446.2796,
-    "movement": -2
-  },
-  "South Africa": {
-    "rank": 60,
-    "points": 1418.2118,
-    "prev_rank": 60,
-    "prev_points": 1428.3793,
-    "movement": 0
+    "movement": -3
   },
   "Qatar": {
     "rank": 61,
