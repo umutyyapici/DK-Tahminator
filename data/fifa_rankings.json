@@ -41,19 +41,19 @@
     "prev_points": 1755.1002,
     "movement": 1
   },
-  "Portugal": {
+  "Netherlands": {
     "rank": 7,
+    "points": 1775.4991,
+    "prev_rank": 8,
+    "prev_points": 1753.5719,
+    "movement": 1
+  },
+  "Portugal": {
+    "rank": 8,
     "points": 1766.7385,
     "prev_rank": 5,
     "prev_points": 1767.849,
-    "movement": -2
-  },
-  "Netherlands": {
-    "rank": 8,
-    "points": 1764.3969,
-    "prev_rank": 8,
-    "prev_points": 1753.5719,
-    "movement": 0
+    "movement": -3
   },
   "Mexico": {
     "rank": 9,
@@ -104,19 +104,19 @@
     "prev_points": 1704.7338,
     "movement": -3
   },
-  "Japan": {
-    "rank": 16,
-    "points": 1681.2621,
-    "prev_rank": 18,
-    "prev_points": 1661.5762,
-    "movement": 2
-  },
   "Switzerland": {
-    "rank": 17,
+    "rank": 16,
     "points": 1676.0002,
     "prev_rank": 19,
     "prev_points": 1650.0642,
-    "movement": 2
+    "movement": 3
+  },
+  "Japan": {
+    "rank": 17,
+    "points": 1673.6765,
+    "prev_rank": 18,
+    "prev_points": 1661.5762,
+    "movement": 1
   },
   "Uruguay": {
     "rank": 18,
@@ -246,7 +246,7 @@
   },
   "Sweden": {
     "rank": 36,
-    "points": 1517.9935,
+    "points": 1525.579,
     "prev_rank": 38,
     "prev_points": 1509.7854,
     "movement": 2
@@ -391,26 +391,26 @@
     "prev_points": 1441.0872,
     "movement": 3
   },
-  "Tunisia": {
-    "rank": 57,
-    "points": 1437.6861,
-    "prev_rank": 45,
-    "prev_points": 1476.4051,
-    "movement": -12
-  },
   "Uzbekistan": {
-    "rank": 58,
+    "rank": 57,
     "points": 1432.8368,
     "prev_rank": 50,
     "prev_points": 1458.7341,
-    "movement": -8
+    "movement": -7
   },
   "Saudi Arabia": {
-    "rank": 59,
+    "rank": 58,
     "points": 1426.7108,
     "prev_rank": 61,
     "prev_points": 1423.8812,
-    "movement": 2
+    "movement": 3
+  },
+  "Tunisia": {
+    "rank": 59,
+    "points": 1426.584,
+    "prev_rank": 45,
+    "prev_points": 1476.4051,
+    "movement": -14
   },
   "Iraq": {
     "rank": 60,
