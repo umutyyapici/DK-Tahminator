@@ -34,33 +34,33 @@
     "prev_points": 1765.8563,
     "movement": 1
   },
-  "Portugal": {
+  "Morocco": {
     "rank": 6,
+    "points": 1776.3986,
+    "prev_rank": 7,
+    "prev_points": 1755.1002,
+    "movement": 1
+  },
+  "Portugal": {
+    "rank": 7,
     "points": 1766.7385,
     "prev_rank": 5,
     "prev_points": 1767.849,
-    "movement": -1
+    "movement": -2
   },
   "Netherlands": {
-    "rank": 7,
+    "rank": 8,
     "points": 1764.3969,
     "prev_rank": 8,
     "prev_points": 1753.5719,
-    "movement": 1
+    "movement": 0
   },
   "Germany": {
-    "rank": 8,
+    "rank": 9,
     "points": 1760.4554,
     "prev_rank": 10,
     "prev_points": 1735.772,
-    "movement": 2
-  },
-  "Morocco": {
-    "rank": 9,
-    "points": 1751.3986,
-    "prev_rank": 7,
-    "prev_points": 1755.1002,
-    "movement": -2
+    "movement": 1
   },
   "Belgium": {
     "rank": 10,
@@ -573,47 +573,47 @@
     "prev_points": 1295.5988,
     "movement": -1
   },
-  "Haiti": {
-    "rank": 83,
-    "points": 1289.5784,
-    "prev_rank": 83,
-    "prev_points": 1293.0966,
-    "movement": 0
-  },
   "Syria": {
-    "rank": 84,
+    "rank": 83,
     "points": 1283.0519,
     "prev_rank": 84,
     "prev_points": 1283.0519,
-    "movement": 0
+    "movement": 1
   },
   "New Zealand": {
-    "rank": 85,
+    "rank": 84,
     "points": 1277.3372,
     "prev_rank": 85,
     "prev_points": 1275.5811,
-    "movement": 0
+    "movement": 1
   },
   "Gabon": {
-    "rank": 86,
+    "rank": 85,
     "points": 1272.5081,
     "prev_rank": 86,
     "prev_points": 1272.5081,
-    "movement": 0
+    "movement": 1
   },
   "Bulgaria": {
-    "rank": 87,
+    "rank": 86,
     "points": 1271.6833,
     "prev_rank": 87,
     "prev_points": 1271.6833,
-    "movement": 0
+    "movement": 1
   },
   "Angola": {
-    "rank": 88,
+    "rank": 87,
     "points": 1265.5751,
     "prev_rank": 88,
     "prev_points": 1265.5751,
-    "movement": 0
+    "movement": 1
+  },
+  "Haiti": {
+    "rank": 88,
+    "points": 1264.5784,
+    "prev_rank": 83,
+    "prev_points": 1293.0966,
+    "movement": -5
   },
   "Uganda": {
     "rank": 89,
