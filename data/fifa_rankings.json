@@ -104,19 +104,19 @@
     "prev_points": 1704.7338,
     "movement": -3
   },
-  "Switzerland": {
+  "Japan": {
     "rank": 16,
+    "points": 1698.6765,
+    "prev_rank": 18,
+    "prev_points": 1661.5762,
+    "movement": 2
+  },
+  "Switzerland": {
+    "rank": 17,
     "points": 1676.0002,
     "prev_rank": 19,
     "prev_points": 1650.0642,
-    "movement": 3
-  },
-  "Japan": {
-    "rank": 17,
-    "points": 1673.6765,
-    "prev_rank": 18,
-    "prev_points": 1661.5762,
-    "movement": 1
+    "movement": 2
   },
   "Uruguay": {
     "rank": 18,
@@ -244,40 +244,40 @@
     "prev_points": 1526.1834,
     "movement": 1
   },
-  "Sweden": {
-    "rank": 36,
-    "points": 1525.579,
-    "prev_rank": 38,
-    "prev_points": 1509.7854,
-    "movement": 2
-  },
   "Paraguay": {
-    "rank": 37,
+    "rank": 36,
     "points": 1517.3899,
     "prev_rank": 41,
     "prev_points": 1505.3497,
-    "movement": 4
+    "movement": 5
   },
   "Wales": {
-    "rank": 38,
+    "rank": 37,
     "points": 1516.9466,
     "prev_rank": 37,
     "prev_points": 1516.9466,
-    "movement": -1
+    "movement": 0
   },
   "Hungary": {
-    "rank": 39,
+    "rank": 38,
     "points": 1506.3937,
     "prev_rank": 39,
     "prev_points": 1506.3937,
-    "movement": 0
+    "movement": 1
   },
   "Serbia": {
-    "rank": 40,
+    "rank": 39,
     "points": 1502.1332,
     "prev_rank": 43,
     "prev_points": 1502.1332,
-    "movement": 3
+    "movement": 4
+  },
+  "Sweden": {
+    "rank": 40,
+    "points": 1500.579,
+    "prev_rank": 38,
+    "prev_points": 1509.7854,
+    "movement": -2
   },
   "Scotland": {
     "rank": 41,
