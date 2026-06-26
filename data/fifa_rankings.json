@@ -1,17 +1,17 @@
 {
-  "Argentina": {
+  "France": {
     "rank": 1,
+    "points": 1906.841,
+    "prev_rank": 3,
+    "prev_points": 1870.6962,
+    "movement": 2
+  },
+  "Argentina": {
+    "rank": 2,
     "points": 1901.9279,
     "prev_rank": 1,
     "prev_points": 1877.2666,
-    "movement": 0
-  },
-  "France": {
-    "rank": 2,
-    "points": 1894.4002,
-    "prev_rank": 3,
-    "prev_points": 1870.6962,
-    "movement": 1
+    "movement": -1
   },
   "Spain": {
     "rank": 3,
@@ -118,19 +118,19 @@
     "prev_points": 1661.5762,
     "movement": 1
   },
-  "Uruguay": {
+  "Senegal": {
     "rank": 18,
+    "points": 1653.4286,
+    "prev_rank": 15,
+    "prev_points": 1684.0699,
+    "movement": -3
+  },
+  "Uruguay": {
+    "rank": 19,
     "points": 1649.9641,
     "prev_rank": 16,
     "prev_points": 1673.0686,
-    "movement": -2
-  },
-  "Senegal": {
-    "rank": 19,
-    "points": 1638.3614,
-    "prev_rank": 15,
-    "prev_points": 1684.0699,
-    "movement": -4
+    "movement": -3
   },
   "Denmark": {
     "rank": 20,
@@ -146,19 +146,19 @@
     "prev_points": 1619.5816,
     "movement": -1
   },
-  "Norway": {
-    "rank": 22,
-    "points": 1606.4818,
-    "prev_rank": 31,
-    "prev_points": 1557.4377,
-    "movement": 9
-  },
   "Austria": {
-    "rank": 23,
+    "rank": 22,
     "points": 1599.9903,
     "prev_rank": 24,
     "prev_points": 1597.4041,
-    "movement": 1
+    "movement": 2
+  },
+  "Norway": {
+    "rank": 23,
+    "points": 1594.0409,
+    "prev_rank": 31,
+    "prev_points": 1557.4377,
+    "movement": 8
   },
   "Ecuador": {
     "rank": 24,
@@ -412,33 +412,33 @@
     "prev_points": 1476.4051,
     "movement": -14
   },
-  "Iraq": {
-    "rank": 60,
-    "points": 1419.24,
-    "prev_rank": 57,
-    "prev_points": 1446.2796,
-    "movement": -3
-  },
   "Qatar": {
-    "rank": 61,
+    "rank": 60,
     "points": 1411.0637,
     "prev_rank": 56,
     "prev_points": 1450.3077,
-    "movement": -5
+    "movement": -4
   },
   "Bosnia and Herzegovina": {
-    "rank": 62,
+    "rank": 61,
     "points": 1408.9305,
     "prev_rank": 64,
     "prev_points": 1387.2158,
-    "movement": 2
+    "movement": 3
   },
   "Burkina Faso": {
-    "rank": 63,
+    "rank": 62,
     "points": 1406.9905,
     "prev_rank": 62,
     "prev_points": 1406.9905,
-    "movement": -1
+    "movement": 0
+  },
+  "Iraq": {
+    "rank": 63,
+    "points": 1404.1728,
+    "prev_rank": 57,
+    "prev_points": 1446.2796,
+    "movement": -6
   },
   "Cape Verde": {
     "rank": 64,
