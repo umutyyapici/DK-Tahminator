@@ -99,7 +99,7 @@
   },
   "United States": {
     "rank": 15,
-    "points": 1702.1705,
+    "points": 1677.1705,
     "prev_rank": 17,
     "prev_points": 1671.2341,
     "movement": 2
@@ -181,40 +181,40 @@
     "prev_points": 1562.3672,
     "movement": 3
   },
-  "Australia": {
+  "Turkey": {
     "rank": 27,
+    "points": 1582.5447,
+    "prev_rank": 22,
+    "prev_points": 1605.7309,
+    "movement": -5
+  },
+  "Australia": {
+    "rank": 28,
     "points": 1581.3482,
     "prev_rank": 27,
     "prev_points": 1579.3426,
-    "movement": 0
+    "movement": -1
   },
   "Algeria": {
-    "rank": 28,
+    "rank": 29,
     "points": 1575.6353,
     "prev_rank": 28,
     "prev_points": 1571.0333,
-    "movement": 0
+    "movement": -1
   },
   "Ivory Coast": {
-    "rank": 29,
+    "rank": 30,
     "points": 1565.4745,
     "prev_rank": 33,
     "prev_points": 1540.8695,
-    "movement": 4
+    "movement": 3
   },
   "South Korea": {
-    "rank": 30,
+    "rank": 31,
     "points": 1558.7195,
     "prev_rank": 25,
     "prev_points": 1591.6309,
-    "movement": -5
-  },
-  "Turkey": {
-    "rank": 31,
-    "points": 1557.5447,
-    "prev_rank": 22,
-    "prev_points": 1605.7309,
-    "movement": -9
+    "movement": -6
   },
   "Canada": {
     "rank": 32,
