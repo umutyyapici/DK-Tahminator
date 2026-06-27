@@ -44,9 +44,10 @@ def fetch_wc2026_matches() -> pd.DataFrame:
             home_score = ft.get("home")
             away_score = ft.get("away")
 
-        # API'den bazen boş takım gelebilir (üst turlar henüz netleşmediyse)
-        home_name = m["homeTeam"]["name"] if m.get("homeTeam") else "Belli Değil"
-        away_name = m["awayTeam"]["name"] if m.get("awayTeam") else "Belli Değil"
+        # API'den bazen boş takım gelebilir (üst turlar henüz netleşmediyse).
+        # homeTeam nesnesi var ama name null olabilir → or {} ile her iki formatı kapat.
+        home_name = (m.get("homeTeam") or {}).get("name") or "Belli Değil"
+        away_name = (m.get("awayTeam") or {}).get("name") or "Belli Değil"
 
         rows.append({
             "date":       m["utcDate"][:10],           # "2026-06-11"
