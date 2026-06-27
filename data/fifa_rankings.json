@@ -22,7 +22,7 @@
   },
   "England": {
     "rank": 4,
-    "points": 1815.4618,
+    "points": 1840.4618,
     "prev_rank": 4,
     "prev_points": 1828.0219,
     "movement": 0
@@ -83,19 +83,19 @@
     "prev_points": 1735.772,
     "movement": -2
   },
-  "Italy": {
+  "Croatia": {
     "rank": 13,
+    "points": 1723.0501,
+    "prev_rank": 11,
+    "prev_points": 1714.8656,
+    "movement": -2
+  },
+  "Italy": {
+    "rank": 14,
     "points": 1704.7338,
     "prev_rank": 12,
     "prev_points": 1704.7338,
-    "movement": -1
-  },
-  "Croatia": {
-    "rank": 14,
-    "points": 1698.0501,
-    "prev_rank": 11,
-    "prev_points": 1714.8656,
-    "movement": -3
+    "movement": -2
   },
   "United States": {
     "rank": 15,
@@ -272,33 +272,33 @@
     "prev_points": 1506.3937,
     "movement": 0
   },
-  "Panama": {
-    "rank": 40,
-    "points": 1503.4115,
-    "prev_rank": 34,
-    "prev_points": 1539.1555,
-    "movement": -6
-  },
   "Serbia": {
-    "rank": 41,
+    "rank": 40,
     "points": 1502.1332,
     "prev_rank": 43,
     "prev_points": 1502.1332,
-    "movement": 2
+    "movement": 3
   },
   "Scotland": {
-    "rank": 42,
+    "rank": 41,
     "points": 1491.2239,
     "prev_rank": 42,
     "prev_points": 1503.3403,
-    "movement": 0
+    "movement": 1
   },
   "Cameroon": {
-    "rank": 43,
+    "rank": 42,
     "points": 1481.2352,
     "prev_rank": 44,
     "prev_points": 1481.2352,
-    "movement": 1
+    "movement": 2
+  },
+  "Panama": {
+    "rank": 43,
+    "points": 1478.4115,
+    "prev_rank": 34,
+    "prev_points": 1539.1555,
+    "movement": -9
   },
   "Slovakia": {
     "rank": 44,
@@ -412,47 +412,47 @@
     "prev_points": 1423.8812,
     "movement": 2
   },
-  "Ghana": {
-    "rank": 60,
-    "points": 1412.0007,
-    "prev_rank": 73,
-    "prev_points": 1346.8812,
-    "movement": 13
-  },
   "Qatar": {
-    "rank": 61,
+    "rank": 60,
     "points": 1411.0637,
     "prev_rank": 56,
     "prev_points": 1450.3077,
-    "movement": -5
+    "movement": -4
   },
   "Bosnia and Herzegovina": {
-    "rank": 62,
+    "rank": 61,
     "points": 1408.9305,
     "prev_rank": 64,
     "prev_points": 1387.2158,
-    "movement": 2
+    "movement": 3
   },
   "Burkina Faso": {
-    "rank": 63,
+    "rank": 62,
     "points": 1406.9905,
     "prev_rank": 62,
     "prev_points": 1406.9905,
-    "movement": -1
+    "movement": 0
   },
   "Iraq": {
-    "rank": 64,
+    "rank": 63,
     "points": 1404.1728,
     "prev_rank": 57,
     "prev_points": 1446.2796,
-    "movement": -7
+    "movement": -6
   },
   "Cape Verde": {
-    "rank": 65,
+    "rank": 64,
     "points": 1402.9661,
     "prev_rank": 67,
     "prev_points": 1371.108,
-    "movement": 2
+    "movement": 3
+  },
+  "Ghana": {
+    "rank": 65,
+    "points": 1387.0007,
+    "prev_rank": 73,
+    "prev_points": 1346.8812,
+    "movement": 8
   },
   "Honduras": {
     "rank": 66,
