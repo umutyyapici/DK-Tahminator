@@ -721,7 +721,7 @@
         'switzerland': 'ch', 'turkey': 'tr',
         'argentina': 'ar', 'brazil': 'br', 'colombia': 'co',
         'ecuador': 'ec', 'paraguay': 'py', 'uruguay': 'uy',
-        'canada': 'ca', 'curacao': 'cw', 'curaçao': 'cw',
+        'canada': 'ca', 'curacao': 'cw', 'cura\u00e7ao': 'cw',
         'haiti': 'ht', 'mexico': 'mx', 'panama': 'pa',
         'united states': 'us', 'usa': 'us',
         'algeria': 'dz', 'cape verde': 'cv', 'cape verde islands': 'cv',
@@ -839,6 +839,25 @@
 
     // ── Render card ────────────────────────────────────────
     function renderCard(match) {
+      const isTBD = match.home_team === 'Belli Değil' || match.away_team === 'Belli Değil';
+      if (isTBD) {
+        return `
+        <div class="match-card">
+          <div class="stage-badge">${stageLabel(match.stage)}</div>
+          <div class="teams-row">
+            <div class="team-block home">
+              <span class="team-name">${match.home_team}</span>
+            </div>
+            <div class="score-bubble">
+              <span class="score-label" style="text-align:center;white-space:normal">Takımlar netleştiğinde<br>tahmin gösterilecek</span>
+            </div>
+            <div class="team-block away">
+              <span class="team-name">${match.away_team}</span>
+            </div>
+          </div>
+        </div>`;
+      }
+
       const ph = parseFloat(match.prob_home) || 0;
       const pd = parseFloat(match.prob_draw) || 0;
       const pa = parseFloat(match.prob_away) || 0;
@@ -982,12 +1001,12 @@ ${scoreBubbleHtml}
           {
             const histMap = {};
             history.forEach(h => {
-              histMap[`${h.date.slice(0,10)}|${h.home_team}|${h.away_team}`] = h;
+              histMap[`${h.date}|${h.home_team}|${h.away_team}`] = h;
             });
             finished = allMatches
               .filter(m => m.status === 'FINISHED' && m.home_team && m.away_team)
               .map(m => {
-                const hist = histMap[`${m.date.slice(0,10)}|${m.home_team}|${m.away_team}`] || {};
+                const hist = histMap[`${m.date}|${m.home_team}|${m.away_team}`] || {};
                 return { ...hist, ...m, played: true };
               });
           }
