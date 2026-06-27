@@ -15,7 +15,7 @@
   },
   "Spain": {
     "rank": 3,
-    "points": 1864.3231,
+    "points": 1854.5833,
     "prev_rank": 2,
     "prev_points": 1874.7108,
     "movement": -1
@@ -118,19 +118,19 @@
     "prev_points": 1661.5762,
     "movement": 1
   },
-  "Senegal": {
+  "Uruguay": {
     "rank": 18,
+    "points": 1659.7038,
+    "prev_rank": 16,
+    "prev_points": 1673.0686,
+    "movement": -2
+  },
+  "Senegal": {
+    "rank": 19,
     "points": 1653.4286,
     "prev_rank": 15,
     "prev_points": 1684.0699,
-    "movement": -3
-  },
-  "Uruguay": {
-    "rank": 19,
-    "points": 1649.9641,
-    "prev_rank": 16,
-    "prev_points": 1673.0686,
-    "movement": -3
+    "movement": -4
   },
   "Denmark": {
     "rank": 20,
@@ -398,19 +398,19 @@
     "prev_points": 1458.7341,
     "movement": -7
   },
-  "Saudi Arabia": {
-    "rank": 58,
-    "points": 1426.7108,
-    "prev_rank": 61,
-    "prev_points": 1423.8812,
-    "movement": 3
-  },
   "Tunisia": {
-    "rank": 59,
+    "rank": 58,
     "points": 1426.584,
     "prev_rank": 45,
     "prev_points": 1476.4051,
-    "movement": -14
+    "movement": -13
+  },
+  "Saudi Arabia": {
+    "rank": 59,
+    "points": 1425.5153,
+    "prev_rank": 61,
+    "prev_points": 1423.8812,
+    "movement": 2
   },
   "Qatar": {
     "rank": 60,
@@ -442,7 +442,7 @@
   },
   "Cape Verde": {
     "rank": 64,
-    "points": 1401.7707,
+    "points": 1402.9661,
     "prev_rank": 67,
     "prev_points": 1371.108,
     "movement": 3
