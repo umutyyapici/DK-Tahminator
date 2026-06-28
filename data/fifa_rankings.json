@@ -356,26 +356,26 @@
     "prev_points": 1456.0291,
     "movement": 2
   },
-  "Romania": {
+  "South Africa": {
     "rank": 52,
+    "points": 1455.9731,
+    "prev_rank": 60,
+    "prev_points": 1428.3793,
+    "movement": 8
+  },
+  "Romania": {
+    "rank": 53,
     "points": 1455.8947,
     "prev_rank": 54,
     "prev_points": 1455.8947,
-    "movement": 2
+    "movement": 1
   },
   "Mali": {
-    "rank": 53,
+    "rank": 54,
     "points": 1455.5867,
     "prev_rank": 55,
     "prev_points": 1455.5867,
-    "movement": 2
-  },
-  "South Africa": {
-    "rank": 54,
-    "points": 1451.2419,
-    "prev_rank": 60,
-    "prev_points": 1428.3793,
-    "movement": 6
+    "movement": 1
   },
   "Republic of Ireland": {
     "rank": 55,
