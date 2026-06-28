@@ -78,9 +78,11 @@ def fetch_wc2026_matches() -> pd.DataFrame:
 
 def save_matches(df: pd.DataFrame) -> None:
     os.makedirs(os.path.dirname(OUTPUT_PATH), exist_ok=True)
+    df = df.copy()
+    df["date"] = pd.to_datetime(df["date"]).dt.strftime("%Y-%m-%d")
     df.to_csv(OUTPUT_PATH, index=False)
     json_path = OUTPUT_PATH.replace(".csv", ".json")
-    df.to_json(json_path, orient="records", force_ascii=False, date_format="iso")
+    df.to_json(json_path, orient="records", force_ascii=False)
     finished = df[df["status"] == "FINISHED"].shape[0]
     scheduled = df[df["status"] == "SCHEDULED"].shape[0]
     print(f"[fetch] {len(df)} maç kaydedildi → {finished} oynanmış, {scheduled} planlanmış")
