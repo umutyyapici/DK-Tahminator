@@ -61,9 +61,9 @@ date,kickoff_utc,home_team,away_team,home_score,away_score,tournament,city,count
 2026-06-26,2026-06-26T02:00:00Z,Paraguay,Australia,0.0,0.0,FIFA World Cup,,USA/Mexico/Canada,True,FINISHED,GROUP_STAGE,3.0,537350
 2026-06-26,2026-06-26T19:00:00Z,Norway,France,1.0,4.0,FIFA World Cup,,USA/Mexico/Canada,True,FINISHED,GROUP_STAGE,3.0,537395
 2026-06-26,2026-06-26T19:00:00Z,Senegal,Iraq,5.0,0.0,FIFA World Cup,,USA/Mexico/Canada,True,FINISHED,GROUP_STAGE,3.0,537396
-2026-06-27,2026-06-27T23:30:00Z,Congo DR,Uzbekistan,,,FIFA World Cup,,USA/Mexico/Canada,True,TIMED,GROUP_STAGE,3.0,537408
-2026-06-27,2026-06-27T23:30:00Z,Colombia,Portugal,,,FIFA World Cup,,USA/Mexico/Canada,True,TIMED,GROUP_STAGE,3.0,537407
-2026-06-27,2026-06-27T21:00:00Z,Croatia,Ghana,,,FIFA World Cup,,USA/Mexico/Canada,True,IN_PLAY,GROUP_STAGE,3.0,537414
+2026-06-27,2026-06-27T23:30:00Z,Congo DR,Uzbekistan,,,FIFA World Cup,,USA/Mexico/Canada,True,LIVE,GROUP_STAGE,3.0,537408
+2026-06-27,2026-06-27T23:30:00Z,Colombia,Portugal,,,FIFA World Cup,,USA/Mexico/Canada,True,LIVE,GROUP_STAGE,3.0,537407
+2026-06-27,2026-06-27T21:00:00Z,Croatia,Ghana,2.0,1.0,FIFA World Cup,,USA/Mexico/Canada,True,FINISHED,GROUP_STAGE,3.0,537414
 2026-06-27,2026-06-27T21:00:00Z,Panama,England,0.0,2.0,FIFA World Cup,,USA/Mexico/Canada,True,FINISHED,GROUP_STAGE,3.0,537413
 2026-06-27,2026-06-27T00:00:00Z,Cape Verde Islands,Saudi Arabia,0.0,0.0,FIFA World Cup,,USA/Mexico/Canada,True,FINISHED,GROUP_STAGE,3.0,537374
 2026-06-27,2026-06-27T03:00:00Z,New Zealand,Belgium,1.0,5.0,FIFA World Cup,,USA/Mexico/Canada,True,FINISHED,GROUP_STAGE,3.0,537367

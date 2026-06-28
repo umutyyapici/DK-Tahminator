@@ -50,7 +50,7 @@
   },
   "Portugal": {
     "rank": 8,
-    "points": 1766.7385,
+    "points": 1764.8559,
     "prev_rank": 5,
     "prev_points": 1767.849,
     "movement": -3
@@ -71,7 +71,7 @@
   },
   "Colombia": {
     "rank": 11,
-    "points": 1727.4181,
+    "points": 1729.3007,
     "prev_rank": 13,
     "prev_points": 1698.3519,
     "movement": 2
@@ -314,26 +314,26 @@
     "prev_points": 1473.1873,
     "movement": 3
   },
-  "DR Congo": {
-    "rank": 46,
-    "points": 1472.3693,
-    "prev_rank": 46,
-    "prev_points": 1474.4278,
-    "movement": 0
-  },
   "Venezuela": {
-    "rank": 47,
+    "rank": 46,
     "points": 1469.1777,
     "prev_rank": 49,
     "prev_points": 1469.1777,
-    "movement": 2
+    "movement": 3
   },
   "Czech Republic": {
-    "rank": 48,
+    "rank": 47,
     "points": 1467.2602,
     "prev_rank": 40,
     "prev_points": 1505.7379,
-    "movement": -8
+    "movement": -7
+  },
+  "Uzbekistan": {
+    "rank": 48,
+    "points": 1459.7296,
+    "prev_rank": 50,
+    "prev_points": 1458.7341,
+    "movement": 2
   },
   "Chile": {
     "rank": 49,
@@ -377,26 +377,26 @@
     "prev_points": 1428.3793,
     "movement": 6
   },
-  "Republic of Ireland": {
+  "DR Congo": {
     "rank": 55,
+    "points": 1445.4765,
+    "prev_rank": 46,
+    "prev_points": 1474.4278,
+    "movement": -9
+  },
+  "Republic of Ireland": {
+    "rank": 56,
     "points": 1441.0969,
     "prev_rank": 58,
     "prev_points": 1441.0969,
-    "movement": 3
+    "movement": 2
   },
   "Slovenia": {
-    "rank": 56,
+    "rank": 57,
     "points": 1441.0872,
     "prev_rank": 59,
     "prev_points": 1441.0872,
-    "movement": 3
-  },
-  "Uzbekistan": {
-    "rank": 57,
-    "points": 1432.8368,
-    "prev_rank": 50,
-    "prev_points": 1458.7341,
-    "movement": -7
+    "movement": 2
   },
   "Tunisia": {
     "rank": 58,
