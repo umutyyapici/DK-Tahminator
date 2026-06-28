@@ -992,6 +992,13 @@ ${scoreBubbleHtml}
         // Oynanmış maçlar: matches_2026'dan gerçek skor + predictions_history'den
         // o maç için yapılmış son tahmin birleştirilir, böylece kart kaybolmadan
         // gerçek sonuç + modelin tahminini gösterebilir.
+        // "2026-06-28T00:00:00.000Z" veya epoch ms → "2026-06-28"
+        function normDate(d) {
+          if (!d && d !== 0) return '';
+          const s = typeof d === 'number' ? new Date(d).toISOString() : String(d);
+          return s.slice(0, 10);
+        }
+
         let finished = [];
         try {
           const [allMatches, history] = await Promise.all([
@@ -1001,12 +1008,12 @@ ${scoreBubbleHtml}
           {
             const histMap = {};
             history.forEach(h => {
-              histMap[`${h.date}|${h.home_team}|${h.away_team}`] = h;
+              histMap[`${normDate(h.date)}|${h.home_team}|${h.away_team}`] = h;
             });
             finished = allMatches
               .filter(m => m.status === 'FINISHED' && m.home_team && m.away_team)
               .map(m => {
-                const hist = histMap[`${m.date}|${m.home_team}|${m.away_team}`] || {};
+                const hist = histMap[`${normDate(m.date)}|${m.home_team}|${m.away_team}`] || {};
                 return { ...hist, ...m, played: true };
               });
           }
@@ -1015,7 +1022,7 @@ ${scoreBubbleHtml}
         // Aynı maç hem history'de hem predictions.csv'de olabilir → played=true öncelikli al
         const matchMap = new Map();
         for (const m of [...finished, ...upcoming]) {
-          const key = `${m.date}|${m.home_team}|${m.away_team}`;
+          const key = `${normDate(m.date)}|${m.home_team}|${m.away_team}`;
           if (!matchMap.has(key) || m.played) matchMap.set(key, m);
         }
         const matches = [...matchMap.values()];
