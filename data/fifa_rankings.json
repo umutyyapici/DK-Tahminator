@@ -202,26 +202,26 @@
     "prev_points": 1571.0333,
     "movement": -1
   },
-  "Ivory Coast": {
+  "Canada": {
     "rank": 30,
+    "points": 1571.3414,
+    "prev_rank": 30,
+    "prev_points": 1559.4793,
+    "movement": 0
+  },
+  "Ivory Coast": {
+    "rank": 31,
     "points": 1565.4745,
     "prev_rank": 33,
     "prev_points": 1540.8695,
-    "movement": 3
+    "movement": 2
   },
   "South Korea": {
-    "rank": 31,
+    "rank": 32,
     "points": 1558.7195,
     "prev_rank": 25,
     "prev_points": 1591.6309,
-    "movement": -6
-  },
-  "Canada": {
-    "rank": 32,
-    "points": 1551.0726,
-    "prev_rank": 30,
-    "prev_points": 1559.4793,
-    "movement": -2
+    "movement": -7
   },
   "Ukraine": {
     "rank": 33,
@@ -356,26 +356,26 @@
     "prev_points": 1456.0291,
     "movement": 2
   },
-  "South Africa": {
-    "rank": 52,
-    "points": 1455.9731,
-    "prev_rank": 60,
-    "prev_points": 1428.3793,
-    "movement": 8
-  },
   "Romania": {
-    "rank": 53,
+    "rank": 52,
     "points": 1455.8947,
     "prev_rank": 54,
     "prev_points": 1455.8947,
-    "movement": 1
+    "movement": 2
   },
   "Mali": {
-    "rank": 54,
+    "rank": 53,
     "points": 1455.5867,
     "prev_rank": 55,
     "prev_points": 1455.5867,
-    "movement": 1
+    "movement": 2
+  },
+  "South Africa": {
+    "rank": 54,
+    "points": 1451.2419,
+    "prev_rank": 60,
+    "prev_points": 1428.3793,
+    "movement": 6
   },
   "Republic of Ireland": {
     "rank": 55,
