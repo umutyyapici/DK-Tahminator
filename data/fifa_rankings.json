@@ -97,26 +97,26 @@
     "prev_points": 1704.7338,
     "movement": -2
   },
-  "United States": {
+  "Japan": {
     "rank": 15,
+    "points": 1703.9458,
+    "prev_rank": 18,
+    "prev_points": 1661.5762,
+    "movement": 3
+  },
+  "United States": {
+    "rank": 16,
     "points": 1677.1705,
     "prev_rank": 17,
     "prev_points": 1671.2341,
-    "movement": 2
+    "movement": 1
   },
   "Switzerland": {
-    "rank": 16,
+    "rank": 17,
     "points": 1676.0002,
     "prev_rank": 19,
     "prev_points": 1650.0642,
-    "movement": 3
-  },
-  "Japan": {
-    "rank": 17,
-    "points": 1673.6765,
-    "prev_rank": 18,
-    "prev_points": 1661.5762,
-    "movement": 1
+    "movement": 2
   },
   "Senegal": {
     "rank": 18,
