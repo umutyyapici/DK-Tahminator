@@ -29,7 +29,7 @@
   },
   "Brazil": {
     "rank": 5,
-    "points": 1785.1925,
+    "points": 1804.9232,
     "prev_rank": 6,
     "prev_points": 1765.8563,
     "movement": 1
@@ -97,26 +97,26 @@
     "prev_points": 1704.7338,
     "movement": -2
   },
-  "Japan": {
-    "rank": 15,
-    "points": 1678.9458,
-    "prev_rank": 18,
-    "prev_points": 1661.5762,
-    "movement": 3
-  },
   "United States": {
-    "rank": 16,
+    "rank": 15,
     "points": 1677.1705,
     "prev_rank": 17,
     "prev_points": 1671.2341,
-    "movement": 1
+    "movement": 2
   },
   "Switzerland": {
-    "rank": 17,
+    "rank": 16,
     "points": 1676.0002,
     "prev_rank": 19,
     "prev_points": 1650.0642,
-    "movement": 2
+    "movement": 3
+  },
+  "Japan": {
+    "rank": 17,
+    "points": 1673.6765,
+    "prev_rank": 18,
+    "prev_points": 1661.5762,
+    "movement": 1
   },
   "Senegal": {
     "rank": 18,
