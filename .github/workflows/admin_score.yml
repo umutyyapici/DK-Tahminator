@@ -1,0 +1,90 @@
+name: Admin Skor Girişi
+
+on:
+  workflow_dispatch:
+    inputs:
+      date:
+        description: 'Tarih (YYYY-MM-DD)'
+        required: true
+      home_team:
+        description: 'Ev sahibi takım adı (matches_2026.csv ile aynı)'
+        required: true
+      away_team:
+        description: 'Deplasman takımı adı (matches_2026.csv ile aynı)'
+        required: true
+      home_score:
+        description: 'Ev sahibi gol sayısı'
+        required: true
+      away_score:
+        description: 'Deplasman gol sayısı'
+        required: true
+      note:
+        description: 'Not (opsiyonel — örn: "API gecikme, erken giriş")'
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+
+concurrency:
+  group: data-update
+  cancel-in-progress: false
+
+jobs:
+  admin-score:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Python kur
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Bağımlılıkları yükle
+        run: pip install -r requirements.txt
+
+      - name: Override skoru kaydet
+        run: |
+          python src/admin_score.py \
+            --date "${{ github.event.inputs.date }}" \
+            --home "${{ github.event.inputs.home_team }}" \
+            --away "${{ github.event.inputs.away_team }}" \
+            --home-score ${{ github.event.inputs.home_score }} \
+            --away-score ${{ github.event.inputs.away_score }} \
+            --note "${{ github.event.inputs.note }}"
+
+      - name: Pipeline güncelle (light)
+        env:
+          FOOTBALL_DATA_API_KEY: ${{ secrets.FOOTBALL_DATA_API_KEY }}
+        run: python src/update.py --light
+
+      - name: Değişiklikleri commit et
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          for f in data/admin_scores.json data/matches_2026.csv data/matches_2026.json \
+                   data/predictions.csv data/predictions.json \
+                   data/predictions_history.csv data/predictions_history.json \
+                   data/accuracy.json data/elo_cache.json data/joker_locks.json; do
+            [ -f "$f" ] && git add "$f"
+          done
+          if git diff --staged --quiet; then
+            echo "Değişiklik yok."
+            exit 0
+          fi
+          git commit -m "chore: admin override ${{ github.event.inputs.date }} — ${{ github.event.inputs.home_team }} ${{ github.event.inputs.home_score }}-${{ github.event.inputs.away_score }} ${{ github.event.inputs.away_team }}"
+          for i in 1 2 3 4 5; do
+            if git push; then
+              exit 0
+            fi
+            echo "Push reddedildi, rebase deneniyor (deneme $i)..."
+            git rebase --abort 2>/dev/null || true
+            git pull --rebase -X theirs origin main
+          done
+          echo "Push 5 denemeden sonra başarısız oldu."
+          exit 1
