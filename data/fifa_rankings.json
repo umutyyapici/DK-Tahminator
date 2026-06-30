@@ -237,26 +237,26 @@
     "prev_points": 1505.3497,
     "movement": 7
   },
-  "Russia": {
+  "Sweden": {
     "rank": 35,
+    "points": 1541.1797,
+    "prev_rank": 38,
+    "prev_points": 1509.7854,
+    "movement": 3
+  },
+  "Russia": {
+    "rank": 36,
     "points": 1529.6028,
     "prev_rank": 35,
     "prev_points": 1529.6028,
-    "movement": 0
+    "movement": -1
   },
   "Poland": {
-    "rank": 36,
+    "rank": 37,
     "points": 1526.1834,
     "prev_rank": 36,
     "prev_points": 1526.1834,
-    "movement": 0
-  },
-  "Sweden": {
-    "rank": 37,
-    "points": 1525.579,
-    "prev_rank": 38,
-    "prev_points": 1509.7854,
-    "movement": 1
+    "movement": -1
   },
   "Wales": {
     "rank": 38,
