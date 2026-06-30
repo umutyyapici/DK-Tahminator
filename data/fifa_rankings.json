@@ -1,17 +1,17 @@
 {
-  "Argentina": {
+  "France": {
     "rank": 1,
+    "points": 1916.2404,
+    "prev_rank": 3,
+    "prev_points": 1870.6962,
+    "movement": 2
+  },
+  "Argentina": {
+    "rank": 2,
     "points": 1907.4047,
     "prev_rank": 1,
     "prev_points": 1877.2666,
-    "movement": 0
-  },
-  "France": {
-    "rank": 2,
-    "points": 1906.841,
-    "prev_rank": 3,
-    "prev_points": 1870.6962,
-    "movement": 1
+    "movement": -1
   },
   "Spain": {
     "rank": 3,
@@ -237,26 +237,26 @@
     "prev_points": 1505.3497,
     "movement": 7
   },
-  "Sweden": {
-    "rank": 35,
-    "points": 1541.1797,
-    "prev_rank": 38,
-    "prev_points": 1509.7854,
-    "movement": 3
-  },
   "Russia": {
-    "rank": 36,
+    "rank": 35,
     "points": 1529.6028,
     "prev_rank": 35,
     "prev_points": 1529.6028,
-    "movement": -1
+    "movement": 0
   },
   "Poland": {
-    "rank": 37,
+    "rank": 36,
     "points": 1526.1834,
     "prev_rank": 36,
     "prev_points": 1526.1834,
-    "movement": -1
+    "movement": 0
+  },
+  "Sweden": {
+    "rank": 37,
+    "points": 1525.579,
+    "prev_rank": 38,
+    "prev_points": 1509.7854,
+    "movement": 1
   },
   "Wales": {
     "rank": 38,
