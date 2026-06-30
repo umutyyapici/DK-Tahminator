@@ -1,129 +1,98 @@
 """
-fetch_matches.py
-----------------
-football-data.org API'sinden 2026 Dünya Kupası maçlarını çeker.
-Hem takvimi (gelecek maçlar) hem de sonuçları (oynanan maçlar) alır.
-Kaggle results.csv formatına dönüştürüp data/matches_2026.csv'ye yazar.
+fetch_rankings.py
+-----------------
+FIFA Men's World Ranking'i api.fifa.com uzerinden ceker.
+Public endpoint, kimlik dogrulamasi gerekmez.
+data/fifa_rankings.json olarak kaydeder.
 """
 
-import json
 import os
+import json
 import requests
-import pandas as pd
-from datetime import datetime
 
-API_KEY = os.environ.get("FOOTBALL_DATA_API_KEY", "")
-BASE_URL = "https://api.football-data.org/v4"
-HEADERS = {"X-Auth-Token": API_KEY}
-WC_CODE = "WC"  # football-data.org'daki Dünya Kupası kodu
-OUTPUT_PATH = os.path.join(os.path.dirname(__file__), "..", "data", "matches_2026.csv")
+FIFA_RANKING_URL = (
+    "https://api.fifa.com/api/v3/fifarankings/rankings/live"
+    "?gender=1&sportType=0&language=en"
+)
+
+OUTPUT_PATH = os.path.join(os.path.dirname(__file__), "..", "data", "fifa_rankings.json")
+
+# FIFA resmi adi --> projedeki ic takim adi
+FIFA_NAME_MAP = {
+    "Korea Republic":          "South Korea",
+    "IR Iran":                 "Iran",
+    "USA":                     "United States",
+    "Turkiye":                 "Turkey",
+    "Ürkiye":             "Turkey",
+    "Türkiye":            "Turkey",
+    "DPR Korea":               "North Korea",
+    "Congo DR":                "DR Congo",
+    "Côte d'Ivoire":      "Ivory Coast",
+    "Cabo Verde":              "Cape Verde",
+    "The Gambia":              "Gambia",
+    "Czechia":                 "Czech Republic",
+    "Palestine":               "Palestine",
+    "Republic of Ireland":     "Republic of Ireland",
+    "Bosnia and Herzegovina":  "Bosnia and Herzegovina",
+}
+
+_HEADERS = {
+    "User-Agent": (
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+        "AppleWebKit/537.36 (KHTML, like Gecko) "
+        "Chrome/125.0.0.0 Safari/537.36"
+    ),
+    "Accept": "application/json, text/plain, */*",
+    "Referer": "https://inside.fifa.com/",
+    "Origin":  "https://inside.fifa.com",
+}
 
 
-def fetch_wc2026_matches() -> pd.DataFrame:
+def fetch_fifa_rankings() -> dict:
     """
-    Tüm 2026 WC maçlarını çeker (oynanmış + oynanacak).
-    Döndürülen DataFrame Kaggle results.csv formatındadır:
-    date, home_team, away_team, home_score, away_score, tournament, city, country, neutral
+    Guncel FIFA Men's siralamasi.
+    Doendueruer: {takim_adi: {rank, points, prev_rank, prev_points, movement}}
     """
-    url = f"{BASE_URL}/competitions/{WC_CODE}/matches"
-    
-    # Sezon filtresini 2026 olarak netleştiriyoruz
-    params = {"season": 2026}
-
-    resp = requests.get(url, headers=HEADERS, params=params, timeout=30)
+    resp = requests.get(FIFA_RANKING_URL, headers=_HEADERS, timeout=30)
     resp.raise_for_status()
     data = resp.json()
 
-    rows = []
-    for m in data.get("matches", []):
-        status = m.get("status", "")  # SCHEDULED, IN_PLAY, FINISHED vs.
-
-        home_score = None
-        away_score = None
-        if status == "FINISHED":
-            ft = m.get("score", {}).get("fullTime", {})
-            home_score = ft.get("home")
-            away_score = ft.get("away")
-
-        # API'den bazen boş takım gelebilir (üst turlar henüz netleşmediyse).
-        # homeTeam nesnesi var ama name null olabilir → or {} ile her iki formatı kapat.
-        home_name = (m.get("homeTeam") or {}).get("name") or "Belli Değil"
-        away_name = (m.get("awayTeam") or {}).get("name") or "Belli Değil"
-
-        rows.append({
-            "date":       m["utcDate"][:10],           # "2026-06-11"
-            "kickoff_utc": m["utcDate"],                # "2026-06-11T22:00:00Z"
-            "home_team":  home_name,
-            "away_team":  away_name,
-            "home_score": home_score,                  # None = oynanmadı
-            "away_score": away_score,
-            "tournament": "FIFA World Cup",
-            "city":       m.get("venue", ""),
-            "country":    "USA/Mexico/Canada",
-            "neutral":    True,                        # WC nötr sahada oynanır
-            "status":     status,
-            "stage":      m.get("stage", ""),          # GROUP_STAGE, ROUND_OF_16 vs.
-            "matchday":   m.get("matchday"),
-            "match_id":   m["id"],                     # football-data.org ID'si
-        })
-
-    if not rows:
-        raise ValueError("API'den maç verisi çekilemedi. Sezon parametresini veya API iznini kontrol edin.")
-
-    df = pd.DataFrame(rows)
-    df["date"] = pd.to_datetime(df["date"])
-    df.sort_values("date", inplace=True)
-    df.reset_index(drop=True, inplace=True)
-    return df
-
-
-def _apply_admin_overrides(df: pd.DataFrame) -> pd.DataFrame:
-    """admin_scores.json'daki manuel skorları uygular; API verisi bunları ezemez."""
-    admin_path = os.path.join(os.path.dirname(__file__), "..", "data", "admin_scores.json")
-    if not os.path.exists(admin_path):
-        return df
-    with open(admin_path, encoding="utf-8") as f:
-        overrides = json.load(f)
-    if not overrides:
-        return df
-    df = df.copy()
-    for key, ov in overrides.items():
-        parts = key.split("|", 2)
-        if len(parts) != 3:
+    rankings = {}
+    for entry in data.get("Results", []):
+        name = None
+        for n in entry.get("TeamName", []):
+            if "en" in n.get("Locale", "").lower():
+                name = n.get("Description")
+                break
+        if not name:
+            names = entry.get("TeamName", [])
+            if names:
+                name = names[0].get("Description", "")
+        if not name:
             continue
-        date_str, home, away = parts
-        mask = (df["date"] == date_str) & (df["home_team"] == home) & (df["away_team"] == away)
-        if mask.any():
-            df.loc[mask, "home_score"] = ov["home_score"]
-            df.loc[mask, "away_score"] = ov["away_score"]
-            df.loc[mask, "status"]     = ov.get("status", "FINISHED")
-            print(f"[fetch] Admin override uygulandı: {home} vs {away} → {ov['home_score']}-{ov['away_score']}")
-        else:
-            print(f"[fetch] UYARI: Admin override için maç bulunamadı: {key}")
-    return df
+
+        internal = FIFA_NAME_MAP.get(name, name)
+        rankings[internal] = {
+            "rank":        int(entry.get("Rank", 999)),
+            "points":      round(float(entry.get("TotalPoints", 0)), 4),
+            "prev_rank":   int(entry.get("PrevRank", 999)),
+            "prev_points": round(float(entry.get("PrevPoints", 0)), 4),
+            "movement":    int(entry.get("RankingMovement", 0)),
+        }
+
+    return rankings
 
 
-def save_matches(df: pd.DataFrame) -> None:
-    df = _apply_admin_overrides(df)
+def save_rankings(rankings: dict) -> None:
     os.makedirs(os.path.dirname(OUTPUT_PATH), exist_ok=True)
-    df = df.copy()
-    df["date"] = pd.to_datetime(df["date"]).dt.strftime("%Y-%m-%d")
-    df.to_csv(OUTPUT_PATH, index=False)
-    json_path = OUTPUT_PATH.replace(".csv", ".json")
-    df.to_json(json_path, orient="records", force_ascii=False)
-    finished = df[df["status"] == "FINISHED"].shape[0]
-    scheduled = df[df["status"] == "SCHEDULED"].shape[0]
-    print(f"[fetch] {len(df)} maç kaydedildi → {finished} oynanmış, {scheduled} planlanmış")
-    print(f"[fetch] Dosya: {OUTPUT_PATH}")
+    with open(OUTPUT_PATH, "w", encoding="utf-8") as f:
+        json.dump(rankings, f, ensure_ascii=False, indent=2)
+    print(f"[rankings] {len(rankings)} takim siralama kaydedildi: {OUTPUT_PATH}")
 
 
 if __name__ == "__main__":
-    # Sadece API_KEY tamamen boş kalmışsa hata versin
-    if not API_KEY:
-        raise EnvironmentError(
-            "FOOTBALL_DATA_API_KEY tanımlı değil veya kodun içine yazılmadı.\n"
-            "Lütfen kodu düzenleyin veya ortam değişkenini tanımlayın."
-        )
-    df = fetch_wc2026_matches()
-    save_matches(df)
-    print(df[["date", "home_team", "away_team", "home_score", "away_score", "status"]].to_string())
+    r = fetch_fifa_rankings()
+    save_rankings(r)
+    print("\nIlk 15 siralama:")
+    for team, info in list(r.items())[:15]:
+        print(f"  {info['rank']:>3}. {team:<30} {info['points']:.1f} puan  ({info['movement']:+d})")
