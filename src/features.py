@@ -553,7 +553,9 @@ def build_features(kaggle_results_path: str,
         nm_q = build_name_map(former_names_path)
         for col in ["home_team", "away_team"]:
             wc2026_q[col] = wc2026_q[col].map(lambda x: normalize_team(x, nm_q))
-        combined_fp = _csv_fingerprint(kaggle_results_path) + f"|{played_cnt}"
+        _admin_path = os.path.join(DATA_DIR, "admin_scores.json")
+        _admin_fp   = _csv_fingerprint(_admin_path) if os.path.exists(_admin_path) else "none"
+        combined_fp = _csv_fingerprint(kaggle_results_path) + f"|{played_cnt}|a:{_admin_fp}"
         cached = _load_elo_cache(combined_fp)
         if cached is not None:
             builder_c, h2h_c = cached
@@ -707,8 +709,10 @@ def build_features(kaggle_results_path: str,
     train_df = pd.DataFrame(feature_rows)
 
     # ELO cache kaydet (kaggle + oynanmış 2026 dahil) — predict.py hızlı yolu için
-    played_cnt = int((wc2026["status"] == "FINISHED").sum()) if not wc2026.empty else 0
-    combined_fp = _csv_fingerprint(kaggle_results_path) + f"|{played_cnt}"
+    played_cnt  = int((wc2026["status"] == "FINISHED").sum()) if not wc2026.empty else 0
+    _admin_path = os.path.join(DATA_DIR, "admin_scores.json")
+    _admin_fp   = _csv_fingerprint(_admin_path) if os.path.exists(_admin_path) else "none"
+    combined_fp = _csv_fingerprint(kaggle_results_path) + f"|{played_cnt}|a:{_admin_fp}"
     _save_elo_cache(builder, h2h_records, combined_fp)
 
     # 6. 2026 tahmin feature'lari (oynanmamis maclar)
