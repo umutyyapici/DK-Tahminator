@@ -6,6 +6,7 @@ Hem takvimi (gelecek maçlar) hem de sonuçları (oynanan maçlar) alır.
 Kaggle results.csv formatına dönüştürüp data/matches_2026.csv'ye yazar.
 """
 
+import json
 import os
 import requests
 import pandas as pd
@@ -76,7 +77,34 @@ def fetch_wc2026_matches() -> pd.DataFrame:
     return df
 
 
+def _apply_admin_overrides(df: pd.DataFrame) -> pd.DataFrame:
+    """admin_scores.json'daki manuel skorları uygular; API verisi bunları ezemez."""
+    admin_path = os.path.join(os.path.dirname(__file__), "..", "data", "admin_scores.json")
+    if not os.path.exists(admin_path):
+        return df
+    with open(admin_path, encoding="utf-8") as f:
+        overrides = json.load(f)
+    if not overrides:
+        return df
+    df = df.copy()
+    for key, ov in overrides.items():
+        parts = key.split("|", 2)
+        if len(parts) != 3:
+            continue
+        date_str, home, away = parts
+        mask = (df["date"] == date_str) & (df["home_team"] == home) & (df["away_team"] == away)
+        if mask.any():
+            df.loc[mask, "home_score"] = ov["home_score"]
+            df.loc[mask, "away_score"] = ov["away_score"]
+            df.loc[mask, "status"]     = ov.get("status", "FINISHED")
+            print(f"[fetch] Admin override uygulandı: {home} vs {away} → {ov['home_score']}-{ov['away_score']}")
+        else:
+            print(f"[fetch] UYARI: Admin override için maç bulunamadı: {key}")
+    return df
+
+
 def save_matches(df: pd.DataFrame) -> None:
+    df = _apply_admin_overrides(df)
     os.makedirs(os.path.dirname(OUTPUT_PATH), exist_ok=True)
     df = df.copy()
     df["date"] = pd.to_datetime(df["date"]).dt.strftime("%Y-%m-%d")
