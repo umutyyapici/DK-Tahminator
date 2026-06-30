@@ -139,26 +139,26 @@
     "prev_points": 1619.4742,
     "movement": 1
   },
-  "Iran": {
+  "Norway": {
     "rank": 21,
+    "points": 1617.6719,
+    "prev_rank": 31,
+    "prev_points": 1557.4377,
+    "movement": 10
+  },
+  "Iran": {
+    "rank": 22,
     "points": 1609.8451,
     "prev_rank": 20,
     "prev_points": 1619.5816,
-    "movement": -1
+    "movement": -2
   },
   "Austria": {
-    "rank": 22,
+    "rank": 23,
     "points": 1598.8228,
     "prev_rank": 24,
     "prev_points": 1597.4041,
-    "movement": 2
-  },
-  "Norway": {
-    "rank": 23,
-    "points": 1594.0409,
-    "prev_rank": 31,
-    "prev_points": 1557.4377,
-    "movement": 8
+    "movement": 1
   },
   "Ecuador": {
     "rank": 24,
@@ -211,7 +211,7 @@
   },
   "Ivory Coast": {
     "rank": 31,
-    "points": 1566.8435,
+    "points": 1565.4745,
     "prev_rank": 33,
     "prev_points": 1540.8695,
     "movement": 2
