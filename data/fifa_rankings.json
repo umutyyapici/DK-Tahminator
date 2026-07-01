@@ -55,19 +55,19 @@
     "prev_points": 1767.849,
     "movement": -3
   },
-  "Mexico": {
+  "Belgium": {
     "rank": 9,
+    "points": 1756.5131,
+    "prev_rank": 9,
+    "prev_points": 1742.2359,
+    "movement": 0
+  },
+  "Mexico": {
+    "rank": 10,
     "points": 1754.2969,
     "prev_rank": 14,
     "prev_points": 1687.4818,
-    "movement": 5
-  },
-  "Belgium": {
-    "rank": 10,
-    "points": 1735.4139,
-    "prev_rank": 9,
-    "prev_points": 1742.2359,
-    "movement": -1
+    "movement": 4
   },
   "Colombia": {
     "rank": 11,
@@ -97,33 +97,33 @@
     "prev_points": 1704.7338,
     "movement": -2
   },
-  "Senegal": {
-    "rank": 15,
-    "points": 1682.3293,
-    "prev_rank": 15,
-    "prev_points": 1684.0699,
-    "movement": 0
-  },
   "United States": {
-    "rank": 16,
+    "rank": 15,
     "points": 1677.1705,
     "prev_rank": 17,
     "prev_points": 1671.2341,
-    "movement": 1
+    "movement": 2
   },
   "Switzerland": {
-    "rank": 17,
+    "rank": 16,
     "points": 1676.0002,
     "prev_rank": 19,
     "prev_points": 1650.0642,
-    "movement": 2
+    "movement": 3
   },
   "Japan": {
-    "rank": 18,
+    "rank": 17,
     "points": 1673.6765,
     "prev_rank": 18,
     "prev_points": 1661.5762,
-    "movement": 0
+    "movement": 1
+  },
+  "Senegal": {
+    "rank": 18,
+    "points": 1653.4286,
+    "prev_rank": 15,
+    "prev_points": 1684.0699,
+    "movement": -3
   },
   "Uruguay": {
     "rank": 19,
