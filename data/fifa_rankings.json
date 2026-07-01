@@ -22,7 +22,7 @@
   },
   "England": {
     "rank": 4,
-    "points": 1840.4618,
+    "points": 1850.9701,
     "prev_rank": 4,
     "prev_points": 1828.0219,
     "movement": 0
@@ -237,54 +237,54 @@
     "prev_points": 1505.3497,
     "movement": 7
   },
-  "DR Congo": {
-    "rank": 35,
-    "points": 1534.9683,
-    "prev_rank": 46,
-    "prev_points": 1474.4278,
-    "movement": 11
-  },
   "Russia": {
-    "rank": 36,
+    "rank": 35,
     "points": 1529.6028,
     "prev_rank": 35,
     "prev_points": 1529.6028,
-    "movement": -1
+    "movement": 0
   },
   "Poland": {
-    "rank": 37,
+    "rank": 36,
     "points": 1526.1834,
     "prev_rank": 36,
     "prev_points": 1526.1834,
-    "movement": -1
+    "movement": 0
   },
   "Sweden": {
-    "rank": 38,
+    "rank": 37,
     "points": 1525.579,
     "prev_rank": 38,
     "prev_points": 1509.7854,
-    "movement": 0
+    "movement": 1
   },
   "Wales": {
-    "rank": 39,
+    "rank": 38,
     "points": 1516.9466,
     "prev_rank": 37,
     "prev_points": 1516.9466,
-    "movement": -2
+    "movement": -1
   },
   "Hungary": {
-    "rank": 40,
+    "rank": 39,
     "points": 1506.3937,
     "prev_rank": 39,
     "prev_points": 1506.3937,
-    "movement": -1
+    "movement": 0
   },
   "Serbia": {
-    "rank": 41,
+    "rank": 40,
     "points": 1502.1332,
     "prev_rank": 43,
     "prev_points": 1502.1332,
-    "movement": 2
+    "movement": 3
+  },
+  "DR Congo": {
+    "rank": 41,
+    "points": 1495.4765,
+    "prev_rank": 46,
+    "prev_points": 1474.4278,
+    "movement": 5
   },
   "Scotland": {
     "rank": 42,
