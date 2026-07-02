@@ -15,7 +15,7 @@
   },
   "Spain": {
     "rank": 3,
-    "points": 1879.5833,
+    "points": 1892.2827,
     "prev_rank": 2,
     "prev_points": 1874.7108,
     "movement": -1
@@ -146,19 +146,19 @@
     "prev_points": 1557.4377,
     "movement": 10
   },
-  "Austria": {
-    "rank": 22,
-    "points": 1611.1235,
-    "prev_rank": 24,
-    "prev_points": 1597.4041,
-    "movement": 2
-  },
   "Iran": {
-    "rank": 23,
+    "rank": 22,
     "points": 1609.8451,
     "prev_rank": 20,
     "prev_points": 1619.5816,
-    "movement": -3
+    "movement": -2
+  },
+  "Austria": {
+    "rank": 23,
+    "points": 1598.8228,
+    "prev_rank": 24,
+    "prev_points": 1597.4041,
+    "movement": 1
   },
   "Ecuador": {
     "rank": 24,
