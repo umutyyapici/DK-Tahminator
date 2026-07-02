@@ -405,26 +405,26 @@
     "prev_points": 1423.8812,
     "movement": 3
   },
-  "Qatar": {
+  "Bosnia and Herzegovina": {
     "rank": 59,
+    "points": 1420.7706,
+    "prev_rank": 64,
+    "prev_points": 1387.2158,
+    "movement": 5
+  },
+  "Qatar": {
+    "rank": 60,
     "points": 1411.0637,
     "prev_rank": 56,
     "prev_points": 1450.3077,
-    "movement": -3
+    "movement": -4
   },
   "Uzbekistan": {
-    "rank": 60,
+    "rank": 61,
     "points": 1409.7296,
     "prev_rank": 50,
     "prev_points": 1458.7341,
-    "movement": -10
-  },
-  "Bosnia and Herzegovina": {
-    "rank": 61,
-    "points": 1408.9305,
-    "prev_rank": 64,
-    "prev_points": 1387.2158,
-    "movement": 3
+    "movement": -11
   },
   "Burkina Faso": {
     "rank": 62,
