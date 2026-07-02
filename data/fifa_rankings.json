@@ -146,19 +146,19 @@
     "prev_points": 1557.4377,
     "movement": 10
   },
-  "Iran": {
+  "Austria": {
     "rank": 22,
+    "points": 1611.1235,
+    "prev_rank": 24,
+    "prev_points": 1597.4041,
+    "movement": 2
+  },
+  "Iran": {
+    "rank": 23,
     "points": 1609.8451,
     "prev_rank": 20,
     "prev_points": 1619.5816,
-    "movement": -2
-  },
-  "Austria": {
-    "rank": 23,
-    "points": 1598.8228,
-    "prev_rank": 24,
-    "prev_points": 1597.4041,
-    "movement": 1
+    "movement": -3
   },
   "Ecuador": {
     "rank": 24,
