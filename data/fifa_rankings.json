@@ -97,19 +97,19 @@
     "prev_points": 1704.7338,
     "movement": -2
   },
-  "United States": {
+  "Switzerland": {
     "rank": 15,
+    "points": 1696.2983,
+    "prev_rank": 19,
+    "prev_points": 1650.0642,
+    "movement": 4
+  },
+  "United States": {
+    "rank": 16,
     "points": 1690.3304,
     "prev_rank": 17,
     "prev_points": 1671.2341,
-    "movement": 2
-  },
-  "Switzerland": {
-    "rank": 16,
-    "points": 1676.0002,
-    "prev_rank": 19,
-    "prev_points": 1650.0642,
-    "movement": 3
+    "movement": 1
   },
   "Japan": {
     "rank": 17,
