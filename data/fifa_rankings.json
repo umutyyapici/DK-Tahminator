@@ -160,26 +160,26 @@
     "prev_points": 1597.4041,
     "movement": 1
   },
-  "Ecuador": {
+  "Egypt": {
     "rank": 24,
+    "points": 1597.0443,
+    "prev_rank": 29,
+    "prev_points": 1562.3672,
+    "movement": 5
+  },
+  "Ecuador": {
+    "rank": 25,
     "points": 1592.5887,
     "prev_rank": 23,
     "prev_points": 1598.5158,
-    "movement": -1
+    "movement": -2
   },
   "Nigeria": {
-    "rank": 25,
+    "rank": 26,
     "points": 1585.0171,
     "prev_rank": 26,
     "prev_points": 1585.0171,
-    "movement": 1
-  },
-  "Egypt": {
-    "rank": 26,
-    "points": 1584.7054,
-    "prev_rank": 29,
-    "prev_points": 1562.3672,
-    "movement": 3
+    "movement": 0
   },
   "Turkey": {
     "rank": 27,
