@@ -36,7 +36,7 @@
   },
   "Morocco": {
     "rank": 6,
-    "points": 1788.8555,
+    "points": 1803.9876,
     "prev_rank": 7,
     "prev_points": 1755.1002,
     "movement": 1
@@ -195,19 +195,19 @@
     "prev_points": 1579.3426,
     "movement": -1
   },
-  "Canada": {
-    "rank": 29,
-    "points": 1581.2092,
-    "prev_rank": 30,
-    "prev_points": 1559.4793,
-    "movement": 1
-  },
   "Algeria": {
-    "rank": 30,
+    "rank": 29,
     "points": 1576.8028,
     "prev_rank": 28,
     "prev_points": 1571.0333,
-    "movement": -2
+    "movement": -1
+  },
+  "Canada": {
+    "rank": 30,
+    "points": 1571.3414,
+    "prev_rank": 30,
+    "prev_points": 1559.4793,
+    "movement": 0
   },
   "Ivory Coast": {
     "rank": 31,
