@@ -33,5 +33,12 @@
     "status": "FINISHED",
     "note": "",
     "created_at": "2026-07-04T10:21:14Z"
+  },
+  "2026-07-03|Argentina|Cape Verde Islands": {
+    "home_score": 1,
+    "away_score": 1,
+    "status": "FINISHED",
+    "note": "",
+    "created_at": "2026-07-04T10:56:04Z"
   }
 }
