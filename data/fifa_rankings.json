@@ -1,7 +1,7 @@
 {
   "France": {
     "rank": 1,
-    "points": 1916.2404,
+    "points": 1925.8613,
     "prev_rank": 3,
     "prev_points": 1870.6962,
     "movement": 2
@@ -223,19 +223,19 @@
     "prev_points": 1591.6309,
     "movement": -7
   },
-  "Paraguay": {
-    "rank": 33,
-    "points": 1557.8551,
-    "prev_rank": 41,
-    "prev_points": 1505.3497,
-    "movement": 8
-  },
   "Ukraine": {
-    "rank": 34,
+    "rank": 33,
     "points": 1549.2872,
     "prev_rank": 32,
     "prev_points": 1549.2872,
-    "movement": -2
+    "movement": -1
+  },
+  "Paraguay": {
+    "rank": 34,
+    "points": 1542.476,
+    "prev_rank": 41,
+    "prev_points": 1505.3497,
+    "movement": 7
   },
   "Russia": {
     "rank": 35,
