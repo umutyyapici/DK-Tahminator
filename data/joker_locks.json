@@ -62,7 +62,7 @@
   "2026-07-04": {
     "home_team": "Colombia",
     "away_team": "Ghana",
-    "played": false
+    "played": true
   },
   "2026-07-05": {
     "home_team": "Paraguay",
@@ -70,13 +70,13 @@
     "played": false
   },
   "2026-07-06": {
-    "home_team": "Belli Değil",
-    "away_team": "Belli Değil",
+    "home_team": "Portugal",
+    "away_team": "Spain",
     "played": false
   },
   "2026-07-07": {
-    "home_team": "Belli Değil",
-    "away_team": "Belli Değil",
+    "home_team": "Argentina",
+    "away_team": "Egypt",
     "played": false
   },
   "2026-07-09": {
