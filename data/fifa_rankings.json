@@ -223,19 +223,19 @@
     "prev_points": 1591.6309,
     "movement": -7
   },
-  "Ukraine": {
+  "Paraguay": {
     "rank": 33,
+    "points": 1557.8551,
+    "prev_rank": 41,
+    "prev_points": 1505.3497,
+    "movement": 8
+  },
+  "Ukraine": {
+    "rank": 34,
     "points": 1549.2872,
     "prev_rank": 32,
     "prev_points": 1549.2872,
-    "movement": -1
-  },
-  "Paraguay": {
-    "rank": 34,
-    "points": 1542.476,
-    "prev_rank": 41,
-    "prev_points": 1505.3497,
-    "movement": 7
+    "movement": -2
   },
   "Russia": {
     "rank": 35,
