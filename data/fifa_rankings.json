@@ -125,19 +125,19 @@
     "prev_points": 1684.0699,
     "movement": -3
   },
-  "Uruguay": {
+  "Norway": {
     "rank": 19,
+    "points": 1651.2869,
+    "prev_rank": 31,
+    "prev_points": 1557.4377,
+    "movement": 12
+  },
+  "Uruguay": {
+    "rank": 20,
     "points": 1634.7038,
     "prev_rank": 16,
     "prev_points": 1673.0686,
-    "movement": -3
-  },
-  "Norway": {
-    "rank": 20,
-    "points": 1626.2869,
-    "prev_rank": 31,
-    "prev_points": 1557.4377,
-    "movement": 11
+    "movement": -4
   },
   "Denmark": {
     "rank": 21,

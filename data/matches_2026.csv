@@ -89,7 +89,7 @@ date,kickoff_utc,home_team,away_team,home_score,away_score,tournament,city,count
 2026-07-04,2026-07-04T21:00:00Z,Paraguay,France,0.0,1.0,FIFA World Cup,,USA/Mexico/Canada,True,FINISHED,LAST_16,,537375
 2026-07-04,2026-07-04T01:30:00Z,Colombia,Ghana,1.0,0.0,FIFA World Cup,,USA/Mexico/Canada,True,FINISHED,LAST_32,,537430
 2026-07-04,2026-07-04T17:00:00Z,Canada,Morocco,0.0,3.0,FIFA World Cup,,USA/Mexico/Canada,True,FINISHED,LAST_16,,537376
-2026-07-05,2026-07-05T20:00:00Z,Brazil,Norway,,,FIFA World Cup,,USA/Mexico/Canada,True,PAUSED,LAST_16,,537377
+2026-07-05,2026-07-05T20:00:00Z,Brazil,Norway,1.0,2.0,FIFA World Cup,,USA/Mexico/Canada,True,FINISHED,LAST_16,,537377
 2026-07-06,2026-07-06T00:00:00Z,Mexico,England,,,FIFA World Cup,,USA/Mexico/Canada,True,TIMED,LAST_16,,537378
 2026-07-06,2026-07-06T19:00:00Z,Portugal,Spain,,,FIFA World Cup,,USA/Mexico/Canada,True,TIMED,LAST_16,,537379
 2026-07-07,2026-07-07T00:00:00Z,United States,Belgium,,,FIFA World Cup,,USA/Mexico/Canada,True,TIMED,LAST_16,,537380
