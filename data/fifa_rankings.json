@@ -132,19 +132,19 @@
     "prev_points": 1673.0686,
     "movement": -3
   },
-  "Denmark": {
+  "Norway": {
     "rank": 20,
+    "points": 1626.2869,
+    "prev_rank": 31,
+    "prev_points": 1557.4377,
+    "movement": 11
+  },
+  "Denmark": {
+    "rank": 21,
     "points": 1619.4742,
     "prev_rank": 21,
     "prev_points": 1619.4742,
-    "movement": 1
-  },
-  "Norway": {
-    "rank": 21,
-    "points": 1617.6719,
-    "prev_rank": 31,
-    "prev_points": 1557.4377,
-    "movement": 10
+    "movement": 0
   },
   "Iran": {
     "rank": 22,
