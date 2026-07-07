@@ -90,19 +90,19 @@
     "prev_points": 1714.8656,
     "movement": -2
   },
-  "Italy": {
+  "Switzerland": {
     "rank": 14,
+    "points": 1710.8848,
+    "prev_rank": 19,
+    "prev_points": 1650.0642,
+    "movement": 5
+  },
+  "Italy": {
+    "rank": 15,
     "points": 1704.7338,
     "prev_rank": 12,
     "prev_points": 1704.7338,
-    "movement": -2
-  },
-  "Switzerland": {
-    "rank": 15,
-    "points": 1698.3848,
-    "prev_rank": 19,
-    "prev_points": 1650.0642,
-    "movement": 4
+    "movement": -3
   },
   "United States": {
     "rank": 16,
