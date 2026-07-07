@@ -48,19 +48,19 @@
     "prev_points": 1767.849,
     "movement": -2
   },
-  "Netherlands": {
+  "Belgium": {
     "rank": 8,
+    "points": 1778.3552,
+    "prev_rank": 9,
+    "prev_points": 1742.2359,
+    "movement": 1
+  },
+  "Netherlands": {
+    "rank": 9,
     "points": 1775.5422,
     "prev_rank": 8,
     "prev_points": 1753.5719,
-    "movement": 0
-  },
-  "Belgium": {
-    "rank": 9,
-    "points": 1756.5131,
-    "prev_rank": 9,
-    "prev_points": 1742.2359,
-    "movement": 0
+    "movement": -1
   },
   "Mexico": {
     "rank": 10,
