@@ -8,7 +8,7 @@
   },
   "Argentina": {
     "rank": 2,
-    "points": 1913.7099,
+    "points": 1925.1485,
     "prev_rank": 1,
     "prev_points": 1877.2666,
     "movement": -1
@@ -132,40 +132,40 @@
     "prev_points": 1557.4377,
     "movement": 12
   },
-  "Egypt": {
-    "rank": 20,
-    "points": 1635.6056,
-    "prev_rank": 29,
-    "prev_points": 1562.3672,
-    "movement": 9
-  },
   "Uruguay": {
-    "rank": 21,
+    "rank": 20,
     "points": 1634.7038,
     "prev_rank": 16,
     "prev_points": 1673.0686,
-    "movement": -5
+    "movement": -4
   },
   "Denmark": {
-    "rank": 22,
+    "rank": 21,
     "points": 1619.4742,
     "prev_rank": 21,
     "prev_points": 1619.4742,
-    "movement": -1
+    "movement": 0
   },
   "Iran": {
-    "rank": 23,
+    "rank": 22,
     "points": 1609.8451,
     "prev_rank": 20,
     "prev_points": 1619.5816,
-    "movement": -3
+    "movement": -2
   },
   "Austria": {
-    "rank": 24,
+    "rank": 23,
     "points": 1598.8228,
     "prev_rank": 24,
     "prev_points": 1597.4041,
-    "movement": 0
+    "movement": 1
+  },
+  "Egypt": {
+    "rank": 24,
+    "points": 1597.0443,
+    "prev_rank": 29,
+    "prev_points": 1562.3672,
+    "movement": 5
   },
   "Ecuador": {
     "rank": 25,
