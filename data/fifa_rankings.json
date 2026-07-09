@@ -27,19 +27,19 @@
     "prev_points": 1828.0219,
     "movement": 0
   },
-  "Brazil": {
+  "Morocco": {
     "rank": 5,
+    "points": 1810.8781,
+    "prev_rank": 7,
+    "prev_points": 1755.1002,
+    "movement": 2
+  },
+  "Brazil": {
+    "rank": 6,
     "points": 1804.9232,
     "prev_rank": 6,
     "prev_points": 1765.8563,
-    "movement": 1
-  },
-  "Morocco": {
-    "rank": 6,
-    "points": 1803.9876,
-    "prev_rank": 7,
-    "prev_points": 1755.1002,
-    "movement": 1
+    "movement": 0
   },
   "Portugal": {
     "rank": 7,
