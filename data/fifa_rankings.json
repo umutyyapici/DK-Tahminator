@@ -6,19 +6,19 @@
     "prev_points": 1870.6962,
     "movement": 2
   },
-  "Argentina": {
+  "Spain": {
     "rank": 2,
+    "points": 1934.792,
+    "prev_rank": 2,
+    "prev_points": 1874.7108,
+    "movement": 0
+  },
+  "Argentina": {
+    "rank": 3,
     "points": 1925.1485,
     "prev_rank": 1,
     "prev_points": 1877.2666,
-    "movement": -1
-  },
-  "Spain": {
-    "rank": 3,
-    "points": 1912.3392,
-    "prev_rank": 2,
-    "prev_points": 1874.7108,
-    "movement": -1
+    "movement": -2
   },
   "England": {
     "rank": 4,
@@ -50,7 +50,7 @@
   },
   "Belgium": {
     "rank": 8,
-    "points": 1785.9024,
+    "points": 1778.3552,
     "prev_rank": 9,
     "prev_points": 1742.2359,
     "movement": 1
