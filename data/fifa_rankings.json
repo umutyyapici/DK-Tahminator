@@ -118,19 +118,19 @@
     "prev_points": 1661.5762,
     "movement": 1
   },
-  "Senegal": {
+  "Norway": {
     "rank": 18,
+    "points": 1663.2536,
+    "prev_rank": 31,
+    "prev_points": 1557.4377,
+    "movement": 13
+  },
+  "Senegal": {
+    "rank": 19,
     "points": 1653.4286,
     "prev_rank": 15,
     "prev_points": 1684.0699,
-    "movement": -3
-  },
-  "Norway": {
-    "rank": 19,
-    "points": 1651.2869,
-    "prev_rank": 31,
-    "prev_points": 1557.4377,
-    "movement": 12
+    "movement": -4
   },
   "Uruguay": {
     "rank": 20,
