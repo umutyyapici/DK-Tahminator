@@ -92,7 +92,7 @@
   "2026-07-12": {
     "home_team": "Argentina",
     "away_team": "Switzerland",
-    "played": false
+    "played": true
   },
   "2026-07-14": {
     "home_team": "France",
@@ -100,8 +100,8 @@
     "played": false
   },
   "2026-07-15": {
-    "home_team": "Belli Değil",
-    "away_team": "Belli Değil",
+    "home_team": "England",
+    "away_team": "Argentina",
     "played": false
   },
   "2026-07-19": {
