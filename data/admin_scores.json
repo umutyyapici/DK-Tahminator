@@ -40,5 +40,12 @@
     "status": "FINISHED",
     "note": "",
     "created_at": "2026-07-04T10:56:04Z"
+  },
+  "2026-07-12|Argentina|Switzerland": {
+    "home_score": 1,
+    "away_score": 1,
+    "status": "FINISHED",
+    "note": "",
+    "created_at": "2026-07-12T11:47:53Z"
   }
 }
