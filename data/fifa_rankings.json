@@ -1,24 +1,24 @@
 {
-  "France": {
+  "Spain": {
     "rank": 1,
+    "points": 1965.608,
+    "prev_rank": 2,
+    "prev_points": 1874.7108,
+    "movement": 1
+  },
+  "France": {
+    "rank": 2,
     "points": 1948.9708,
     "prev_rank": 3,
     "prev_points": 1870.6962,
-    "movement": 2
+    "movement": 1
   },
   "Argentina": {
-    "rank": 2,
+    "rank": 3,
     "points": 1943.4655,
     "prev_rank": 1,
     "prev_points": 1877.2666,
-    "movement": -1
-  },
-  "Spain": {
-    "rank": 3,
-    "points": 1935.608,
-    "prev_rank": 2,
-    "prev_points": 1874.7108,
-    "movement": -1
+    "movement": -2
   },
   "England": {
     "rank": 4,
