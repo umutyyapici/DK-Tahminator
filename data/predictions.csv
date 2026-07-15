@@ -1,4 +1,4 @@
 date,kickoff_utc,home_team,away_team,stage,expected_home,expected_away,most_likely_score,prob_home,prob_draw,prob_away,predicted,elo_home,elo_away,updated_at,top1_score,top1_prob,top2_score,top2_prob,top3_score,top3_prob,is_joker
-2026-07-15,2026-07-15T19:00:00Z,England,Argentina,SEMI_FINALS,1.11,1.62,1-1,25.4,26.2,48.4,Deplasman,2134.8,2170.9,2026-07-15 17:18 UTC,1-1,12.5,0-1,9.9,1-2,9.5,True
-2026-07-18,2026-07-18T21:00:00Z,France,Belli Değil,THIRD_PLACE,3.03,0.43,3-0,88.0,9.3,2.7,Ev Sahibi,2172.2,1500.0,2026-07-15 17:18 UTC,3-0,14.6,2-0,14.4,4-0,11.1,False
-2026-07-19,2026-07-19T19:00:00Z,Spain,Belli Değil,FINAL,2.85,0.43,2-0,86.2,10.6,3.2,Ev Sahibi,2275.7,1500.0,2026-07-15 17:18 UTC,2-0,15.3,3-0,14.5,1-0,10.4,True
+2026-07-15,2026-07-15T19:00:00Z,England,Argentina,SEMI_FINALS,1.11,1.62,1-1,25.4,26.2,48.4,Deplasman,2134.8,2170.9,2026-07-15 17:22 UTC,1-1,12.5,0-1,9.9,1-2,9.5,True
+2026-07-18,2026-07-18T21:00:00Z,France,Belli Değil,THIRD_PLACE,3.03,0.43,3-0,88.0,9.3,2.7,Ev Sahibi,2172.2,1500.0,2026-07-15 17:22 UTC,3-0,14.6,2-0,14.4,4-0,11.1,False
+2026-07-19,2026-07-19T19:00:00Z,Spain,Belli Değil,FINAL,2.85,0.43,2-0,86.2,10.6,3.2,Ev Sahibi,2275.7,1500.0,2026-07-15 17:22 UTC,2-0,15.3,3-0,14.5,1-0,10.4,True
