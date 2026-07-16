@@ -101,5 +101,5 @@ date,kickoff_utc,home_team,away_team,home_score,away_score,tournament,city,count
 2026-07-12,2026-07-12T01:00:00Z,Argentina,Switzerland,1.0,1.0,FIFA World Cup,,USA/Mexico/Canada,True,FINISHED,QUARTER_FINALS,,537386
 2026-07-14,2026-07-14T19:00:00Z,France,Spain,0.0,2.0,FIFA World Cup,,USA/Mexico/Canada,True,FINISHED,SEMI_FINALS,,537387
 2026-07-15,2026-07-15T19:00:00Z,England,Argentina,1.0,2.0,FIFA World Cup,,USA/Mexico/Canada,True,FINISHED,SEMI_FINALS,,537388
-2026-07-18,2026-07-18T21:00:00Z,France,Belli Değil,,,FIFA World Cup,,USA/Mexico/Canada,True,TIMED,THIRD_PLACE,,537389
-2026-07-19,2026-07-19T19:00:00Z,Spain,Belli Değil,,,FIFA World Cup,,USA/Mexico/Canada,True,TIMED,FINAL,,537390
+2026-07-18,2026-07-18T21:00:00Z,France,England,,,FIFA World Cup,,USA/Mexico/Canada,True,TIMED,THIRD_PLACE,,537389
+2026-07-19,2026-07-19T19:00:00Z,Spain,Argentina,,,FIFA World Cup,,USA/Mexico/Canada,True,TIMED,FINAL,,537390
