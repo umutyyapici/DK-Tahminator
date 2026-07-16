@@ -131,3 +131,5 @@ date,kickoff_utc,home_team,away_team,stage,predicted,most_likely_score,expected_
 2026-07-15,2026-07-15T19:00:00Z,England,Argentina,SEMI_FINALS,Deplasman,1-1,1.1,1.64,24.9,25.9,49.2,2134.8,2170.9,1-1,12.3,0-1,9.8,1-2,9.6,True
 2026-07-18,2026-07-18T21:00:00Z,France,Belli Değil,THIRD_PLACE,Ev Sahibi,3-0,3.03,0.43,87.9,9.3,2.7,2172.2,1500.0,3-0,14.6,2-0,14.4,4-0,11.0,False
 2026-07-19,2026-07-19T19:00:00Z,Spain,Belli Değil,FINAL,Ev Sahibi,2-0,2.85,0.43,86.1,10.6,3.2,2275.7,1500.0,2-0,15.3,3-0,14.5,1-0,10.5,True
+2026-07-18,2026-07-18T21:00:00Z,France,England,THIRD_PLACE,Ev Sahibi,1-1,1.51,1.12,45.4,27.1,27.5,2172.2,2107.9,1-1,12.9,1-0,10.1,2-1,9.2,True
+2026-07-19,2026-07-19T19:00:00Z,Spain,Argentina,FINAL,Ev Sahibi,1-1,1.52,1.5,37.7,25.5,36.8,2275.7,2197.8,1-1,11.8,2-1,8.5,1-2,8.3,False
