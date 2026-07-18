@@ -107,6 +107,6 @@
   "2026-07-19": {
     "home_team": "France",
     "away_team": "England",
-    "played": false
+    "played": true
   }
 }
