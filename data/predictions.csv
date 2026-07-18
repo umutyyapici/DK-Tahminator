@@ -1,3 +1,3 @@
 date,kickoff_utc,home_team,away_team,stage,expected_home,expected_away,most_likely_score,prob_home,prob_draw,prob_away,predicted,elo_home,elo_away,updated_at,top1_score,top1_prob,top2_score,top2_prob,top3_score,top3_prob,is_joker
-2026-07-18,2026-07-18T21:00:00Z,France,England,THIRD_PLACE,1.49,1.53,1-1,36.4,25.5,38.1,Deplasman,2172.2,2107.9,2026-07-18 22:26 UTC,1-1,11.8,1-2,8.5,2-1,8.3,True
-2026-07-19,2026-07-19T19:00:00Z,Spain,Argentina,FINAL,1.5,1.57,1-1,35.8,25.3,38.9,Deplasman,2275.7,2197.8,2026-07-18 22:26 UTC,1-1,11.6,1-2,8.6,2-1,8.2,False
+2026-07-18,2026-07-18T21:00:00Z,France,England,THIRD_PLACE,1.49,1.53,1-1,36.4,25.5,38.1,Deplasman,2172.2,2107.9,2026-07-18 22:51 UTC,1-1,11.8,1-2,8.5,2-1,8.3,True
+2026-07-19,2026-07-19T19:00:00Z,Spain,Argentina,FINAL,1.5,1.57,1-1,35.8,25.3,38.9,Deplasman,2275.7,2197.8,2026-07-18 22:51 UTC,1-1,11.6,1-2,8.6,2-1,8.2,False
