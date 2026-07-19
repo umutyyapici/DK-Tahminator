@@ -102,4 +102,4 @@ date,kickoff_utc,home_team,away_team,home_score,away_score,tournament,city,count
 2026-07-14,2026-07-14T19:00:00Z,France,Spain,0.0,2.0,FIFA World Cup,,USA/Mexico/Canada,True,FINISHED,SEMI_FINALS,,537387
 2026-07-15,2026-07-15T19:00:00Z,England,Argentina,1.0,2.0,FIFA World Cup,,USA/Mexico/Canada,True,FINISHED,SEMI_FINALS,,537388
 2026-07-18,2026-07-18T21:00:00Z,France,England,4.0,6.0,FIFA World Cup,,USA/Mexico/Canada,True,FINISHED,THIRD_PLACE,,537389
-2026-07-19,2026-07-19T19:00:00Z,Spain,Argentina,,,FIFA World Cup,,USA/Mexico/Canada,True,LIVE,FINAL,,537390
+2026-07-19,2026-07-19T19:00:00Z,Spain,Argentina,,,FIFA World Cup,,USA/Mexico/Canada,True,PAUSED,FINAL,,537390
