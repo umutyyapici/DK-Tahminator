@@ -1,17 +1,17 @@
 {
-  "Argentina": {
+  "Spain": {
     "rank": 1,
+    "points": 1995.8819,
+    "prev_rank": 2,
+    "prev_points": 1874.7108,
+    "movement": 1
+  },
+  "Argentina": {
+    "rank": 2,
     "points": 1970.3654,
     "prev_rank": 1,
     "prev_points": 1877.2666,
-    "movement": 0
-  },
-  "Spain": {
-    "rank": 2,
-    "points": 1965.8819,
-    "prev_rank": 2,
-    "prev_points": 1874.7108,
-    "movement": 0
+    "movement": -1
   },
   "France": {
     "rank": 3,
