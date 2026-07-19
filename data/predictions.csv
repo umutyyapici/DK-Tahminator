@@ -1,2 +1,2 @@
 date,kickoff_utc,home_team,away_team,stage,expected_home,expected_away,most_likely_score,prob_home,prob_draw,prob_away,predicted,elo_home,elo_away,updated_at,top1_score,top1_prob,top2_score,top2_prob,top3_score,top3_prob,is_joker
-2026-07-19,2026-07-19T19:00:00Z,Spain,Argentina,FINAL,1.65,1.88,1-1,33.7,23.2,43.1,Deplasman,2275.7,2197.8,2026-07-19 20:24 UTC,1-1,9.7,1-2,8.6,2-1,7.5,False
+2026-07-19,2026-07-19T19:00:00Z,Spain,Argentina,FINAL,1.65,1.88,1-1,33.7,23.2,43.1,Deplasman,2275.7,2197.8,2026-07-19 20:50 UTC,1-1,9.7,1-2,8.6,2-1,7.5,False
