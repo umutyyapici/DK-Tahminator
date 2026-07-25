@@ -652,7 +652,7 @@
   },
   "Thailand": {
     "rank": 94,
-    "points": 1250.8031,
+    "points": 1251.7892,
     "prev_rank": 94,
     "prev_points": 1250.8031,
     "movement": 0
@@ -944,26 +944,26 @@
     "prev_points": 1100.95,
     "movement": 0
   },
-  "Latvia": {
+  "Malaysia": {
     "rank": 136,
+    "points": 1088.3522,
+    "prev_rank": 136,
+    "prev_points": 1086.2181,
+    "movement": 0
+  },
+  "Latvia": {
+    "rank": 137,
     "points": 1085.6608,
     "prev_rank": 137,
     "prev_points": 1085.6608,
-    "movement": 1
+    "movement": 0
   },
   "India": {
-    "rank": 137,
+    "rank": 138,
     "points": 1084.9308,
     "prev_rank": 138,
     "prev_points": 1084.9308,
-    "movement": 1
-  },
-  "Malaysia": {
-    "rank": 138,
-    "points": 1083.3522,
-    "prev_rank": 136,
-    "prev_points": 1086.2181,
-    "movement": -2
+    "movement": 0
   },
   "Central African Republic": {
     "rank": 139,
@@ -1098,19 +1098,19 @@
     "prev_points": 1019.036,
     "movement": 0
   },
-  "Myanmar": {
-    "rank": 158,
-    "points": 1012.2564,
-    "prev_rank": 158,
-    "prev_points": 1009.3905,
-    "movement": 0
-  },
   "Moldova": {
-    "rank": 159,
+    "rank": 158,
     "points": 1008.24,
     "prev_rank": 159,
     "prev_points": 1008.24,
-    "movement": 0
+    "movement": 1
+  },
+  "Myanmar": {
+    "rank": 159,
+    "points": 1007.2564,
+    "prev_rank": 158,
+    "prev_points": 1009.3905,
+    "movement": -1
   },
   "Vanuatu": {
     "rank": 160,
@@ -1289,7 +1289,7 @@
   },
   "Laos": {
     "rank": 185,
-    "points": 885.0289,
+    "points": 884.0428,
     "prev_rank": 185,
     "prev_points": 885.0289,
     "movement": 0
