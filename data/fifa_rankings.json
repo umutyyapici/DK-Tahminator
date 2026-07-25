@@ -944,26 +944,26 @@
     "prev_points": 1100.95,
     "movement": 0
   },
-  "Malaysia": {
-    "rank": 136,
-    "points": 1086.2181,
-    "prev_rank": 136,
-    "prev_points": 1086.2181,
-    "movement": 0
-  },
   "Latvia": {
-    "rank": 137,
+    "rank": 136,
     "points": 1085.6608,
     "prev_rank": 137,
     "prev_points": 1085.6608,
-    "movement": 0
+    "movement": 1
   },
   "India": {
-    "rank": 138,
+    "rank": 137,
     "points": 1084.9308,
     "prev_rank": 138,
     "prev_points": 1084.9308,
-    "movement": 0
+    "movement": 1
+  },
+  "Malaysia": {
+    "rank": 138,
+    "points": 1083.3522,
+    "prev_rank": 136,
+    "prev_points": 1086.2181,
+    "movement": -2
   },
   "Central African Republic": {
     "rank": 139,
@@ -1100,7 +1100,7 @@
   },
   "Myanmar": {
     "rank": 158,
-    "points": 1009.3905,
+    "points": 1012.2564,
     "prev_rank": 158,
     "prev_points": 1009.3905,
     "movement": 0
