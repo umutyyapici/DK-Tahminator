@@ -939,7 +939,7 @@
   },
   "Philippines": {
     "rank": 135,
-    "points": 1100.95,
+    "points": 1098.0053,
     "prev_rank": 135,
     "prev_points": 1100.95,
     "movement": 0
@@ -1098,19 +1098,19 @@
     "prev_points": 1019.036,
     "movement": 0
   },
-  "Moldova": {
+  "Myanmar": {
     "rank": 158,
+    "points": 1010.201,
+    "prev_rank": 158,
+    "prev_points": 1009.3905,
+    "movement": 0
+  },
+  "Moldova": {
+    "rank": 159,
     "points": 1008.24,
     "prev_rank": 159,
     "prev_points": 1008.24,
-    "movement": 1
-  },
-  "Myanmar": {
-    "rank": 159,
-    "points": 1007.2564,
-    "prev_rank": 158,
-    "prev_points": 1009.3905,
-    "movement": -1
+    "movement": 0
   },
   "Vanuatu": {
     "rank": 160,
