@@ -811,19 +811,19 @@
     "prev_points": 1159.6378,
     "movement": 0
   },
-  "Indonesia": {
-    "rank": 117,
-    "points": 1158.5794,
-    "prev_rank": 118,
-    "prev_points": 1157.1427,
-    "movement": 1
-  },
   "Sudan": {
-    "rank": 118,
+    "rank": 117,
     "points": 1157.2239,
     "prev_rank": 117,
     "prev_points": 1157.2239,
-    "movement": -1
+    "movement": 0
+  },
+  "Indonesia": {
+    "rank": 118,
+    "points": 1157.1789,
+    "prev_rank": 118,
+    "prev_points": 1157.1427,
+    "movement": 0
   },
   "Togo": {
     "rank": 119,
@@ -1401,7 +1401,7 @@
   },
   "Timor-Leste": {
     "rank": 201,
-    "points": 828.6375,
+    "points": 830.0379,
     "prev_rank": 201,
     "prev_points": 830.9987,
     "movement": 0
