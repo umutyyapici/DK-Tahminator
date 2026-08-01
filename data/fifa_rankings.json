@@ -643,19 +643,19 @@
     "prev_points": 1254.4068,
     "movement": 0
   },
-  "Benin": {
+  "Thailand": {
     "rank": 93,
+    "points": 1253.5367,
+    "prev_rank": 94,
+    "prev_points": 1250.8031,
+    "movement": 1
+  },
+  "Benin": {
+    "rank": 94,
     "points": 1252.1709,
     "prev_rank": 93,
     "prev_points": 1252.1709,
-    "movement": 0
-  },
-  "Thailand": {
-    "rank": 94,
-    "points": 1251.0367,
-    "prev_rank": 94,
-    "prev_points": 1250.8031,
-    "movement": 0
+    "movement": -1
   },
   "Palestine": {
     "rank": 95,
@@ -946,7 +946,7 @@
   },
   "Malaysia": {
     "rank": 136,
-    "points": 1090.6719,
+    "points": 1088.1719,
     "prev_rank": 136,
     "prev_points": 1086.2181,
     "movement": 0
