@@ -687,7 +687,7 @@
   },
   "Vietnam": {
     "rank": 99,
-    "points": 1227.3267,
+    "points": 1229.5041,
     "prev_rank": 99,
     "prev_points": 1227.2038,
     "movement": 0
@@ -804,19 +804,19 @@
     "prev_points": 1172.2152,
     "movement": 0
   },
-  "Indonesia": {
-    "rank": 116,
-    "points": 1159.6789,
-    "prev_rank": 118,
-    "prev_points": 1157.1427,
-    "movement": 2
-  },
   "Gambia": {
-    "rank": 117,
+    "rank": 116,
     "points": 1159.6378,
     "prev_rank": 116,
     "prev_points": 1159.6378,
-    "movement": -1
+    "movement": 0
+  },
+  "Indonesia": {
+    "rank": 117,
+    "points": 1157.5016,
+    "prev_rank": 118,
+    "prev_points": 1157.1427,
+    "movement": 1
   },
   "Sudan": {
     "rank": 118,
