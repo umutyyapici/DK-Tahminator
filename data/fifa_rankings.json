@@ -629,26 +629,26 @@
     "prev_points": 1255.8218,
     "movement": 0
   },
-  "China PR": {
+  "Thailand": {
     "rank": 91,
+    "points": 1255.3187,
+    "prev_rank": 94,
+    "prev_points": 1250.8031,
+    "movement": 3
+  },
+  "China PR": {
+    "rank": 92,
     "points": 1254.8091,
     "prev_rank": 91,
     "prev_points": 1254.8091,
-    "movement": 0
+    "movement": -1
   },
   "Bahrain": {
-    "rank": 92,
+    "rank": 93,
     "points": 1254.4068,
     "prev_rank": 92,
     "prev_points": 1254.4068,
-    "movement": 0
-  },
-  "Thailand": {
-    "rank": 93,
-    "points": 1252.8187,
-    "prev_rank": 94,
-    "prev_points": 1250.8031,
-    "movement": 1
+    "movement": -1
   },
   "Benin": {
     "rank": 94,
@@ -939,7 +939,7 @@
   },
   "Philippines": {
     "rank": 135,
-    "points": 1100.2446,
+    "points": 1097.7446,
     "prev_rank": 135,
     "prev_points": 1100.95,
     "movement": 0
